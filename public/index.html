@@ -3,40 +3,36 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>WorkshopKmer</title>
+<title>WorkshopKmer - Optimisé</title>
 <style>
 body { margin:0; font-family:Arial,sans-serif; background:#0b0f1a; color:#fff; padding:1rem; }
-header{display:flex;align-items:center;justify-content:space-between;}
-header img{width:50px;height:50px;border-radius:50%;}
-h1{margin-left:0.5rem;font-size:1.5rem;}
-#clocks{display:flex;gap:0.5rem;overflow-x:auto;margin-top:0.5rem;}
-.clock{background:#1f2937;padding:0.3rem 0.5rem;border-radius:5px;white-space:nowrap;}
-input,textarea,select,button{margin:0.2rem 0; padding:0.5rem; border-radius:8px; border:none;}
+h2{margin-top:1rem;}
+input,textarea,button{margin:0.3rem 0; padding:0.5rem; border-radius:8px; border:none;}
 button{cursor:pointer;}
 .btn-whatsapp{background:#25D366;color:#fff;font-weight:bold;}
+.btn-block{background:#f87171;color:#fff;}
+.btn-unblock{background:#34d399;color:#000;}
+.btn-delete{background:#ef4444;color:#fff;}
+.btn-clear{background:#facc15;color:#000;}
 small{font-size:10px;color:#ccc;}
 .profile img{width:50px;height:50px;border-radius:50%;object-fit:cover;margin-right:0.5rem;cursor:pointer;}
 table{width:100%;border-collapse:collapse;margin-top:1rem;}
 th,td{padding:0.4rem;border:1px solid #444;text-align:center;font-size:12px;}
 th{background:#4f46e5;}
 #profilePage{display:none; border:1px solid #444; padding:0.5rem; margin-top:1rem;}
-#mediaScroll{display:flex;overflow-x:auto;gap:5px;padding:5px;border:1px solid #444;}
-#chatBox{border:1px solid #444; padding:0.5rem; height:300px; overflow-y:auto;}
+#chatBox{border:1px solid #444; padding:0.5rem; height:200px; overflow-y:auto;}
+#mediaList{display:flex; overflow-x:auto; gap:5px; margin-top:0.5rem;}
 </style>
 </head>
 <body>
 
-<header>
-  <div style="display:flex;align-items:center;">
-    <img src="https://raw.githubusercontent.com/Lfg237/m-dias/main/Screenshot_20260302-170127.jpg" alt="Logo">
-    <h1>WorkshopKmer</h1>
-  </div>
-</header>
+<h2>Connexion Utilisateur</h2>
+<input type="text" id="loginEmail" placeholder="Email">
+<button onclick="loginUser()">Se connecter</button>
 
-<div id="clocks"></div>
+<hr>
 
 <h2>Créer votre compte</h2>
-<div style="max-width:400px;">
 <input type="text" id="email" placeholder="Email">
 <input type="text" id="companyName" placeholder="Nom de l'entreprise">
 <input type="text" id="phone1" placeholder="Téléphone 1">
@@ -46,18 +42,17 @@ th{background:#4f46e5;}
 <input type="number" id="age" placeholder="Âge">
 <input type="file" id="photoFile" accept="image/*">
 <img id="previewPhoto" src="" alt="Aperçu" style="width:50px;height:50px;border-radius:50%;display:block;">
-<button id="btnCreate">Créer un compte</button>
-<button id="btnAdmin" class="btn-whatsapp">Contacter l'administrateur</button>
-</div>
+<button onclick="createAccount()">Créer un compte</button>
+<button class="btn-whatsapp" onclick="contactAdmin()">Contacter l'administrateur</button>
 
 <hr>
 
 <h2>Utilisateurs</h2>
-<input type="text" id="searchUsers" placeholder="Rechercher utilisateur...">
+<input type="text" id="searchUsers" placeholder="Rechercher utilisateur..." oninput="renderUsers()">
 <table>
 <thead>
 <tr>
-<th>Photo</th><th>Nom Entreprise</th><th>Ville</th><th>Profil</th><th>Copier lien</th>
+<th>Photo</th><th>Nom Entreprise</th><th>Ville</th><th>ID</th><th>Profil</th><th>Lien direct</th>
 </tr>
 </thead>
 <tbody id="usersTableBody"></tbody>
@@ -65,14 +60,31 @@ th{background:#4f46e5;}
 
 <hr>
 
-<h2>Profil Utilisateur</h2>
+<h2>Accès Administrateur</h2>
+<input type="password" id="adminCodeInput" placeholder="Entrez le code admin">
+<button onclick="showAdmin()">Accéder Admin</button>
+<div id="adminSection" style="display:none;">
+<table>
+<thead>
+<tr>
+<th>Nom Entreprise</th><th>Email</th><th>Ville</th><th>Bloqué</th><th>Actions</th>
+</tr>
+</thead>
+<tbody id="adminTableBody"></tbody>
+</table>
+<button class="btn-clear" onclick="clearHalfMessages()">Supprimer 50% des messages</button>
+</div>
+
+<hr>
+
 <div id="profilePage">
+<h2>Profil Utilisateur</h2>
 <div class="profile">
 <img id="profilePhoto" src="" alt="Profil">
 <div id="profileInfo"></div>
 <label>Ajouter médias :</label>
 <input type="file" id="mediaFile" multiple>
-<div id="mediaScroll"></div>
+<div id="mediaList"></div>
 <button onclick="closeProfile()">Fermer Profil</button>
 </div>
 </div>
@@ -81,54 +93,54 @@ th{background:#4f46e5;}
 
 <h2>Chat Public</h2>
 <div id="chatContainer">
-<textarea id="messageInput" placeholder="Écrire un message..." rows="3" style="width:100%;"></textarea>
+<textarea id="messageInput" placeholder="Écrire un message..." rows="2" style="width:100%;"></textarea>
 <input type="file" id="chatMedia" multiple>
-<button id="sendMessageBtn">Envoyer</button>
+<button onclick="sendMessage()">Envoyer</button>
 <div id="chatBox"></div>
 </div>
 
 <script>
-// --- Horloges ---
-const countries=[{name:'Cameroun',offset:1},{name:'France',offset:1},{name:'USA',offset:-5},{name:'Afrique du Sud',offset:2},{name:'Chine',offset:8},{name:'Russie',offset:3},{name:'Japon',offset:9},{name:'Brésil',offset:-3},{name:'Royaume-Uni',offset:0},{name:'Canada',offset:-5}];
-function updateClocks(){
-  const container=document.getElementById('clocks');
-  container.innerHTML='';
-  countries.forEach(c=>{
-    const d=new Date();
-    const utc=d.getTime() + d.getTimezoneOffset()*60000;
-    const nd=new Date(utc + 3600000*c.offset);
-    const div=document.createElement('div');
-    div.className='clock';
-    div.textContent=`${c.name}: ${nd.toLocaleTimeString()}`;
-    container.appendChild(div);
-  });
-}
-setInterval(updateClocks,1000);
-updateClocks();
+// URL du site pour les liens directs
+const siteURL = "https://workshopkmer.vercel.app/?user=";
 
 // --- Stockage ---
-let users=JSON.parse(localStorage.getItem('users')||'[]');
-let messages=JSON.parse(localStorage.getItem('messages')||'[]');
-let currentUser=null;
+let users = JSON.parse(localStorage.getItem('users')||'[]');
+let messages = JSON.parse(localStorage.getItem('messages')||'[]');
+let currentUser = JSON.parse(localStorage.getItem('currentUser')||'null');
+let blockedUsers = users.filter(u=>u.blocked).map(u=>u.id);
 
 // --- Prévisualisation photo ---
-document.getElementById('photoFile').addEventListener('change',function(){
+document.getElementById('photoFile').addEventListener('change', function(){
   const file=this.files[0];
-  if(file){ const reader=new FileReader(); reader.onload=function(e){document.getElementById('previewPhoto').src=e.target.result;} reader.readAsDataURL(file);}
+  if(file){
+    const reader=new FileReader();
+    reader.onload=function(e){document.getElementById('previewPhoto').src=e.target.result;}
+    reader.readAsDataURL(file);
+  }
 });
 
-// --- Boutons ---
-document.getElementById('btnCreate').addEventListener('click',createAccount);
-document.getElementById('btnAdmin').addEventListener('click',contactAdmin);
-document.getElementById('sendMessageBtn').addEventListener('click',sendMessage);
-document.getElementById('searchUsers').addEventListener('input',renderUsers);
+// --- Connexion ---
+function loginUser(){
+  const email = document.getElementById('loginEmail').value.trim();
+  if(!email){ alert("Email requis"); return; }
+  const user = users.find(u => u.email === email);
+  if(user){
+    currentUser = user;
+    localStorage.setItem('currentUser', JSON.stringify(currentUser));
+    alert("Connecté ! Bienvenue "+user.companyName);
+    renderUsers();
+    renderChat();
+  } else {
+    alert("Email non trouvé. Veuillez créer un compte.");
+  }
+}
 
 // --- Créer compte ---
 function createAccount(){
   const email=document.getElementById('email').value.trim();
   if(!email){ alert("Email requis"); return; }
   if(users.find(u=>u.email===email)){ alert("Email déjà utilisé"); return; }
-  const newUser={
+  const newUser = {
     id:'u_'+Date.now(),
     email,
     companyName:document.getElementById('companyName').value,
@@ -137,20 +149,22 @@ function createAccount(){
     city:document.getElementById('city').value,
     quarter:document.getElementById('quarter').value,
     age:document.getElementById('age').value,
-    photo:document.getElementById('previewPhoto').src||"https://raw.githubusercontent.com/Lfg237/m-dias/main/Screenshot_20260302-170127.jpg",
+    photo:document.getElementById('previewPhoto').src || "https://raw.githubusercontent.com/Lfg237/m-dias/main/Screenshot_20260302-170127.jpg",
     media:[],
     blocked:false
   };
   users.push(newUser);
-  localStorage.setItem('users',JSON.stringify(users));
-  currentUser=newUser;
-  alert("Compte créé ! Votre ID : "+newUser.id);
+  localStorage.setItem('users', JSON.stringify(users));
+  currentUser = newUser;
+  localStorage.setItem('currentUser', JSON.stringify(currentUser));
   renderUsers();
+  renderAdminTable();
+  alert("Compte créé ! Votre ID : "+newUser.id);
 }
 
 // --- Contacter admin ---
 function contactAdmin(){
-  if(!currentUser){ alert("Créez un compte d'abord"); return; }
+  if(!currentUser){ alert("Créez d'abord votre compte"); return; }
   const message=encodeURIComponent("Demande validation compte ID: "+currentUser.id);
   window.open(`https://wa.me/237670035609?text=${message}`,"_blank");
 }
@@ -163,89 +177,175 @@ function renderUsers(){
   users.forEach(u=>{
     if(u.companyName.toLowerCase().includes(search)||u.city.toLowerCase().includes(search)){
       const tr=document.createElement('tr');
-      const viewBtn=document.createElement('button');
-      viewBtn.textContent='Voir Profil';
-      viewBtn.addEventListener('click',()=>openProfile(u.id));
-      const copyBtn=document.createElement('button');
-      copyBtn.textContent='Copier lien';
-      copyBtn.addEventListener('click',()=>copyLink(u.id));
-      tr.innerHTML=`<td><img src="${u.photo}" style="width:40px;height:40px;border-radius:50%;cursor:pointer;"></td><td>${u.companyName}</td><td>${u.city}</td>`;
-      const tdView=document.createElement('td'); tdView.appendChild(viewBtn);
-      const tdCopy=document.createElement('td'); tdCopy.appendChild(copyBtn);
-      tr.appendChild(tdView); tr.appendChild(tdCopy);
-      tr.querySelector('img').addEventListener('click',()=>openProfile(u.id));
+      tr.innerHTML=`
+        <td><img src="${u.photo}" onclick="openProfile('${u.id}')" style="width:40px;height:40px;border-radius:50%;cursor:pointer;"></td>
+        <td>${u.companyName}</td>
+        <td>${u.city}</td>
+        <td>${u.id}</td>
+        <td><button onclick="openProfile('${u.id}')">Voir Profil</button></td>
+        <td><button onclick="copyLink('${u.id}')">Copier lien</button></td>
+      `;
       tbody.appendChild(tr);
     }
   });
 }
 
 // --- Copier lien ---
-function copyLink(id){navigator.clipboard.writeText(`${window.location.href}?user=${id}`); alert("Lien copié !");}
+function copyLink(id){
+  navigator.clipboard.writeText(`${siteURL}${id}`);
+  alert("Lien copié !");
+}
 
 // --- Profil ---
 function openProfile(id){
-  const user=users.find(u=>u.id===id); if(!user) return;
+  const user=users.find(u=>u.id===id);
+  if(!user) return;
+  currentUser=user;
+  localStorage.setItem('currentUser', JSON.stringify(currentUser));
   document.getElementById('profilePage').style.display='block';
   document.getElementById('profilePhoto').src=user.photo;
-  document.getElementById('profileInfo').innerHTML=`<small>Email: ${user.email}</small><br><small>Nom Entreprise: ${user.companyName}</small><br><small>Tel1: ${user.phone1}</small><br><small>Tel2: ${user.phone2}</small><br><small>Ville: ${user.city}</small><br><small>Quartier: ${user.quarter}</small><br><small>Âge: ${user.age}</small>`;
-  renderProfileMedia(user);
+  document.getElementById('profileInfo').innerHTML=`
+    <small>ID: ${user.id}</small><br>
+    <small>Email: ${user.email}</small><br>
+    <small>Nom Entreprise: ${user.companyName}</small><br>
+    <small>Tel1: ${user.phone1}</small><br>
+    <small>Tel2: ${user.phone2}</small><br>
+    <small>Ville: ${user.city}</small><br>
+    <small>Quartier: ${user.quarter}</small><br>
+    <small>Âge: ${user.age}</small><br>
+    <button onclick="copyLink('${user.id}')">Copier lien du profil</button>
+  `;
+  renderMedia();
 }
-function closeProfile(){document.getElementById('profilePage').style.display='none';}
+function closeProfile(){ document.getElementById('profilePage').style.display='none'; currentUser=null; localStorage.removeItem('currentUser'); }
 
-// --- Médias profil ---
-document.getElementById('mediaFile').addEventListener('change',function(){
+// --- Médias ---
+document.getElementById('mediaFile').addEventListener('change', function(){
   if(!currentUser) return;
   Array.from(this.files).forEach(file=>{
-    const reader=new FileReader();
-    reader.onload=function(e){
-      currentUser.media.push(e.target.result);
-      renderProfileMedia(currentUser);
-    }
-    reader.readAsDataURL(file);
+    const url = URL.createObjectURL(file);
+    currentUser.media.push(url);
+    renderMedia();
+    localStorage.setItem('users', JSON.stringify(users));
+    localStorage.setItem('currentUser', JSON.stringify(currentUser));
   });
 });
-function renderProfileMedia(user){
-  const mediaDiv=document.getElementById('mediaScroll'); mediaDiv.innerHTML='';
-  user.media.forEach(m=>{
-    const ext=m.split(';')[0].split('/')[1];
+function renderMedia(){
+  const container=document.getElementById('mediaList');
+  container.innerHTML='';
+  currentUser.media.forEach((m,i)=>{
+    const ext=m.split('.').pop().toLowerCase();
     let el;
-    if(ext==='jpeg'||ext==='png'||ext==='jpg') el=`<img src="${m}" style="height:80px;">`;
-    else if(ext==='mp4') el=`<video src="${m}" controls style="height:80px;"></video>`;
-    else if(ext==='mp3') el=`<audio src="${m}" controls></audio>`;
-    else el=`<a href="${m}" target="_blank">Fichier</a>`;
-    mediaDiv.innerHTML+=el;
+    if(['jpeg','png','jpg'].includes(ext)) el=`<img src="${m}" style="width:50px;height:50px;margin:2px;">`;
+    else if(ext==='mp4') el=`<video src="${m}" controls style="width:80px;height:50px;margin:2px;"></video>`;
+    else if(ext==='mp3') el=`<audio src="${m}" controls style="width:80px;margin:2px;"></audio>`;
+    else el=`<a href="${m}" target="_blank">Fichier ${i+1}</a>`;
+    container.innerHTML+=el;
   });
 }
 
-// --- Chat ---
-document.getElementById('chatMedia').addEventListener('change',function(){
+// --- Chat rapide ---
+function renderChat(){
+  const chatBox=document.getElementById('chatBox');
+  chatBox.innerHTML='';
+  const lastMessages = messages.slice(-30); // seulement 30 derniers messages
+  lastMessages.forEach(msg=>{
+    const blocked=blockedUsers.includes(msg.userId);
+    let content=msg.text;
+    if(msg.media){
+      const ext=msg.media.split('.').pop().toLowerCase();
+      if(['jpeg','png','jpg'].includes(ext)) content+=`<br><img src="${msg.media}" style="width:50px;height:50px;margin:2px;">`;
+      else if(ext==='mp4') content+=`<br><video src="${msg.media}" controls style="width:100px;height:60px;"></video>`;
+      else if(ext==='mp3') content+=`<br><audio src="${msg.media}" controls></audio>`;
+      else content+=`<br><a href="${msg.media}" target="_blank">Fichier</a>`;
+    }
+    chatBox.innerHTML+=`<div><b>${msg.email}:</b> ${content} <small>${msg.date}</small> ${blocked?'<small>(Bloqué)</small>':''}</div>`;
+  });
+  chatBox.scrollTop = chatBox.scrollHeight;
+}
+
+document.getElementById('chatMedia').addEventListener('change', function(){
   if(!currentUser) return;
+  if(blockedUsers.includes(currentUser.id)){ alert("Vous êtes bloqué"); return; }
   Array.from(this.files).forEach(file=>{
-    const reader=new FileReader();
-    reader.onload=function(e){ messages.push({userId:currentUser.id,email:currentUser.companyName,text:'[Média]',media:e.target.result}); renderChat();}
-    reader.readAsDataURL(file);
+    const url = URL.createObjectURL(file);
+    messages.push({userId:currentUser.id,email:currentUser.companyName,text:'[Média]',media:url,date:new Date().toLocaleString()});
+    renderChat();
+    localStorage.setItem('messages', JSON.stringify(messages));
   });
 });
+
 function sendMessage(){
-  if(!currentUser){alert("Créez un compte d'abord"); return;}
+  if(!currentUser){ alert("Créez un compte d'abord"); return; }
+  if(blockedUsers.includes(currentUser.id)){ alert("Vous êtes bloqué"); return; }
   const text=document.getElementById('messageInput').value.trim();
-  if(!text && !document.getElementById('chatMedia').files.length) return;
-  messages.push({userId:currentUser.id,email:currentUser.companyName,text:text});
+  if(!text) return;
+  const textWithLinks=text.replace(/(https?:\/\/[^\s]+)/g,'<a href="$1" target="_blank">$1</a>');
+  messages.push({userId:currentUser.id,email:currentUser.companyName,text:textWithLinks,date:new Date().toLocaleString()});
   document.getElementById('messageInput').value='';
   renderChat();
+  localStorage.setItem('messages', JSON.stringify(messages));
 }
-function renderChat(){
-  const chatBox=document.getElementById('chatBox'); chatBox.innerHTML='';
-  messages.forEach(msg=>{
-    let content=msg.text;
-    if(msg.media){ const ext=msg.media.split(';')[0].split('/')[1]; if(ext==='jpeg'||ext==='png'||ext==='jpg') content+=`<br><img src="${msg.media}" style="width:50px;height:50px;margin:2px;">`; else if(ext==='mp4') content+=`<br><video src="${msg.media}" controls style="width:100px;height:60px;"></video>`; else if(ext==='mp3') content+=`<br><audio src="${msg.media}" controls></audio>`; else content+=`<br><a href="${msg.media}" target="_blank">Fichier</a>`;}
-    chatBox.innerHTML+=`<div><b>${msg.email}:</b> ${content}</div>`;
+
+// --- Admin ---
+function showAdmin(){
+  const code=document.getElementById('adminCodeInput').value;
+  if(code==='233233'){ document.getElementById('adminSection').style.display='block'; renderAdminTable(); }
+  else alert("Code incorrect");
+}
+
+function renderAdminTable(){
+  const tbody=document.getElementById('adminTableBody');
+  tbody.innerHTML='';
+  users.forEach(u=>{
+    const tr=document.createElement('tr');
+    tr.innerHTML=`
+      <td>${u.companyName}</td>
+      <td>${u.email}</td>
+      <td>${u.city}</td>
+      <td>${u.blocked?'Oui':'Non'}</td>
+      <td>
+        <button class="${u.blocked?'btn-unblock':'btn-block'}" onclick="toggleBlock('${u.id}')">${u.blocked?'Débloquer':'Bloquer'}</button>
+        <button class="btn-delete" onclick="deleteUser('${u.id}')">Supprimer</button>
+      </td>
+    `;
+    tbody.appendChild(tr);
   });
+}
+
+function toggleBlock(id){
+  users=users.map(u=>u.id===id?{...u,blocked:!u.blocked}:u);
+  blockedUsers=users.filter(u=>u.blocked).map(u=>u.id);
+  localStorage.setItem('users', JSON.stringify(users));
+  renderAdminTable();
+  renderChat();
+}
+
+function deleteUser(id){
+  if(confirm("Supprimer cet utilisateur et ses messages ?")){
+    users=users.filter(u=>u.id!==id);
+    messages=messages.filter(m=>m.userId!==id);
+    blockedUsers=users.filter(u=>u.blocked).map(u=>u.id);
+    localStorage.setItem('users', JSON.stringify(users));
+    localStorage.setItem('messages', JSON.stringify(messages));
+    renderAdminTable();
+    renderUsers();
+    renderChat();
+  }
+}
+
+function clearHalfMessages(){
+  const half=Math.floor(messages.length/2);
+  messages=messages.slice(half);
+  localStorage.setItem('messages', JSON.stringify(messages));
+  renderChat();
 }
 
 // --- Initialisation ---
+if(currentUser) alert("Connecté automatiquement : "+currentUser.companyName);
 renderUsers();
 renderChat();
+blockedUsers=users.filter(u=>u.blocked).map(u=>u.id);
 </script>
 
 </body>
