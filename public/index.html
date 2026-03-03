@@ -34,7 +34,7 @@ td,th{padding:8px;border-bottom:1px solid #333;text-align:center;}
 <section>
 <h3>Créer un compte</h3>
 <input type="text" id="companyName" placeholder="Nom entreprise"><br>
-<input type="text" id="prestations" placeholder="Prestations"><br>
+<input type="text" id="prestations" placeholder="Prestations de service"><br>
 <input type="text" id="city" placeholder="Ville"><br>
 <input type="email" id="email" placeholder="Email"><br>
 <input type="text" id="whatsapp" placeholder="Numéro WhatsApp"><br>
@@ -58,7 +58,7 @@ td,th{padding:8px;border-bottom:1px solid #333;text-align:center;}
 <button onclick="closeProfile()">Fermer Profil</button>
 <button id="whatsappBtn">WhatsApp</button>
 <div id="mediaList"></div>
-<input type="file" id="mediaFile" multiple><br>
+<input type="file" id="mediaFile" multiple>
 </div>
 
 <hr>
@@ -67,7 +67,6 @@ td,th{padding:8px;border-bottom:1px solid #333;text-align:center;}
 <div id="chatBox"></div>
 <input type="text" id="messageInput" placeholder="Votre message"><br>
 <input type="file" id="chatMedia" multiple><br>
-<button onclick="sendMessage()">Envoyer</button>
 
 <hr>
 
@@ -104,11 +103,7 @@ let blockedUsers = users.filter(u=>u.blocked).map(u=>u.id);
 // AFFICHAGE ID
 // ======================
 function showCurrentUserId(){
-  if(currentUser){
-    document.getElementById('userIdDisplay').innerText = "Votre ID : " + currentUser.id;
-  } else {
-    document.getElementById('userIdDisplay').innerText = "";
-  }
+  document.getElementById('userIdDisplay').innerText = currentUser ? "Votre ID : " + currentUser.id : "";
 }
 
 // ======================
@@ -126,7 +121,7 @@ function createAccount(){
     const newUser = {
       id,
       companyName:document.getElementById('companyName').value,
-      prestations: document.getElementById('prestations').value,
+      prestations:document.getElementById('prestations').value,
       city:document.getElementById('city').value,
       email,
       whatsapp:document.getElementById('whatsapp').value,
@@ -195,7 +190,7 @@ function openProfile(id){
   document.getElementById('profilePhoto').src = user.photo;
   document.getElementById('profileInfo').innerHTML = `
     <b>${user.companyName}</b><br>
-    Prestations: ${user.prestations || 'Aucune'}<br>
+    Prestations: ${user.prestations}<br>
     Ville: ${user.city}<br>
     ID: ${user.id}<br>
     WhatsApp: ${user.whatsapp}<br>
@@ -227,6 +222,10 @@ document.getElementById('mediaFile').addEventListener('change', function(){
       users[index].media.push(e.target.result);
       localStorage.setItem('users', JSON.stringify(users));
       renderMedia(users[index]);
+      // Publier directement dans le chat
+      messages.push({userId:currentUser.id,name:currentUser.companyName,media:e.target.result});
+      localStorage.setItem('messages', JSON.stringify(messages));
+      renderChat();
     };
     reader.readAsDataURL(file);
   });
@@ -262,7 +261,7 @@ document.getElementById('chatMedia').addEventListener('change', function(){
   files.forEach(file=>{
     const reader = new FileReader();
     reader.onload = function(e){
-      messages.push({userId:currentUser.id,name:currentUser.companyName,media:[e.target.result]});
+      messages.push({userId:currentUser.id,name:currentUser.companyName,media:e.target.result});
       localStorage.setItem('messages', JSON.stringify(messages));
       renderChat();
     };
@@ -273,49 +272,22 @@ document.getElementById('chatMedia').addEventListener('change', function(){
 function sendMessage(){
   if(!currentUser){ alert("Créez un compte d'abord"); return; }
   const text = document.getElementById('messageInput').value.trim();
-  const chatFiles = Array.from(document.getElementById('chatMedia').files);
-
-  if(!text && chatFiles.length === 0) return;
-
-  const messageObj = { userId: currentUser.id, name: currentUser.companyName, text: text, media: [] };
-
-  if(chatFiles.length > 0){
-    let loaded = 0;
-    chatFiles.forEach(file=>{
-      const reader = new FileReader();
-      reader.onload = function(e){
-        messageObj.media.push(e.target.result);
-        loaded++;
-        if(loaded === chatFiles.length){
-          messages.push(messageObj);
-          localStorage.setItem('messages', JSON.stringify(messages));
-          renderChat();
-        }
-      };
-      reader.readAsDataURL(file);
-    });
-  } else {
-    messages.push(messageObj);
-    localStorage.setItem('messages', JSON.stringify(messages));
-    renderChat();
-  }
-
+  if(!text && !document.getElementById('chatMedia').files.length) return;
+  if(text) messages.push({userId:currentUser.id,name:currentUser.companyName,text});
   document.getElementById('messageInput').value="";
-  document.getElementById('chatMedia').value="";
+  renderChat();
 }
 
 function renderChat(){
   const box = document.getElementById('chatBox');
   box.innerHTML="";
   messages.forEach(m=>{
-    let content = m.text || "";
-    if(m.media && m.media.length){
-      m.media.forEach(file=>{
-        if(file.startsWith("data:image")) content+=`<br><img src="${file}" width="150">`;
-        else if(file.startsWith("data:video")) content+=`<br><video src="${file}" width="200" controls></video>`;
-        else if(file.startsWith("data:audio")) content+=`<br><audio src="${file}" controls></audio>`;
-        else content+=`<br><a href="${file}" target="_blank">Fichier</a>`;
-      });
+    let content = m.text||"";
+    if(m.media){
+      if(m.media.startsWith("data:image")) content+=`<br><img src="${m.media}" width="150">`;
+      else if(m.media.startsWith("data:video")) content+=`<br><video src="${m.media}" width="200" controls></video>`;
+      else if(m.media.startsWith("data:audio")) content+=`<br><audio src="${m.media}" controls></audio>`;
+      else content+=`<br><a href="${m.media}" target="_blank">Fichier</a>`;
     }
     content = content.replace(/(https?:\/\/[^\s]+)/g,'<a href="$1" target="_blank">$1</a>');
     box.innerHTML += `<div class="message"><b>${m.name}:</b> ${content}</div>`;
@@ -378,6 +350,7 @@ function deleteUser(id){
 showCurrentUserId();
 renderUsers();
 renderChat();
+
 </script>
 
 </body>
