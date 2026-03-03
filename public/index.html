@@ -47,6 +47,8 @@ th { background:#4f46e5; }
 <h2>Connexion</h2>
 <input type="email" id="loginEmail" placeholder="Email">
 <input type="password" id="loginPassword" placeholder="Mot de passe">
+<input type="text" id="adminCodeInput" placeholder="Entrer code admin pour tests">
+<button onclick="validateAdminCode()">Valider Code</button>
 <button onclick="login()">Se connecter</button>
 <button onclick="showPage('registerPage')">Créer un compte</button>
 </div>
@@ -65,8 +67,9 @@ th { background:#4f46e5; }
 <input id="quarter" placeholder="Quartier">
 <input id="age" placeholder="Âge">
 <input id="website" placeholder="Site web">
+<button id="modifyBtn" onclick="requestProfileModification()" disabled>Demander modification au admin</button>
+<button id="premiumBtn" class="btn-premium" onclick="openWhatsAppPremium()" disabled>Rejoindre Chat Premium</button>
 <button class="btn-private" onclick="togglePrivate()">Privé/Public</button>
-<button class="btn-premium" onclick="openWhatsAppPremium()">Passer Premium</button>
 <button onclick="saveProfile()">Sauvegarder local</button>
 <button onclick="logout()">Se déconnecter</button>
 </div>
@@ -140,7 +143,8 @@ function register(){
     website: document.getElementById('regWebsite').value,
     photo: userPhotoBase64,
     isPublic: false,
-    premium: false
+    premium: false,
+    modificationRequested:false
   };
 
   users.push(newUser);
@@ -172,9 +176,32 @@ function login(){
 
   user = u;
   localStorage.setItem('currentUser', JSON.stringify(user));
+
+  // Vérifie si code admin a été entré
+  const code = document.getElementById('adminCodeInput').value.trim();
+  if(code==='2332333'){
+    alert("Mode test activé ! Vous pouvez modifier le profil et rejoindre le chat Premium.");
+    user.premium=true;
+    document.getElementById('premiumBtn').disabled=false;
+    document.getElementById('modifyBtn').disabled=false;
+    localStorage.setItem('currentUser', JSON.stringify(user));
+  }
+
   alert("Connexion réussie !");
   loadProfile(); 
   showPage('profilePage');
+}
+
+// Valider code admin dans input
+function validateAdminCode(){
+  const code = document.getElementById('adminCodeInput').value.trim();
+  if(code==='2332333'){
+    alert('Code valide ! Vous pouvez modifier le profil et rejoindre le chat Premium.');
+    user.premium=true;
+    document.getElementById('premiumBtn').disabled=false;
+    document.getElementById('modifyBtn').disabled=false;
+    localStorage.setItem('currentUser', JSON.stringify(user));
+  } else alert('Code invalide !');
 }
 
 // Logout
@@ -193,6 +220,8 @@ function loadProfile(){
   document.getElementById('quarter').value = user.quartier||'';
   document.getElementById('age').value = user.age||'';
   document.getElementById('website').value = user.website||'';
+  document.getElementById('premiumBtn').disabled = !user.premium;
+  document.getElementById('modifyBtn').disabled = !user.premium;
 }
 
 // Sauvegarder profil local
@@ -225,6 +254,14 @@ function openWhatsAppPremium(){
   );
   alert("Vous allez ouvrir WhatsApp pour payer 500 F et activer le mode Premium.");
   window.open(`https://wa.me/237670035609?text=${message}`, "_blank");
+}
+
+// Demander modification admin
+function requestProfileModification(){
+  if(!user) return;
+  user.modificationRequested=true;
+  localStorage.setItem('currentUser', JSON.stringify(user));
+  alert("Demande de modification envoyée à l'admin !");
 }
 
 // Admin : tableau
