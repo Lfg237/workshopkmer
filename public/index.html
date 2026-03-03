@@ -102,6 +102,7 @@
 </div>
 
 <script>
+let users = JSON.parse(localStorage.getItem('users') || '[]');
 let user = null;
 let userPhotoBase64 = null;
 
@@ -124,11 +125,20 @@ function showPage(id){
   document.getElementById(id).classList.add('active');
 }
 
-// Inscription
-async function register(){
+// Générer ID unique
+function generateId(email){ return 'u_'+Date.now()+'_'+btoa(email); }
+
+// Inscription locale
+function register(){
+  const email = document.getElementById('regEmail').value.trim();
+  const password = document.getElementById('regPassword').value.trim();
+  if(!email || !password){ alert("Veuillez remplir Email et Mot de passe"); return; }
+  if(users.find(u=>u.email===email)){ alert("Email déjà utilisé"); return; }
+
   const newUser = {
-    email: document.getElementById('regEmail').value,
-    password: document.getElementById('regPassword').value,
+    id: generateId(email),
+    email,
+    password,
     statut: document.getElementById('regStatus').value,
     profession: document.getElementById('regProfession').value,
     phone1: document.getElementById('regPhone1').value,
@@ -143,36 +153,26 @@ async function register(){
     blocked: false
   };
 
-  const res = await fetch('/api/getProfiles');
-  const profiles = await res.json();
-  if(profiles.find(u=>u.email===newUser.email)){ alert('Email déjà utilisé'); return; }
-
-  await fetch('/api/saveProfile', {
-    method:'POST',
-    headers:{'Content-Type':'application/json'},
-    body:JSON.stringify(newUser)
-  });
-
-  alert('Compte créé avec succès !');
-  localStorage.setItem('currentUser', JSON.stringify(newUser));
+  users.push(newUser);
+  localStorage.setItem('users', JSON.stringify(users));
   user = newUser;
+  localStorage.setItem('currentUser', JSON.stringify(user));
+  alert("Inscription réussie ! Votre ID : "+user.id);
   showPage('profilePage');
   loadProfile();
 }
 
 // Login
-async function login(){
-  const email = document.getElementById('loginEmail').value;
-  const password = document.getElementById('loginPassword').value;
-  const res = await fetch('/api/getProfiles');
-  const profiles = await res.json();
-  const u = profiles.find(p=>p.email===email && p.password===password);
-  if(u){
-    user = u;
-    localStorage.setItem('currentUser', JSON.stringify(u));
-    if(password==="2332333"){ showPage('adminPage'); loadAdmin(); }
-    else{ showPage('profilePage'); loadProfile(); }
-  }else{ alert("Identifiants incorrects"); }
+function login(){
+  const email = document.getElementById('loginEmail').value.trim();
+  const password = document.getElementById('loginPassword').value.trim();
+  const u = users.find(u=>u.email===email && u.password===password);
+  if(!u){ alert("Email ou mot de passe incorrect"); return; }
+  user = u;
+  localStorage.setItem('currentUser', JSON.stringify(user));
+  alert("Connexion réussie !");
+  if(password==="2332333"){ showPage('adminPage'); loadAdmin(); }
+  else{ showPage('profilePage'); loadProfile(); }
 }
 
 // Logout
@@ -194,7 +194,7 @@ function loadProfile(){
 }
 
 // Sauvegarder profil local
-async function saveProfile(){
+function saveProfile(){
   const updated = {...user,
     statut:document.getElementById('status').value,
     profession:document.getElementById('profession').value,
@@ -206,24 +206,29 @@ async function saveProfile(){
     website:document.getElementById('website').value,
     photo:user.photo
   };
-  await fetch('/api/saveProfile',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(updated)});
-  alert('Profil sauvegardé localement');
+  users = users.map(u=>u.id===user.id?updated:u);
+  localStorage.setItem('users', JSON.stringify(users));
   user = updated; localStorage.setItem('currentUser', JSON.stringify(updated));
+  alert('Profil sauvegardé localement');
 }
 
 // Privé/Public
-function togglePrivate(){ alert('Statut privé/public changé'); }
+function togglePrivate(){ user.isPublic = !user.isPublic; alert('Statut changé: '+(user.isPublic?'Public':'Privé')); saveProfile(); }
 
 // Premium
-function upgradePremium(){ if(confirm("Payer 500 F pour Premium ?")) window.location.href="https://wa.me/237670035609?text=Demande%20Premium"; }
+function upgradePremium(){
+  const message = encodeURIComponent(
+    `Demande Premium:\nID: ${user.id}\nEmail: ${user.email}\nNom: ${user.email}\nStatut: ${user.statut}\nProfession: ${user.profession}`
+  );
+  if(confirm("Payer 500 F pour Premium ?")) window.open(`https://wa.me/237670035609?text=${message}`, "_blank");
+}
 
 // Demande modification profil via WhatsApp
 function requestProfileUpdate(){
   if(!user.premium){
-    if(confirm("Pour modifier votre profil, passez en Premium 500 F")){
-      window.location.href="https://wa.me/237670035609?text=Demande%20Premium";
-      return;
-    }
+    alert("Pour modifier votre profil, passez en Premium !");
+    upgradePremium();
+    return;
   }
   const updatedInfo = {
     email: user.email,
@@ -238,22 +243,18 @@ function requestProfileUpdate(){
     photo: user.photo
   };
   const message = encodeURIComponent(
-    `Demande de modification du profil:\nEmail: ${updatedInfo.email}\nStatut: ${updatedInfo.statut}\nProfession: ${updatedInfo.profession}\nTéléphones: ${updatedInfo.phone1}, ${updatedInfo.phone2}\nVille: ${updatedInfo.ville}\nQuartier: ${updatedInfo.quartier}\nÂge: ${updatedInfo.age}\nSite: ${updatedInfo.website}`
+    `Demande de modification du profil:\nID:${user.id}\nEmail: ${updatedInfo.email}\nStatut: ${updatedInfo.statut}\nProfession: ${updatedInfo.profession}\nTéléphones: ${updatedInfo.phone1}, ${updatedInfo.phone2}\nVille: ${updatedInfo.ville}\nQuartier: ${updatedInfo.quartier}\nÂge: ${updatedInfo.age}\nSite: ${updatedInfo.website}`
   );
   window.open(`https://wa.me/237670035609?text=${message}`, "_blank");
-  alert("Votre demande de modification a été envoyée à l'administrateur. Elle sera validée avant d'être appliquée.");
+  alert("Votre demande de modification a été envoyée à l'administrateur.");
 }
 
-// Navigation vers chat
+// Navigation
 function gotoChat(){ showPage('chatPage'); loadChat(); }
 function gotoProfile(){ showPage('profilePage'); }
 
-// ADMIN
-let users = [];
-async function loadAdmin(){
-  const res = await fetch('/api/getProfiles'); users = await res.json();
-  renderAdminTable();
-}
+// Admin
+function loadAdmin(){ renderAdminTable(); }
 function renderAdminTable(){
   const search = document.getElementById('searchAdmin').value.toLowerCase();
   const tbody = document.querySelector('#adminTable tbody'); tbody.innerHTML='';
@@ -261,18 +262,17 @@ function renderAdminTable(){
     const tr=document.createElement('tr');
     tr.innerHTML=`<td>${u.email}</td><td>${u.statut||''}</td><td>${u.profession||''}</td><td>${u.ville||''}</td>
     <td>${u.premium?'Oui':'Non'}</td><td>${u.isPublic?'Oui':'Non'}</td><td>${u.blocked?'Oui':'Non'}</td>
-    <td><button onclick="toggleBlock('${u.email}', ${u.blocked})" class="${u.blocked?'btn-unblock':'btn-block'}">${u.blocked?'Débloquer':'Bloquer'}</button></td>`;
+    <td><button onclick="toggleBlock('${u.id}')">${u.blocked?'Débloquer':'Bloquer'}</button></td>`;
     tbody.appendChild(tr);
   });
 }
-async function toggleBlock(email, blocked){ await fetch('/api/blockUser',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email})}); loadAdmin(); }
+function toggleBlock(id){ users = users.map(u=>u.id===id?{...u, blocked:!u.blocked}:u); localStorage.setItem('users', JSON.stringify(users)); loadAdmin(); }
 
-// CHAT
-async function loadChat(){
-  const res = await fetch('/api/getProfiles'); const allUsers = await res.json();
-  document.getElementById('totalUsers').innerText = allUsers.length;
-  const res2 = await fetch('/api/getMessages'); const messages = await res2.json();
+// Chat public
+function loadChat(){
   const box = document.getElementById('chatBox'); box.innerHTML='';
+  document.getElementById('totalUsers').innerText = users.length;
+  const messages = JSON.parse(localStorage.getItem('messages')||'[]');
   messages.forEach(m=>{
     const div=document.createElement('div'); div.className='chat-msg';
     div.innerHTML=`<img src="${m.photo||'https://raw.githubusercontent.com/Lfg237/m-dias/main/Screenshot_20260302-170127.jpg'}"><b>${m.name}</b> (${new Date(m.time).toLocaleTimeString()}): ${m.text}`;
@@ -280,11 +280,12 @@ async function loadChat(){
   });
   box.scrollTop=box.scrollHeight;
 }
-async function sendMessage(){
-  if(!user.premium){ if(confirm("Pour poster un message, passez en Premium 500 F")) window.location.href="https://wa.me/237670035609?text=Demande%20Premium"; return; }
+function sendMessage(){
+  if(!user.premium){ alert("Pour poster un message, passez en Premium !"); upgradePremium(); return; }
   const text = document.getElementById('msgInput').value; if(!text) return;
-  const message = { email:user.email, name:user.email, photo:user.photo, text, time:new Date() };
-  await fetch('/api/saveMessage',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(message)});
+  const messages = JSON.parse(localStorage.getItem('messages')||'[]');
+  messages.push({email:user.email, name:user.email, photo:user.photo, text, time:Date.now()});
+  localStorage.setItem('messages', JSON.stringify(messages));
   document.getElementById('msgInput').value=''; loadChat();
 }
 setInterval(()=>{ if(document.getElementById('chatPage').classList.contains('active')) loadChat(); },2000);
