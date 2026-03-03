@@ -4,120 +4,53 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Workshopkmer</title>
-
 <style>
-body{
-  margin:0;
-  font-family:Arial, sans-serif;
-  background:#0f172a;
-  color:white;
-}
-
-header{
-  background:#111827;
-  padding:15px;
-  text-align:center;
-  font-size:22px;
-  font-weight:bold;
-}
-
-section{ padding:15px; }
-
-input, button{
-  padding:8px;
-  margin:5px 0;
-  border-radius:6px;
-  border:none;
-}
-
-button{
-  background:#2563eb;
-  color:white;
-  cursor:pointer;
-}
-
-button:hover{ opacity:0.8; }
-
-table{
-  width:100%;
-  border-collapse:collapse;
-}
-
-td{
-  padding:8px;
-  border-bottom:1px solid #333;
-}
-
-#profilePage{
-  display:none;
-  background:#1e293b;
-  padding:15px;
-  margin-top:15px;
-  border-radius:12px;
-}
-
-#mediaList{
-  display:flex;
-  gap:10px;
-  overflow-x:auto;
-  padding:10px 0;
-}
-
-#mediaList img,
-#mediaList video{
-  height:220px;
-  border-radius:12px;
-  object-fit:cover;
-}
-
-#chatBox{
-  height:300px;
-  overflow-y:auto;
-  background:#111827;
-  padding:10px;
-  border-radius:10px;
-  margin-bottom:10px;
-}
-
-.message{ margin-bottom:10px; }
-.message b{ color:#60a5fa; }
-
-#adminPanel{
-  display:none;
-  background:#111827;
-  padding:15px;
-  margin-top:10px;
-  border-radius:12px;
-}
+body{margin:0;font-family:Arial,sans-serif;background:#0f172a;color:white;padding:1rem;}
+header{background:#111827;padding:15px;text-align:center;font-size:22px;font-weight:bold;}
+input,button{padding:8px;margin:5px 0;border-radius:6px;border:none;}
+button{background:#2563eb;color:white;cursor:pointer;}
+button:hover{opacity:0.8;}
+table{width:100%;border-collapse:collapse;margin-top:1rem;}
+td,th{padding:8px;border-bottom:1px solid #333;text-align:center;}
+#profilePage{display:none;background:#1e293b;padding:15px;margin-top:15px;border-radius:12px;}
+#mediaList{display:flex;gap:10px;overflow-x:auto;padding:10px 0;}
+#mediaList img,#mediaList video{height:220px;border-radius:12px;object-fit:cover;}
+#mediaList audio{width:250px;}
+#chatBox{height:300px;overflow-y:auto;background:#111827;padding:10px;border-radius:10px;margin-bottom:10px;}
+.message{margin-bottom:10px;}
+.message b{color:#60a5fa;}
+#userIdDisplay{margin-top:10px;font-size:14px;color:#60a5fa;}
 </style>
 </head>
-
 <body>
 
 <header>WORKSHOPKMER</header>
 
 <section>
+<div id="userIdDisplay"></div>
 
 <h3>Créer un compte</h3>
-
 <input type="text" id="companyName" placeholder="Nom entreprise"><br>
 <input type="text" id="city" placeholder="Ville"><br>
 <input type="email" id="email" placeholder="Email"><br>
 <input type="file" id="photoFile" accept="image/*"><br>
 <button onclick="createAccount()">Créer un compte</button>
+<button onclick="contactAdmin()">Contacter Admin</button>
 
 <hr>
 
 <h3>Utilisateurs</h3>
+<input type="text" id="searchUsers" placeholder="Rechercher..." oninput="renderUsers()">
 <table>
+<thead><tr><th>Photo</th><th>Nom Entreprise</th><th>Ville</th><th>ID</th><th>Status</th><th>Profil</th></tr></thead>
 <tbody id="usersTableBody"></tbody>
 </table>
 
 <div id="profilePage">
-<button onclick="closeProfile()" style="background:red;float:right;">Fermer ✖</button>
 <h3>Profil</h3>
 <img id="profilePhoto" width="120" style="border-radius:50%"><br>
 <div id="profileInfo"></div>
+<button onclick="closeProfile()">Fermer Profil</button>
 <br>
 <input type="file" id="mediaFile" multiple>
 <div id="mediaList"></div>
@@ -127,262 +60,186 @@ td{
 
 <h3>Discussion</h3>
 <div id="chatBox"></div>
-<input type="text" id="messageInput" placeholder="Votre message">
-<input type="file" id="chatMedia" multiple>
+<input type="text" id="messageInput" placeholder="Votre message"><br>
+<input type="file" id="chatMedia" multiple><br>
 <button onclick="sendMessage()">Envoyer</button>
-
-<hr>
-
-<h3>Accès Administrateur</h3>
-<input type="password" id="adminCode" placeholder="Code admin">
-<button onclick="openAdmin()">Accéder</button>
-
-<div id="adminPanel">
-<h4>Tableau Administrateur</h4>
-<div id="adminUsersList"></div>
-</div>
-
 </section>
 
 <script>
-
 // ======================
-// LISTE DES ID VALIDÉS (AJOUTE LES AUTRES ICI)
+// IDs VALIDÉS
 // ======================
 const validatedUsers = [
   "u_1772525310883",
-  "u_1894567890123",
-  "u_1900000000000",
-"(u_1772527367504)"
+  "u_1772527367504"
 ];
+
+// ======================
+// STOCKAGE
 // ======================
 let users = JSON.parse(localStorage.getItem('users') || '[]');
 let messages = JSON.parse(localStorage.getItem('messages') || '[]');
 let currentUser = JSON.parse(localStorage.getItem('currentUser') || 'null');
 
 // ======================
+// AFFICHAGE ID
+// ======================
+function showCurrentUserId(){
+  if(currentUser){
+    document.getElementById('userIdDisplay').innerText = "Votre ID : " + currentUser.id;
+  } else {
+    document.getElementById('userIdDisplay').innerText = "";
+  }
+}
+
+// ======================
 // CREATION COMPTE
 // ======================
 function createAccount(){
-
   const email = document.getElementById('email').value.trim();
-  if(!email) return alert("Email requis");
-
-  if(users.find(u => u.email === email)){
-    return alert("Email déjà utilisé");
-  }
+  if(!email){ alert("Email requis"); return; }
+  if(users.find(u=>u.email===email)){ alert("Email déjà utilisé"); return; }
 
   const reader = new FileReader();
   const file = document.getElementById('photoFile').files[0];
 
   reader.onload = function(e){
-
-    const generatedId = "u_" + Date.now();
-
+    const id = "u_" + Date.now();
     const newUser = {
-      id: generatedId,
-      companyName: document.getElementById('companyName').value,
-      city: document.getElementById('city').value,
+      id,
+      companyName:document.getElementById('companyName').value,
+      city:document.getElementById('city').value,
       email,
-      photo: e.target.result || "https://via.placeholder.com/150",
-      media: [],
-      validated: validatedUsers.includes(generatedId)
+      photo:e.target.result || "https://via.placeholder.com/150",
+      media:[],
+      validated: validatedUsers.includes(id)
     };
-
     users.push(newUser);
     localStorage.setItem('users', JSON.stringify(users));
 
     currentUser = newUser;
     localStorage.setItem('currentUser', JSON.stringify(currentUser));
 
-    alert("Compte créé ✅\nID : " + newUser.id);
+    alert("Compte créé ✅\nID : " + id);
     renderUsers();
+    showCurrentUserId();
   };
 
-  if(file){
-    reader.readAsDataURL(file);
-  } else {
-    reader.onload({target:{result:"https://via.placeholder.com/150"}});
-  }
+  if(file){ reader.readAsDataURL(file); }
+  else{ reader.onload({target:{result:"https://via.placeholder.com/150"}}); }
 }
 
 // ======================
-// USERS LIST
+// CONTACT ADMIN
+// ======================
+function contactAdmin(){
+  if(!currentUser){ alert("Créez un compte d'abord"); return; }
+  const message = encodeURIComponent("Demande validation compte ID: "+currentUser.id);
+  window.open(`https://wa.me/237670035609?text=${message}`,"_blank");
+}
+
+// ======================
+// UTILISATEURS
 // ======================
 function renderUsers(){
-
   const tbody = document.getElementById('usersTableBody');
-  tbody.innerHTML="";
-
+  const search = document.getElementById('searchUsers').value.toLowerCase();
+  tbody.innerHTML = "";
   users.forEach(u=>{
-
-    const status = validatedUsers.includes(u.id)
-      ? "✅"
-      : "❌";
-
-    tbody.innerHTML += `
-      <tr>
-        <td><img src="${u.photo}" width="40" style="border-radius:50%"></td>
-        <td>${u.companyName}</td>
-        <td>${u.city}</td>
-        <td>${status}</td>
-        <td><button onclick="openProfile('${u.id}')">Voir Profil</button></td>
-      </tr>
-    `;
+    if(u.companyName.toLowerCase().includes(search)||u.city.toLowerCase().includes(search)){
+      const status = validatedUsers.includes(u.id) ? "✅" : "❌";
+      tbody.innerHTML += `
+        <tr>
+          <td><img src="${u.photo}" width="40" style="border-radius:50%"></td>
+          <td>${u.companyName}</td>
+          <td>${u.city}</td>
+          <td>${u.id}</td>
+          <td>${status}</td>
+          <td><button onclick="openProfile('${u.id}')">Voir Profil</button></td>
+        </tr>
+      `;
+    }
   });
 }
 
 // ======================
-// PROFILE
+// PROFIL
 // ======================
 function openProfile(id){
-
   const user = users.find(u=>u.id===id);
   if(!user) return;
-
+  currentUser = user;
   document.getElementById('profilePage').style.display='block';
   document.getElementById('profilePhoto').src = user.photo;
-
   document.getElementById('profileInfo').innerHTML = `
     <b>${user.companyName}</b><br>
     Ville: ${user.city}<br>
-    ID: ${user.id}
+    ID: ${user.id}<br>
+    Status: ${validatedUsers.includes(user.id)?"✅ Validé":"❌ Non validé"}
   `;
-
   renderMedia(user);
 }
-
-function closeProfile(){
-  document.getElementById('profilePage').style.display='none';
-}
-
-function renderMedia(user){
-
-  const container = document.getElementById('mediaList');
-  container.innerHTML="";
-
-  user.media.forEach(m=>{
-    if(m.startsWith("data:image")){
-      container.innerHTML += `<img src="${m}">`;
-    }
-    else if(m.startsWith("data:video")){
-      container.innerHTML += `<video src="${m}" controls></video>`;
-    }
-  });
-}
+function closeProfile(){ document.getElementById('profilePage').style.display='none'; currentUser=null; showCurrentUserId(); }
 
 // ======================
-// AJOUT MEDIA PROFIL
+// MEDIA PROFIL
 // ======================
 document.getElementById('mediaFile').addEventListener('change', function(){
-
-  if(!currentUser) return alert("Créez un compte d'abord");
-
+  if(!currentUser){ alert("Créez un compte d'abord"); return; }
   const files = Array.from(this.files);
-
   files.forEach(file=>{
     const reader = new FileReader();
-
     reader.onload = function(e){
-
       const index = users.findIndex(u=>u.id===currentUser.id);
       if(index===-1) return;
-
       users[index].media.push(e.target.result);
       localStorage.setItem('users', JSON.stringify(users));
-
       renderMedia(users[index]);
     };
-
     reader.readAsDataURL(file);
   });
-
 });
+function renderMedia(user){
+  const container = document.getElementById('mediaList');
+  container.innerHTML="";
+  if(!user.media) return;
+  user.media.forEach((m,i)=>{
+    if(m.startsWith("data:image")) container.innerHTML += `<img src="${m}">`;
+    else if(m.startsWith("data:video")) container.innerHTML += `<video src="${m}" controls></video>`;
+    else if(m.startsWith("data:audio")) container.innerHTML += `<audio src="${m}" controls></audio>`;
+    else container.innerHTML += `<a href="${m}" target="_blank">Fichier ${i+1}</a>`;
+  });
+}
 
 // ======================
 // CHAT
 // ======================
 function sendMessage(){
-
-  if(!currentUser) return alert("Créez un compte d'abord");
-
-  if(!validatedUsers.includes(currentUser.id)){
-    return alert("Compte non validé par l'administration");
-  }
-
+  if(!currentUser){ alert("Créez un compte d'abord"); return; }
   const text = document.getElementById('messageInput').value.trim();
-  if(!text) return;
+  if(!text && !document.getElementById('chatMedia').files.length) return;
 
-  messages.push({
-    userId:currentUser.id,
-    name:currentUser.companyName,
-    text
-  });
-
+  messages.push({userId:currentUser.id,name:currentUser.companyName,text});
   localStorage.setItem('messages', JSON.stringify(messages));
   document.getElementById('messageInput').value="";
   renderChat();
 }
-
 function renderChat(){
-
   const box = document.getElementById('chatBox');
   box.innerHTML="";
-
   messages.forEach(m=>{
-    box.innerHTML += `
-      <div class="message">
-        <b>${m.name}:</b><br>
-        ${m.text || ""}
-      </div>
-    `;
+    let content = m.text||"";
+    box.innerHTML += `<div class="message"><b>${m.name}:</b> ${content}</div>`;
   });
-
   box.scrollTop = box.scrollHeight;
 }
 
 // ======================
-// ADMIN
+// INIT
 // ======================
-function openAdmin(){
-
-  const code = document.getElementById('adminCode').value;
-
-  if(code !== "233233"){
-    alert("Code incorrect");
-    return;
-  }
-
-  document.getElementById('adminPanel').style.display="block";
-  renderAdminUsers();
-}
-
-function renderAdminUsers(){
-
-  const container = document.getElementById('adminUsersList');
-  container.innerHTML="";
-
-  users.forEach(u=>{
-    container.innerHTML += `
-      <div style="margin-bottom:8px;border-bottom:1px solid #333;padding:5px;">
-        ${u.companyName} (${u.id})
-        <button onclick="deleteUser('${u.id}')" style="background:red;">Supprimer</button>
-      </div>
-    `;
-  });
-}
-
-function deleteUser(id){
-  users = users.filter(u=>u.id!==id);
-  localStorage.setItem('users', JSON.stringify(users));
-  renderUsers();
-  renderAdminUsers();
-}
-
-// ======================
+showCurrentUserId();
 renderUsers();
 renderChat();
-
 </script>
 
 </body>
