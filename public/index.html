@@ -1,141 +1,294 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>SaaS Travailleurs</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-  <style>
-    :root {
-      --primary: #4f46e5;
-      --background: #0b0f1a;
-      --text: #ffffff;
-      --accent: #6366f1;
-    }
-
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background-color: var(--background);
-      color: var(--text);
-    }
-
-    header {
-      background-color: var(--primary);
-      padding: 1rem;
-      text-align: center;
-      font-size: 1.5rem;
-      font-weight: bold;
-    }
-
-    main {
-      padding: 1rem;
-      max-width: 900px;
-      margin: auto;
-    }
-
-    .profile {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      background: #1f2937;
-      padding: 1rem;
-      border-radius: 12px;
-      margin-bottom: 1rem;
-    }
-
-    .profile img {
-      width: 120px;
-      height: 120px;
-      border-radius: 50%;
-      object-fit: cover;
-      animation: float 3s ease-in-out infinite;
-    }
-
-    @keyframes float {
-      0%, 100% { transform: translateY(0); }
-      50% { transform: translateY(-10px); }
-    }
-
-    .btn {
-      padding: 0.5rem 1rem;
-      margin: 0.5rem;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-      font-weight: bold;
-      transition: 0.3s;
-    }
-
-    .btn-premium {
-      background-color: var(--accent);
-      color: white;
-      animation: blink 1.5s infinite;
-    }
-
-    @keyframes blink {
-      0%, 100% { opacity: 1; }
-      50% { opacity: 0.5; }
-    }
-
-    .btn-private {
-      background-color: gray;
-      color: white;
-    }
-
-    input, select {
-      padding: 0.5rem;
-      margin: 0.5rem 0;
-      border-radius: 8px;
-      border: none;
-      width: 100%;
-    }
-
-    label {
-      margin-top: 0.5rem;
-    }
-
-    footer {
-      text-align: center;
-      padding: 1rem;
-      margin-top: 2rem;
-      color: gray;
-    }
-
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SaaS Travailleurs - Combiné</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<style>
+  body { margin:0; font-family:Arial,sans-serif; background:#0b0f1a; color:#fff; }
+  .page { display:none; padding:1rem; }
+  .active { display:block; }
+  input, select, textarea { width:100%; padding:0.5rem; margin:0.3rem 0; border-radius:8px; border:none; }
+  button { padding:0.5rem 1rem; margin:0.5rem 0; border:none; border-radius:8px; cursor:pointer; font-weight:bold; }
+  .btn-premium { background:#6366f1; color:#fff; animation:blink 1.5s infinite; }
+  @keyframes blink {0%,100%{opacity:1;}50%{opacity:0.5;}}
+  .btn-private { background:gray; color:white; }
+  .profile img, .chat-msg img { width:50px; height:50px; border-radius:50%; object-fit:cover; vertical-align:middle; margin-right:0.5rem; animation:float 3s ease-in-out infinite; }
+  @keyframes float {0%,100%{transform:translateY(0);}50%{transform:translateY(-10px);}}
+  table { width:100%; border-collapse:collapse; margin-top:1rem; }
+  th, td { padding:0.5rem; border:1px solid #444; text-align:center; }
+  th { background:#4f46e5; }
+  #chatBox { height:300px; overflow-y:auto; margin-bottom:0.5rem; }
+  .chat-msg { background:#1f2937; padding:0.5rem; border-radius:8px; margin-bottom:0.5rem; display:flex; align-items:center; }
+</style>
 </head>
 <body>
 
-<header>SaaS Travailleurs</header>
+<!-- Inscription -->
+<div id="registerPage" class="page active">
+  <h2>Inscription</h2>
+  <input id="regEmail" placeholder="Email">
+  <input id="regPassword" type="password" placeholder="Mot de passe">
+  <input id="regStatus" placeholder="Statut (Chômeur, Entrepreneur…)">
+  <input id="regProfession" placeholder="Profession">
+  <input id="regPhone1" placeholder="Téléphone 1">
+  <input id="regPhone2" placeholder="Téléphone 2">
+  <input id="regCity" placeholder="Ville">
+  <input id="regQuarter" placeholder="Quartier">
+  <input id="regAge" placeholder="Âge">
+  <input id="regWebsite" placeholder="Site web (optionnel)">
+  <input type="file" id="regPhotoFile" accept="image/*">
+  <img id="previewPhoto" src="" alt="Aperçu" style="width:100px;height:100px;border-radius:50%;margin-top:0.5rem;">
+  <button onclick="register()">Créer le compte</button>
+  <button onclick="showPage('loginPage')">Déjà inscrit ? Connexion</button>
+</div>
 
-<main>
+<!-- Connexion -->
+<div id="loginPage" class="page">
+  <h2>Connexion</h2>
+  <input type="email" id="loginEmail" placeholder="Email">
+  <input type="password" id="loginPassword" placeholder="Mot de passe">
+  <button onclick="login()">Se connecter</button>
+  <button onclick="showPage('registerPage')">Créer un compte</button>
+</div>
 
+<!-- Profil utilisateur -->
+<div id="profilePage" class="page">
+  <h2>Profil</h2>
   <div class="profile">
-    <img src="https://raw.githubusercontent.com/Lfg237/m-dias/main/Screenshot_20260302-170127.jpg" alt="Profil animé">
-    <h2 id="username">Nom de l'utilisateur</h2>
-    <p id="user-status">Statut : Chômeur</p>
-    <p id="user-profession">Profession : Développeur</p>
-    <p id="user-city">Ville : Yaoundé</p>
-
-    <button class="btn btn-private" onclick="togglePrivate()">Privé/Public</button>
-    <button class="btn btn-premium" onclick="upgradePremium()">Passer Premium</button>
+    <img id="photo" src="" alt="Profil">
+    <h3 id="name"></h3>
+    <input id="status" placeholder="Statut">
+    <input id="profession" placeholder="Profession">
+    <input id="phone1" placeholder="Téléphone 1">
+    <input id="phone2" placeholder="Téléphone 2">
+    <input id="city" placeholder="Ville">
+    <input id="quarter" placeholder="Quartier">
+    <input id="age" placeholder="Âge">
+    <input id="website" placeholder="Site web">
+    <button class="btn-private" onclick="togglePrivate()">Privé/Public</button>
+    <button class="btn-premium" onclick="upgradePremium()">Passer Premium</button>
+    <button onclick="requestProfileUpdate()">Modifier profil</button>
+    <button onclick="saveProfile()">Sauvegarder local</button>
+    <button onclick="gotoChat()">Chat Public</button>
+    <button onclick="logout()">Se déconnecter</button>
   </div>
+</div>
 
-</main>
+<!-- Admin -->
+<div id="adminPage" class="page">
+  <h2>Admin</h2>
+  <input type="text" id="searchAdmin" placeholder="Rechercher..." oninput="renderAdminTable()">
+  <table id="adminTable">
+    <thead>
+      <tr>
+        <th>Email</th><th>Statut</th><th>Profession</th><th>Ville</th><th>Premium</th><th>Public</th><th>Bloqué</th><th>Actions</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+  <button onclick="logout()">Se déconnecter</button>
+</div>
 
-<footer>&copy; 2026 SaaS Travailleurs</footer>
+<!-- Chat public -->
+<div id="chatPage" class="page">
+  <h2>Chat Public</h2>
+  <div>Nombre d’abonnés : <span id="totalUsers">0</span></div>
+  <div id="chatBox"></div>
+  <input type="text" id="msgInput" placeholder="Écrire un message...">
+  <button onclick="sendMessage()">Envoyer</button>
+  <button onclick="gotoProfile()">Retour Profil</button>
+</div>
 
 <script>
-  function togglePrivate() {
-    alert('Statut du profil changé (simulation)');
-  }
+let user = null;
+let userPhotoBase64 = null;
 
-  function upgradePremium() {
-    if (confirm("Payer 500 F pour passer en version premium et rendre votre profil public ?")) {
-      window.location.href = "https://wa.me/237670035609?text=Demande%20Premium";
+// Prévisualisation photo inscription
+document.getElementById('regPhotoFile').addEventListener('change', function(){
+  const file = this.files[0];
+  if(file){
+    const reader = new FileReader();
+    reader.onload = function(e){
+      document.getElementById('previewPhoto').src = e.target.result;
+      userPhotoBase64 = e.target.result;
+    }
+    reader.readAsDataURL(file);
+  }
+});
+
+// Changer de page
+function showPage(id){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+// Inscription
+async function register(){
+  const newUser = {
+    email: document.getElementById('regEmail').value,
+    password: document.getElementById('regPassword').value,
+    statut: document.getElementById('regStatus').value,
+    profession: document.getElementById('regProfession').value,
+    phone1: document.getElementById('regPhone1').value,
+    phone2: document.getElementById('regPhone2').value,
+    ville: document.getElementById('regCity').value,
+    quartier: document.getElementById('regQuarter').value,
+    age: document.getElementById('regAge').value,
+    website: document.getElementById('regWebsite').value,
+    photo: userPhotoBase64,
+    isPublic: false,
+    premium: false,
+    blocked: false
+  };
+
+  const res = await fetch('/api/getProfiles');
+  const profiles = await res.json();
+  if(profiles.find(u=>u.email===newUser.email)){ alert('Email déjà utilisé'); return; }
+
+  await fetch('/api/saveProfile', {
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify(newUser)
+  });
+
+  alert('Compte créé avec succès !');
+  localStorage.setItem('currentUser', JSON.stringify(newUser));
+  user = newUser;
+  showPage('profilePage');
+  loadProfile();
+}
+
+// Login
+async function login(){
+  const email = document.getElementById('loginEmail').value;
+  const password = document.getElementById('loginPassword').value;
+  const res = await fetch('/api/getProfiles');
+  const profiles = await res.json();
+  const u = profiles.find(p=>p.email===email && p.password===password);
+  if(u){
+    user = u;
+    localStorage.setItem('currentUser', JSON.stringify(u));
+    if(password==="2332333"){ showPage('adminPage'); loadAdmin(); }
+    else{ showPage('profilePage'); loadProfile(); }
+  }else{ alert("Identifiants incorrects"); }
+}
+
+// Logout
+function logout(){ user=null; localStorage.removeItem('currentUser'); showPage('loginPage'); }
+
+// Charger profil
+function loadProfile(){
+  if(!user) user = JSON.parse(localStorage.getItem('currentUser'));
+  document.getElementById('photo').src = user.photo||'https://raw.githubusercontent.com/Lfg237/m-dias/main/Screenshot_20260302-170127.jpg';
+  document.getElementById('name').innerText = user.email;
+  document.getElementById('status').value = user.statut||'';
+  document.getElementById('profession').value = user.profession||'';
+  document.getElementById('phone1').value = user.phone1||'';
+  document.getElementById('phone2').value = user.phone2||'';
+  document.getElementById('city').value = user.ville||'';
+  document.getElementById('quarter').value = user.quartier||'';
+  document.getElementById('age').value = user.age||'';
+  document.getElementById('website').value = user.website||'';
+}
+
+// Sauvegarder profil local
+async function saveProfile(){
+  const updated = {...user,
+    statut:document.getElementById('status').value,
+    profession:document.getElementById('profession').value,
+    phone1:document.getElementById('phone1').value,
+    phone2:document.getElementById('phone2').value,
+    ville:document.getElementById('city').value,
+    quartier:document.getElementById('quarter').value,
+    age:document.getElementById('age').value,
+    website:document.getElementById('website').value,
+    photo:user.photo
+  };
+  await fetch('/api/saveProfile',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(updated)});
+  alert('Profil sauvegardé localement');
+  user = updated; localStorage.setItem('currentUser', JSON.stringify(updated));
+}
+
+// Privé/Public
+function togglePrivate(){ alert('Statut privé/public changé'); }
+
+// Premium
+function upgradePremium(){ if(confirm("Payer 500 F pour Premium ?")) window.location.href="https://wa.me/237670035609?text=Demande%20Premium"; }
+
+// Demande modification profil via WhatsApp
+function requestProfileUpdate(){
+  if(!user.premium){
+    if(confirm("Pour modifier votre profil, passez en Premium 500 F")){
+      window.location.href="https://wa.me/237670035609?text=Demande%20Premium";
+      return;
     }
   }
+  const updatedInfo = {
+    email: user.email,
+    statut: document.getElementById('status').value,
+    profession: document.getElementById('profession').value,
+    phone1: document.getElementById('phone1').value,
+    phone2: document.getElementById('phone2').value,
+    ville: document.getElementById('city').value,
+    quartier: document.getElementById('quarter').value,
+    age: document.getElementById('age').value,
+    website: document.getElementById('website').value,
+    photo: user.photo
+  };
+  const message = encodeURIComponent(
+    `Demande de modification du profil:\nEmail: ${updatedInfo.email}\nStatut: ${updatedInfo.statut}\nProfession: ${updatedInfo.profession}\nTéléphones: ${updatedInfo.phone1}, ${updatedInfo.phone2}\nVille: ${updatedInfo.ville}\nQuartier: ${updatedInfo.quartier}\nÂge: ${updatedInfo.age}\nSite: ${updatedInfo.website}`
+  );
+  window.open(`https://wa.me/237670035609?text=${message}`, "_blank");
+  alert("Votre demande de modification a été envoyée à l'administrateur. Elle sera validée avant d'être appliquée.");
+}
+
+// Navigation vers chat
+function gotoChat(){ showPage('chatPage'); loadChat(); }
+function gotoProfile(){ showPage('profilePage'); }
+
+// ADMIN
+let users = [];
+async function loadAdmin(){
+  const res = await fetch('/api/getProfiles'); users = await res.json();
+  renderAdminTable();
+}
+function renderAdminTable(){
+  const search = document.getElementById('searchAdmin').value.toLowerCase();
+  const tbody = document.querySelector('#adminTable tbody'); tbody.innerHTML='';
+  users.filter(u=>u.email.toLowerCase().includes(search)||u.ville?.toLowerCase().includes(search)).forEach(u=>{
+    const tr=document.createElement('tr');
+    tr.innerHTML=`<td>${u.email}</td><td>${u.statut||''}</td><td>${u.profession||''}</td><td>${u.ville||''}</td>
+    <td>${u.premium?'Oui':'Non'}</td><td>${u.isPublic?'Oui':'Non'}</td><td>${u.blocked?'Oui':'Non'}</td>
+    <td><button onclick="toggleBlock('${u.email}', ${u.blocked})" class="${u.blocked?'btn-unblock':'btn-block'}">${u.blocked?'Débloquer':'Bloquer'}</button></td>`;
+    tbody.appendChild(tr);
+  });
+}
+async function toggleBlock(email, blocked){ await fetch('/api/blockUser',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email})}); loadAdmin(); }
+
+// CHAT
+async function loadChat(){
+  const res = await fetch('/api/getProfiles'); const allUsers = await res.json();
+  document.getElementById('totalUsers').innerText = allUsers.length;
+  const res2 = await fetch('/api/getMessages'); const messages = await res2.json();
+  const box = document.getElementById('chatBox'); box.innerHTML='';
+  messages.forEach(m=>{
+    const div=document.createElement('div'); div.className='chat-msg';
+    div.innerHTML=`<img src="${m.photo||'https://raw.githubusercontent.com/Lfg237/m-dias/main/Screenshot_20260302-170127.jpg'}"><b>${m.name}</b> (${new Date(m.time).toLocaleTimeString()}): ${m.text}`;
+    box.appendChild(div);
+  });
+  box.scrollTop=box.scrollHeight;
+}
+async function sendMessage(){
+  if(!user.premium){ if(confirm("Pour poster un message, passez en Premium 500 F")) window.location.href="https://wa.me/237670035609?text=Demande%20Premium"; return; }
+  const text = document.getElementById('msgInput').value; if(!text) return;
+  const message = { email:user.email, name:user.email, photo:user.photo, text, time:new Date() };
+  await fetch('/api/saveMessage',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(message)});
+  document.getElementById('msgInput').value=''; loadChat();
+}
+setInterval(()=>{ if(document.getElementById('chatPage').classList.contains('active')) loadChat(); },2000);
 </script>
 
 </body>
-</html>public
+</html>
