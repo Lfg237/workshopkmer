@@ -34,7 +34,7 @@ a{color:#60a5fa;}
 <input type="text" id="quarter" placeholder="Quartier">
 <input type="number" id="age" placeholder="Âge">
 <input type="file" id="photoFile" accept="image/*">
-<img id="previewPhoto" src="" alt="Aperçu" style="width:50px;height:50px;border-radius:50%;display:block;">
+<img id="previewPhoto" src="https://raw.githubusercontent.com/Lfg237/m-dias/main/Screenshot_20260302-170127.jpg" alt="Aperçu" style="width:50px;height:50px;border-radius:50%;display:block;">
 <button onclick="createAccount()">Créer un compte</button>
 <button class="btn-whatsapp" onclick="contactAdmin()">Contacter l'administrateur</button>
 
@@ -113,36 +113,47 @@ if(urlUserId){
 
 // --- Prévisualisation photo ---
 document.getElementById('photoFile').addEventListener('change', function(){
-  const file=this.files[0];
+  const file = this.files[0];
   if(file){
-    const reader=new FileReader();
-    reader.onload=function(e){document.getElementById('previewPhoto').src=e.target.result;}
+    const reader = new FileReader();
+    reader.onload = function(e){
+      document.getElementById('previewPhoto').src = e.target.result;
+    };
     reader.readAsDataURL(file);
   }
 });
 
 // --- Créer compte ---
 function createAccount(){
-  const email=document.getElementById('email').value.trim();
+  const email = document.getElementById('email').value.trim();
   if(!email){ alert("Email requis"); return; }
   if(users.find(u=>u.email===email)){ alert("Email déjà utilisé"); return; }
+
+  // Récupérer la photo choisie ou image par défaut
+  let photoSrc = document.getElementById('previewPhoto').src;
+  if(!photoSrc || photoSrc === ""){
+    photoSrc = "https://raw.githubusercontent.com/Lfg237/m-dias/main/Screenshot_20260302-170127.jpg";
+  }
+
   const newUser = {
-    id:'u_'+Date.now(),
+    id: 'u_' + Date.now(),
     email,
-    companyName:document.getElementById('companyName').value,
-    phone1:document.getElementById('phone1').value,
-    phone2:document.getElementById('phone2').value,
-    city:document.getElementById('city').value,
-    quarter:document.getElementById('quarter').value,
-    age:document.getElementById('age').value,
-    photo:document.getElementById('previewPhoto').src || "https://raw.githubusercontent.com/Lfg237/m-dias/main/Screenshot_20260302-170127.jpg",
-    media:[],
+    companyName: document.getElementById('companyName').value,
+    phone1: document.getElementById('phone1').value,
+    phone2: document.getElementById('phone2').value,
+    city: document.getElementById('city').value,
+    quarter: document.getElementById('quarter').value,
+    age: document.getElementById('age').value,
+    photo: photoSrc,
+    media: [],
     blocked:false
   };
+
   users.push(newUser);
   localStorage.setItem('users', JSON.stringify(users));
   currentUser=newUser;
   localStorage.setItem('currentUser', JSON.stringify(currentUser));
+
   renderUsers();
   renderAdminTable();
   alert("Compte créé ! Votre ID : "+newUser.id+"\nLien direct profil : https://workshopkmer.vercel.app/?user="+newUser.id);
@@ -257,7 +268,7 @@ document.getElementById('chatMedia').addEventListener('change', function(){
 function renderChat(){
   const chatBox=document.getElementById('chatBox');
   chatBox.innerHTML='';
-  const displayMessages = messages.slice(-50); // limite 50 derniers messages pour performance
+  const displayMessages = messages.slice(-50); // limite 50 derniers messages
   displayMessages.forEach(msg=>{
     const blocked=blockedUsers.includes(msg.userId);
     let content=msg.text;
@@ -345,6 +356,7 @@ blockedUsers=users.filter(u=>u.blocked).map(u=>u.id);
 
 // --- Ouvrir profil automatiquement si ID dans URL ---
 if(urlUserId) openProfile(urlUserId);
+
 </script>
 
 </body>
