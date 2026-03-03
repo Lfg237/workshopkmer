@@ -3,11 +3,14 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Workshopkmer</title>
+<title>WORKSHOPKMER</title>
 <style>
 body{margin:0;font-family:Arial,sans-serif;background:#0f172a;color:white;padding:1rem;}
-header{background:#111827;padding:15px;text-align:center;font-size:28px;font-weight:bold;font-family:'Brush Script MT', cursive;}
-input,button{padding:8px;margin:5px 0;border-radius:6px;border:none;}
+header{background:#111827;padding:15px;text-align:center;font-size:28px;font-weight:bold;display:flex;align-items:center;justify-content:center;gap:10px;}
+header img{height:40px;}
+.animated-title{animation:wave 2s infinite;}
+@keyframes wave{0%{transform:rotate(0deg);}25%{transform:rotate(5deg);}50%{transform:rotate(0deg);}75%{transform:rotate(-5deg);}100%{transform:rotate(0deg);}}
+input,button,textarea{padding:8px;margin:5px 0;border-radius:6px;border:none;}
 button{background:#2563eb;color:white;cursor:pointer;}
 button:hover{opacity:0.8;}
 table{width:100%;border-collapse:collapse;margin-top:1rem;}
@@ -28,7 +31,10 @@ td,th{padding:8px;border-bottom:1px solid #333;text-align:center;}
 </head>
 <body>
 
-<header id="siteHeader"></header>
+<header>
+<img src="https://via.placeholder.com/40" alt="Logo">
+<div class="animated-title">WORKSHOPKMER</div>
+</header>
 <div id="userIdDisplay"></div>
 
 <section>
@@ -65,7 +71,7 @@ td,th{padding:8px;border-bottom:1px solid #333;text-align:center;}
 
 <h3>Discussion</h3>
 <div id="chatBox"></div>
-<input type="text" id="messageInput" placeholder="Votre message"><br>
+<textarea id="messageInput" placeholder="Votre message"></textarea><br>
 <input type="file" id="chatMedia" multiple><br>
 <button onclick="sendMessage()">Envoyer</button>
 
@@ -81,67 +87,71 @@ td,th{padding:8px;border-bottom:1px solid #333;text-align:center;}
 </table>
 </div>
 
+</section>
+
 <script>
 // ======================
-// TITRE ANIMÉ
+// IDs VALIDÉS
 // ======================
-const siteName = "WORKSHOPKMER";
-const header = document.getElementById("siteHeader");
-let i = 0;
-function typeWriter(){ if(i<siteName.length){ header.innerHTML+=siteName.charAt(i); i++; setTimeout(typeWriter,150); }}
-typeWriter();
-
-// ======================
-// IDS VALIDÉS
-// ======================
-const validatedUsers = ["u_1772525310883","u_1772527367504"];
+const validatedUsers = [
+  "u_1772525310883",
+  "u_1772527367504"
+];
 
 // ======================
 // STOCKAGE
 // ======================
-let users = JSON.parse(localStorage.getItem('users')||'[]');
-let messages = JSON.parse(localStorage.getItem('messages')||'[]');
-let currentUser = JSON.parse(localStorage.getItem('currentUser')||'null');
+let users = JSON.parse(localStorage.getItem('users') || '[]');
+let messages = JSON.parse(localStorage.getItem('messages') || '[]');
+let currentUser = JSON.parse(localStorage.getItem('currentUser') || 'null');
 let blockedUsers = users.filter(u=>u.blocked).map(u=>u.id);
 
 // ======================
 // AFFICHAGE ID
 // ======================
 function showCurrentUserId(){
-  if(currentUser) document.getElementById('userIdDisplay').innerText="Votre ID : "+currentUser.id;
-  else document.getElementById('userIdDisplay').innerText="";
+  if(currentUser){
+    document.getElementById('userIdDisplay').innerText = "Votre ID : " + currentUser.id;
+  } else {
+    document.getElementById('userIdDisplay').innerText = "";
+  }
 }
 
 // ======================
 // CREATION COMPTE
 // ======================
 function createAccount(){
-  const email=document.getElementById('email').value.trim();
-  if(!email){ alert("Email requis"); return;}
-  if(users.find(u=>u.email===email)){ alert("Email déjà utilisé"); return;}
-  const reader=new FileReader();
-  const file=document.getElementById('photoFile').files[0];
-  reader.onload=function(e){
-    const id="u_"+Date.now();
-    const newUser={id,
+  const email = document.getElementById('email').value.trim();
+  if(!email){ alert("Email requis"); return; }
+  if(users.find(u=>u.email===email)){ alert("Email déjà utilisé"); return; }
+
+  const reader = new FileReader();
+  const file = document.getElementById('photoFile').files[0];
+  reader.onload = function(e){
+    const id = "u_" + Date.now();
+    const newUser = {
+      id,
       companyName:document.getElementById('companyName').value,
       prestations:document.getElementById('prestations').value,
       city:document.getElementById('city').value,
       email,
       whatsapp:document.getElementById('whatsapp').value,
-      photo:e.target.result||"https://via.placeholder.com/150",
-      media:[], blocked:false,
-      validated:validatedUsers.includes(id)
+      photo:e.target.result || "https://via.placeholder.com/150",
+      media:[],
+      blocked:false,
+      validated: validatedUsers.includes(id)
     };
     users.push(newUser);
-    localStorage.setItem('users',JSON.stringify(users));
-    currentUser=newUser;
-    localStorage.setItem('currentUser',JSON.stringify(currentUser));
-    alert("Compte créé ✅\nID : "+id);
-    renderUsers(); showCurrentUserId(); renderAdminTable();
+    localStorage.setItem('users', JSON.stringify(users));
+    currentUser = newUser;
+    localStorage.setItem('currentUser', JSON.stringify(currentUser));
+    alert("Compte créé ✅\nID : " + id);
+    renderUsers();
+    showCurrentUserId();
+    renderAdminTable();
   };
-  if(file){ reader.readAsDataURL(file);}
-  else{ reader.onload({target:{result:"https://via.placeholder.com/150"}});}
+  if(file){ reader.readAsDataURL(file); }
+  else{ reader.onload({target:{result:"https://via.placeholder.com/150"}}); }
 }
 
 // ======================
@@ -149,7 +159,7 @@ function createAccount(){
 // ======================
 function contactAdmin(){
   if(!currentUser){ alert("Créez un compte d'abord"); return; }
-  const message=encodeURIComponent("Demande validation compte ID: "+currentUser.id);
+  const message = encodeURIComponent("Demande validation compte ID: "+currentUser.id);
   window.open(`https://wa.me/237670035609?text=${message}`,"_blank");
 }
 
@@ -157,13 +167,13 @@ function contactAdmin(){
 // UTILISATEURS
 // ======================
 function renderUsers(){
-  const tbody=document.getElementById('usersTableBody');
-  const search=document.getElementById('searchUsers').value.toLowerCase();
-  tbody.innerHTML="";
+  const tbody = document.getElementById('usersTableBody');
+  const search = document.getElementById('searchUsers').value.toLowerCase();
+  tbody.innerHTML = "";
   users.forEach(u=>{
     if(u.companyName.toLowerCase().includes(search)||u.city.toLowerCase().includes(search)){
-      const status=validatedUsers.includes(u.id)?"✅":"❌";
-      tbody.innerHTML+=`
+      const status = validatedUsers.includes(u.id) ? "✅" : "❌";
+      tbody.innerHTML += `
         <tr>
           <td><img src="${u.photo}" width="40" style="border-radius:50%"></td>
           <td>${u.companyName}</td>
@@ -184,10 +194,12 @@ function renderUsers(){
 // PROFIL
 // ======================
 function openProfile(id){
-  const user=users.find(u=>u.id===id); if(!user) return;
-  currentUser=user; document.getElementById('profilePage').style.display='block';
-  document.getElementById('profilePhoto').src=user.photo;
-  document.getElementById('profileInfo').innerHTML=`
+  const user = users.find(u=>u.id===id);
+  if(!user) return;
+  currentUser = user;
+  document.getElementById('profilePage').style.display='block';
+  document.getElementById('profilePhoto').src = user.photo;
+  document.getElementById('profileInfo').innerHTML = `
     <b>${user.companyName}</b><br>
     Prestations: ${user.prestations}<br>
     Ville: ${user.city}<br>
@@ -195,85 +207,100 @@ function openProfile(id){
     WhatsApp: ${user.whatsapp}<br>
     Status: ${validatedUsers.includes(user.id)?"✅ Validé":"❌ Non validé"}
   `;
-  const waBtn=document.getElementById('whatsappBtn');
-  if(user.whatsapp){ waBtn.style.display="inline-block"; waBtn.onclick=()=>window.open(`https://wa.me/${user.whatsapp}`,"_blank"); }
+  const waBtn = document.getElementById('whatsappBtn');
+  if(user.whatsapp){ waBtn.style.display="inline-block"; waBtn.onclick = ()=> window.open(`https://wa.me/${user.whatsapp}`,"_blank"); }
   else waBtn.style.display="none";
   renderMedia(user);
 }
-function closeProfile(){ document.getElementById('profilePage').style.display='none'; currentUser=null; showCurrentUserId(); }
+
+function closeProfile(){ 
+  document.getElementById('profilePage').style.display='none'; 
+  currentUser=null; 
+  showCurrentUserId(); 
+}
 
 // ======================
 // MEDIA PROFIL
 // ======================
 document.getElementById('mediaFile').addEventListener('change', function(){
   if(!currentUser){ alert("Créez un compte d'abord"); return; }
-  const files=Array.from(this.files);
+  const files = Array.from(this.files);
   files.forEach(file=>{
-    const reader=new FileReader();
-    reader.onload=function(e){
-      const index=users.findIndex(u=>u.id===currentUser.id); if(index===-1) return;
+    const reader = new FileReader();
+    reader.onload = function(e){
+      const index = users.findIndex(u=>u.id===currentUser.id);
+      if(index===-1) return;
       users[index].media.push(e.target.result);
-      localStorage.setItem('users',JSON.stringify(users));
+      localStorage.setItem('users', JSON.stringify(users));
       renderMedia(users[index]);
     };
     reader.readAsDataURL(file);
   });
 });
+
 function renderMedia(user){
-  const container=document.getElementById('mediaList'); container.innerHTML="";
+  const container = document.getElementById('mediaList');
+  container.innerHTML="";
   if(!user.media) return;
   user.media.forEach((m,i)=>{
-    if(m.startsWith("data:image")) container.innerHTML+=`<img src="${m}">`;
-    else if(m.startsWith("data:video")) container.innerHTML+=`<video src="${m}" controls></video>`;
-    else if(m.startsWith("data:audio")) container.innerHTML+=`<audio src="${m}" controls></audio>`;
-    else container.innerHTML+=`<a href="${m}" target="_blank">Fichier ${i+1}</a>`;
+    if(m.startsWith("data:image")) container.innerHTML += `<img src="${m}">`;
+    else if(m.startsWith("data:video")) container.innerHTML += `<video src="${m}" controls></video>`;
+    else if(m.startsWith("data:audio")) container.innerHTML += `<audio src="${m}" controls></audio>`;
+    else container.innerHTML += `<a href="${m}" target="_blank">Fichier ${i+1}</a>`;
   });
 }
 
 // ======================
 // COPIER LIEN PROFIL
 // ======================
-function copyProfileLink(id){ const url=`${window.location.origin}?id=${id}`; navigator.clipboard.writeText(url); alert("Lien copié ! : "+url); }
+function copyProfileLink(id){
+  const url = `${window.location.origin}?id=${id}`;
+  navigator.clipboard.writeText(url);
+  alert("Lien copié ! : " + url);
+}
 
 // ======================
 // CHAT
 // ======================
 document.getElementById('chatMedia').addEventListener('change', function(){
   if(!currentUser){ alert("Créez un compte d'abord"); return; }
-  const files=Array.from(this.files);
+  const files = Array.from(this.files);
   files.forEach(file=>{
-    const reader=new FileReader();
-    reader.onload=function(e){
+    const reader = new FileReader();
+    reader.onload = function(e){
       messages.push({userId:currentUser.id,name:currentUser.companyName,media:e.target.result});
-      localStorage.setItem('messages',JSON.stringify(messages));
+      localStorage.setItem('messages', JSON.stringify(messages));
       renderChat();
     };
     reader.readAsDataURL(file);
   });
 });
+
 function sendMessage(){
   if(!currentUser){ alert("Créez un compte d'abord"); return; }
-  const text=document.getElementById('messageInput').value.trim();
+  const text = document.getElementById('messageInput').value.trim();
   if(!text && !document.getElementById('chatMedia').files.length) return;
   messages.push({userId:currentUser.id,name:currentUser.companyName,text});
-  localStorage.setItem('messages',JSON.stringify(messages));
+  localStorage.setItem('messages', JSON.stringify(messages));
   document.getElementById('messageInput').value="";
   renderChat();
 }
+
 function renderChat(){
-  const box=document.getElementById('chatBox'); box.innerHTML="";
+  const box = document.getElementById('chatBox');
+  box.innerHTML="";
   messages.forEach(m=>{
-    let content=m.text||"";
+    let content = m.text||"";
     if(m.media){
       if(m.media.startsWith("data:image")) content+=`<br><img src="${m.media}" width="150">`;
       else if(m.media.startsWith("data:video")) content+=`<br><video src="${m.media}" width="200" controls></video>`;
       else if(m.media.startsWith("data:audio")) content+=`<br><audio src="${m.media}" controls></audio>`;
       else content+=`<br><a href="${m.media}" target="_blank">Fichier</a>`;
     }
-    content=content.replace(/(https?:\/\/[^\s]+)/g,'<a href="$1" target="_blank">$1</a>');
-    box.innerHTML+=`<div class="message"><b>${m.name}:</b> ${content}</div>`;
+    content = content.replace(/(https?:\/\/[^\s]+)/g,'<a href="$1" target="_blank">$1</a>');
+    box.innerHTML += `<div class="message"><b>${m.name}:</b> ${content}</div>`;
   });
-  box.scrollTop=box.scrollHeight;
+  box.scrollTop = box.scrollHeight;
 }
 
 // ======================
@@ -284,8 +311,10 @@ function showAdmin(){
   if(code==='233233'){ document.getElementById('adminSection').style.display='block'; renderAdminTable(); }
   else alert("Code incorrect");
 }
+
 function renderAdminTable(){
-  const tbody=document.getElementById('adminTableBody'); tbody.innerHTML='';
+  const tbody=document.getElementById('adminTableBody');
+  tbody.innerHTML='';
   users.forEach(u=>{
     const tr=document.createElement('tr');
     tr.innerHTML=`
@@ -301,20 +330,25 @@ function renderAdminTable(){
     tbody.appendChild(tr);
   });
 }
+
 function toggleBlock(id){
   users=users.map(u=>u.id===id?{...u,blocked:!u.blocked}:u);
-  localStorage.setItem('users',JSON.stringify(users));
+  localStorage.setItem('users', JSON.stringify(users));
   blockedUsers=users.filter(u=>u.blocked).map(u=>u.id);
-  renderAdminTable(); renderChat();
+  renderAdminTable();
+  renderChat();
 }
+
 function deleteUser(id){
   if(confirm("Supprimer cet utilisateur et ses médias ?")){
     users=users.filter(u=>u.id!==id);
     messages=messages.filter(m=>m.userId!==id);
-    localStorage.setItem('users',JSON.stringify(users));
-    localStorage.setItem('messages',JSON.stringify(messages));
+    localStorage.setItem('users', JSON.stringify(users));
+    localStorage.setItem('messages', JSON.stringify(messages));
     blockedUsers=users.filter(u=>u.blocked).map(u=>u.id);
-    renderAdminTable(); renderUsers(); renderChat();
+    renderAdminTable();
+    renderUsers();
+    renderChat();
   }
 }
 
