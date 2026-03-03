@@ -20,15 +20,17 @@ td,th{padding:8px;border-bottom:1px solid #333;text-align:center;}
 .message{margin-bottom:10px;}
 .message b{color:#60a5fa;}
 #userIdDisplay{margin-top:10px;font-size:14px;color:#60a5fa;}
+.btn-block{background:#f87171;color:#fff;}
+.btn-unblock{background:#34d399;color:#000;}
+.btn-delete{background:#ef4444;color:#fff;}
 </style>
 </head>
 <body>
 
 <header>WORKSHOPKMER</header>
-
-<section>
 <div id="userIdDisplay"></div>
 
+<section>
 <h3>Créer un compte</h3>
 <input type="text" id="companyName" placeholder="Nom entreprise"><br>
 <input type="text" id="city" placeholder="Ville"><br>
@@ -63,6 +65,19 @@ td,th{padding:8px;border-bottom:1px solid #333;text-align:center;}
 <input type="text" id="messageInput" placeholder="Votre message"><br>
 <input type="file" id="chatMedia" multiple><br>
 <button onclick="sendMessage()">Envoyer</button>
+
+<hr>
+
+<h3>Accès Administrateur</h3>
+<input type="password" id="adminCodeInput" placeholder="Code admin">
+<button onclick="showAdmin()">Accéder Admin</button>
+<div id="adminSection" style="display:none;">
+<table>
+<thead><tr><th>Nom Entreprise</th><th>Email</th><th>Ville</th><th>Bloqué</th><th>Actions</th></tr></thead>
+<tbody id="adminTableBody"></tbody>
+</table>
+</div>
+
 </section>
 
 <script>
@@ -80,6 +95,7 @@ const validatedUsers = [
 let users = JSON.parse(localStorage.getItem('users') || '[]');
 let messages = JSON.parse(localStorage.getItem('messages') || '[]');
 let currentUser = JSON.parse(localStorage.getItem('currentUser') || 'null');
+let blockedUsers = users.filter(u=>u.blocked).map(u=>u.id);
 
 // ======================
 // AFFICHAGE ID
@@ -112,17 +128,17 @@ function createAccount(){
       email,
       photo:e.target.result || "https://via.placeholder.com/150",
       media:[],
+      blocked:false,
       validated: validatedUsers.includes(id)
     };
     users.push(newUser);
     localStorage.setItem('users', JSON.stringify(users));
-
     currentUser = newUser;
     localStorage.setItem('currentUser', JSON.stringify(currentUser));
-
     alert("Compte créé ✅\nID : " + id);
     renderUsers();
     showCurrentUserId();
+    renderAdminTable();
   };
 
   if(file){ reader.readAsDataURL(file); }
@@ -214,24 +230,95 @@ function renderMedia(user){
 // ======================
 // CHAT
 // ======================
+document.getElementById('chatMedia').addEventListener('change', function(){
+  if(!currentUser){ alert("Créez un compte d'abord"); return; }
+  const files = Array.from(this.files);
+  files.forEach(file=>{
+    const reader = new FileReader();
+    reader.onload = function(e){
+      messages.push({userId:currentUser.id,name:currentUser.companyName,media:e.target.result});
+      localStorage.setItem('messages', JSON.stringify(messages));
+      renderChat();
+    };
+    reader.readAsDataURL(file);
+  });
+});
+
 function sendMessage(){
   if(!currentUser){ alert("Créez un compte d'abord"); return; }
   const text = document.getElementById('messageInput').value.trim();
   if(!text && !document.getElementById('chatMedia').files.length) return;
-
   messages.push({userId:currentUser.id,name:currentUser.companyName,text});
   localStorage.setItem('messages', JSON.stringify(messages));
   document.getElementById('messageInput').value="";
   renderChat();
 }
+
 function renderChat(){
   const box = document.getElementById('chatBox');
   box.innerHTML="";
   messages.forEach(m=>{
     let content = m.text||"";
+    if(m.media){
+      if(m.media.startsWith("data:image")) content+=`<br><img src="${m.media}" width="150">`;
+      else if(m.media.startsWith("data:video")) content+=`<br><video src="${m.media}" width="200" controls></video>`;
+      else if(m.media.startsWith("data:audio")) content+=`<br><audio src="${m.media}" controls></audio>`;
+      else content+=`<br><a href="${m.media}" target="_blank">Fichier</a>`;
+    }
+    // transformer liens en clicables
+    content = content.replace(/(https?:\/\/[^\s]+)/g,'<a href="$1" target="_blank">$1</a>');
     box.innerHTML += `<div class="message"><b>${m.name}:</b> ${content}</div>`;
   });
   box.scrollTop = box.scrollHeight;
+}
+
+// ======================
+// ADMIN
+// ======================
+function showAdmin(){
+  const code=document.getElementById('adminCodeInput').value;
+  if(code==='233233'){ document.getElementById('adminSection').style.display='block'; renderAdminTable(); }
+  else alert("Code incorrect");
+}
+
+function renderAdminTable(){
+  const tbody=document.getElementById('adminTableBody');
+  tbody.innerHTML='';
+  users.forEach(u=>{
+    const tr=document.createElement('tr');
+    tr.innerHTML=`
+      <td>${u.companyName}</td>
+      <td>${u.email}</td>
+      <td>${u.city}</td>
+      <td>${u.blocked?'Oui':'Non'}</td>
+      <td>
+        <button class="${u.blocked?'btn-unblock':'btn-block'}" onclick="toggleBlock('${u.id}')">${u.blocked?'Débloquer':'Bloquer'}</button>
+        <button class="btn-delete" onclick="deleteUser('${u.id}')">Supprimer</button>
+      </td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
+
+function toggleBlock(id){
+  users=users.map(u=>u.id===id?{...u,blocked:!u.blocked}:u);
+  localStorage.setItem('users', JSON.stringify(users));
+  blockedUsers=users.filter(u=>u.blocked).map(u=>u.id);
+  renderAdminTable();
+  renderChat();
+}
+
+function deleteUser(id){
+  if(confirm("Supprimer cet utilisateur et ses médias ?")){
+    users=users.filter(u=>u.id!==id);
+    messages=messages.filter(m=>m.userId!==id);
+    localStorage.setItem('users', JSON.stringify(users));
+    localStorage.setItem('messages', JSON.stringify(messages));
+    blockedUsers=users.filter(u=>u.blocked).map(u=>u.id);
+    renderAdminTable();
+    renderUsers();
+    renderChat();
+  }
 }
 
 // ======================
