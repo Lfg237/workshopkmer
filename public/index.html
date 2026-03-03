@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SaaS Travailleurs - Premium WhatsApp</title>
+<title>SaaS Travailleurs - Admin et Premium</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 <style>
 body { margin:0; font-family:Arial,sans-serif; background:#0b0f1a; color:#fff; }
@@ -16,6 +16,9 @@ button { padding:0.5rem 1rem; margin:0.5rem 0; border:none; border-radius:8px; c
 .btn-private { background:gray; color:white; }
 .profile img { width:50px; height:50px; border-radius:50%; object-fit:cover; vertical-align:middle; margin-right:0.5rem; animation:float 3s ease-in-out infinite; }
 @keyframes float {0%,100%{transform:translateY(0);}50%{transform:translateY(-10px);}}
+table { width:100%; border-collapse:collapse; margin-top:1rem; }
+th, td { padding:0.5rem; border:1px solid #444; text-align:center; }
+th { background:#4f46e5; }
 </style>
 </head>
 <body>
@@ -69,7 +72,27 @@ button { padding:0.5rem 1rem; margin:0.5rem 0; border:none; border-radius:8px; c
 </div>
 </div>
 
+<!-- Admin -->
+<div id="adminPage" class="page">
+<h2>Admin</h2>
+<input type="text" id="searchAdmin" placeholder="Rechercher..." oninput="renderAdminTable()">
+<button onclick="unblockAllUsers()">Débloquer tous les utilisateurs</button>
+<table id="adminTable">
+<thead>
+<tr>
+<th>Email</th><th>Statut</th><th>Profession</th><th>Ville</th><th>Premium</th><th>Public</th><th>Actions</th>
+</tr>
+</thead>
+<tbody></tbody>
+</table>
+<button onclick="logout()">Se déconnecter</button>
+</div>
+
 <script>
+// Admin fixe
+const ADMIN_CREDENTIALS = {email:'admin@workshopkmer.com', password:'2332333'};
+
+// Utilisateurs locaux
 let users = JSON.parse(localStorage.getItem('users') || '[]');
 let user = null;
 let userPhotoBase64 = null;
@@ -135,6 +158,15 @@ function register(){
 function login(){
   const email = document.getElementById('loginEmail').value.trim();
   const password = document.getElementById('loginPassword').value.trim();
+
+  // Vérifie admin
+  if(email === ADMIN_CREDENTIALS.email && password === ADMIN_CREDENTIALS.password){
+    alert("Connexion Admin réussie !");
+    showPage('adminPage');
+    renderAdminTable();
+    return;
+  }
+
   const u = users.find(u=>u.email===email && u.password===password);
   if(!u){ alert("Email ou mot de passe incorrect"); return; }
 
@@ -185,17 +217,55 @@ function saveProfile(){
 // Privé/Public
 function togglePrivate(){ user.isPublic = !user.isPublic; alert('Statut changé: '+(user.isPublic?'Public':'Privé')); saveProfile(); }
 
-// Bouton Premium -> WhatsApp sans blocage
+// Bouton Premium -> WhatsApp
 function openWhatsAppPremium(){
   if(!user) return;
   const message = encodeURIComponent(
     `Demande Premium:\nID: ${user.id}\nEmail: ${user.email}\nNom: ${user.email}\nStatut: ${user.statut}`
   );
   alert("Vous allez ouvrir WhatsApp pour payer 500 F et activer le mode Premium.");
-  // Ouvre WhatsApp en un seul clic
   window.open(`https://wa.me/237670035609?text=${message}`, "_blank");
 }
 
+// Admin : tableau
+function renderAdminTable(){
+  const tbody = document.querySelector('#adminTable tbody');
+  tbody.innerHTML='';
+  const search = document.getElementById('searchAdmin').value.toLowerCase();
+  users.forEach(u=>{
+    if(u.email.toLowerCase().includes(search)){
+      const tr=document.createElement('tr');
+      tr.innerHTML=`
+        <td>${u.email}</td>
+        <td>${u.statut}</td>
+        <td>${u.profession}</td>
+        <td>${u.ville}</td>
+        <td>${u.premium?'Oui':'Non'}</td>
+        <td>${u.isPublic?'Oui':'Non'}</td>
+        <td>
+          <button onclick="toggleUserBlock('${u.id}')">${u.blocked?'Débloquer':'Bloquer'}</button>
+        </td>
+      `;
+      tbody.appendChild(tr);
+    }
+  });
+}
+
+// Bloquer / débloquer utilisateur
+function toggleUserBlock(id){
+  users = users.map(u=>u.id===id?{...u, blocked: !u.blocked}:u);
+  localStorage.setItem('users', JSON.stringify(users));
+  renderAdminTable();
+}
+
+// Débloquer tous les utilisateurs
+function unblockAllUsers(){
+  users.forEach(u => u.blocked=false);
+  localStorage.setItem('users', JSON.stringify(users));
+  renderAdminTable();
+  alert("Tous les utilisateurs ont été débloqués !");
+}
 </script>
+
 </body>
 </html>
