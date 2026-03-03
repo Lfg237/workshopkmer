@@ -23,6 +23,7 @@ td,th{padding:8px;border-bottom:1px solid #333;text-align:center;}
 .btn-block{background:#f87171;color:#fff;}
 .btn-unblock{background:#34d399;color:#000;}
 .btn-delete{background:#ef4444;color:#fff;}
+.copy-link{background:#facc15;color:#000;}
 </style>
 </head>
 <body>
@@ -35,6 +36,7 @@ td,th{padding:8px;border-bottom:1px solid #333;text-align:center;}
 <input type="text" id="companyName" placeholder="Nom entreprise"><br>
 <input type="text" id="city" placeholder="Ville"><br>
 <input type="email" id="email" placeholder="Email"><br>
+<input type="text" id="whatsapp" placeholder="Numéro WhatsApp"><br>
 <input type="file" id="photoFile" accept="image/*"><br>
 <button onclick="createAccount()">Créer un compte</button>
 <button onclick="contactAdmin()">Contacter Admin</button>
@@ -44,7 +46,7 @@ td,th{padding:8px;border-bottom:1px solid #333;text-align:center;}
 <h3>Utilisateurs</h3>
 <input type="text" id="searchUsers" placeholder="Rechercher..." oninput="renderUsers()">
 <table>
-<thead><tr><th>Photo</th><th>Nom Entreprise</th><th>Ville</th><th>ID</th><th>Status</th><th>Profil</th></tr></thead>
+<thead><tr><th>Photo</th><th>Nom Entreprise</th><th>Ville</th><th>ID</th><th>Status</th><th>Actions</th></tr></thead>
 <tbody id="usersTableBody"></tbody>
 </table>
 
@@ -53,8 +55,7 @@ td,th{padding:8px;border-bottom:1px solid #333;text-align:center;}
 <img id="profilePhoto" width="120" style="border-radius:50%"><br>
 <div id="profileInfo"></div>
 <button onclick="closeProfile()">Fermer Profil</button>
-<br>
-<input type="file" id="mediaFile" multiple>
+<button id="whatsappBtn">WhatsApp</button>
 <div id="mediaList"></div>
 </div>
 
@@ -118,7 +119,6 @@ function createAccount(){
 
   const reader = new FileReader();
   const file = document.getElementById('photoFile').files[0];
-
   reader.onload = function(e){
     const id = "u_" + Date.now();
     const newUser = {
@@ -126,6 +126,7 @@ function createAccount(){
       companyName:document.getElementById('companyName').value,
       city:document.getElementById('city').value,
       email,
+      whatsapp:document.getElementById('whatsapp').value,
       photo:e.target.result || "https://via.placeholder.com/150",
       media:[],
       blocked:false,
@@ -140,7 +141,6 @@ function createAccount(){
     showCurrentUserId();
     renderAdminTable();
   };
-
   if(file){ reader.readAsDataURL(file); }
   else{ reader.onload({target:{result:"https://via.placeholder.com/150"}}); }
 }
@@ -171,7 +171,10 @@ function renderUsers(){
           <td>${u.city}</td>
           <td>${u.id}</td>
           <td>${status}</td>
-          <td><button onclick="openProfile('${u.id}')">Voir Profil</button></td>
+          <td>
+            <button onclick="openProfile('${u.id}')">Voir Profil</button>
+            <button class="copy-link" onclick="copyProfileLink('${u.id}')">Copier Lien</button>
+          </td>
         </tr>
       `;
     }
@@ -191,11 +194,20 @@ function openProfile(id){
     <b>${user.companyName}</b><br>
     Ville: ${user.city}<br>
     ID: ${user.id}<br>
+    WhatsApp: ${user.whatsapp}<br>
     Status: ${validatedUsers.includes(user.id)?"✅ Validé":"❌ Non validé"}
   `;
+  const waBtn = document.getElementById('whatsappBtn');
+  if(user.whatsapp){ waBtn.style.display="inline-block"; waBtn.onclick = ()=> window.open(`https://wa.me/${user.whatsapp}`,"_blank"); }
+  else waBtn.style.display="none";
   renderMedia(user);
 }
-function closeProfile(){ document.getElementById('profilePage').style.display='none'; currentUser=null; showCurrentUserId(); }
+
+function closeProfile(){ 
+  document.getElementById('profilePage').style.display='none'; 
+  currentUser=null; 
+  showCurrentUserId(); 
+}
 
 // ======================
 // MEDIA PROFIL
@@ -215,6 +227,7 @@ document.getElementById('mediaFile').addEventListener('change', function(){
     reader.readAsDataURL(file);
   });
 });
+
 function renderMedia(user){
   const container = document.getElementById('mediaList');
   container.innerHTML="";
@@ -225,6 +238,15 @@ function renderMedia(user){
     else if(m.startsWith("data:audio")) container.innerHTML += `<audio src="${m}" controls></audio>`;
     else container.innerHTML += `<a href="${m}" target="_blank">Fichier ${i+1}</a>`;
   });
+}
+
+// ======================
+// COPIER LIEN PROFIL
+// ======================
+function copyProfileLink(id){
+  const url = `${window.location.origin}?id=${id}`;
+  navigator.clipboard.writeText(url);
+  alert("Lien copié ! : " + url);
 }
 
 // ======================
@@ -265,7 +287,6 @@ function renderChat(){
       else if(m.media.startsWith("data:audio")) content+=`<br><audio src="${m.media}" controls></audio>`;
       else content+=`<br><a href="${m.media}" target="_blank">Fichier</a>`;
     }
-    // transformer liens en clicables
     content = content.replace(/(https?:\/\/[^\s]+)/g,'<a href="$1" target="_blank">$1</a>');
     box.innerHTML += `<div class="message"><b>${m.name}:</b> ${content}</div>`;
   });
