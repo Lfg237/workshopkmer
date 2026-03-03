@@ -3,305 +3,219 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SaaS Travailleurs - Admin et Premium</title>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<title>SaaS Travailleurs - Gestion</title>
 <style>
-body { margin:0; font-family:Arial,sans-serif; background:#0b0f1a; color:#fff; }
-.page { display:none; padding:1rem; }
-.active { display:block; }
-input, select, textarea { width:100%; padding:0.5rem; margin:0.3rem 0; border-radius:8px; border:none; }
-button { padding:0.5rem 1rem; margin:0.5rem 0; border:none; border-radius:8px; cursor:pointer; font-weight:bold; }
-.btn-premium { background:#6366f1; color:#fff; animation:blink 1.5s infinite; }
-@keyframes blink {0%,100%{opacity:1;}50%{opacity:0.5;}}
-.btn-private { background:gray; color:white; }
-.profile img { width:50px; height:50px; border-radius:50%; object-fit:cover; vertical-align:middle; margin-right:0.5rem; animation:float 3s ease-in-out infinite; }
-@keyframes float {0%,100%{transform:translateY(0);}50%{transform:translateY(-10px);}}
-table { width:100%; border-collapse:collapse; margin-top:1rem; }
-th, td { padding:0.5rem; border:1px solid #444; text-align:center; }
-th { background:#4f46e5; }
+body { margin:0; font-family:Arial,sans-serif; background:#0b0f1a; color:#fff; padding:1rem; }
+h2{margin-top:0;}
+input,textarea,select,button{margin:0.3rem 0; padding:0.5rem; border-radius:8px; border:none;}
+button{cursor:pointer;}
+.btn-whatsapp{background:#25D366;color:#fff;font-weight:bold;}
+.btn-block{background:#f87171;color:#fff;}
+.btn-unblock{background:#34d399;color:#000;}
+small{font-size:10px;color:#ccc;}
+.profile img{width:50px;height:50px;border-radius:50%;object-fit:cover;margin-right:0.5rem;}
+table{width:100%;border-collapse:collapse;margin-top:1rem;}
+th,td{padding:0.4rem;border:1px solid #444;text-align:center;font-size:12px;}
+th{background:#4f46e5;}
 </style>
 </head>
 <body>
 
-<!-- Inscription -->
-<div id="registerPage" class="page active">
-<h2>Inscription</h2>
-<input id="regEmail" placeholder="Email">
-<input id="regPassword" type="password" placeholder="Mot de passe">
-<input id="regStatus" placeholder="Statut (Chômeur, Entrepreneur…)">
-<input id="regProfession" placeholder="Profession">
-<input id="regPhone1" placeholder="Téléphone 1">
-<input id="regPhone2" placeholder="Téléphone 2">
-<input id="regCity" placeholder="Ville">
-<input id="regQuarter" placeholder="Quartier">
-<input id="regAge" placeholder="Âge">
-<input id="regWebsite" placeholder="Site web (optionnel)">
-<input type="file" id="regPhotoFile" accept="image/*">
-<img id="previewPhoto" src="" alt="Aperçu" style="width:100px;height:100px;border-radius:50%;margin-top:0.5rem;">
-<button onclick="register()">Créer le compte</button>
-<button onclick="showPage('loginPage')">Déjà inscrit ? Connexion</button>
-</div>
+<h2>Créer votre compte</h2>
+<input type="text" id="email" placeholder="Email">
+<input type="text" id="status" placeholder="Statut (Chômeur, Entrepreneur…)">
+<input type="text" id="profession" placeholder="Profession">
+<input type="text" id="phone1" placeholder="Téléphone 1">
+<input type="text" id="phone2" placeholder="Téléphone 2">
+<input type="text" id="city" placeholder="Ville">
+<input type="text" id="quarter" placeholder="Quartier">
+<input type="number" id="age" placeholder="Âge">
+<input type="file" id="photoFile" accept="image/*">
+<img id="previewPhoto" src="" alt="Aperçu" style="width:50px;height:50px;border-radius:50%;display:block;">
+<button onclick="createAccount()">Créer un compte</button>
+<button class="btn-whatsapp" onclick="contactAdmin()">Contacter l'administrateur</button>
 
-<!-- Connexion -->
-<div id="loginPage" class="page">
-<h2>Connexion</h2>
-<input type="email" id="loginEmail" placeholder="Email">
-<input type="password" id="loginPassword" placeholder="Mot de passe">
-<input type="text" id="adminCodeInput" placeholder="Entrer code admin pour tests">
-<button onclick="validateAdminCode()">Valider Code</button>
-<button onclick="login()">Se connecter</button>
-<button onclick="showPage('registerPage')">Créer un compte</button>
-</div>
+<hr>
 
-<!-- Profil utilisateur -->
-<div id="profilePage" class="page">
-<h2>Profil</h2>
+<h2>Profil Utilisateur</h2>
 <div class="profile">
-<img id="photo" src="" alt="Profil">
-<h3 id="name"></h3>
-<input id="status" placeholder="Statut">
-<input id="profession" placeholder="Profession">
-<input id="phone1" placeholder="Téléphone 1">
-<input id="phone2" placeholder="Téléphone 2">
-<input id="city" placeholder="Ville">
-<input id="quarter" placeholder="Quartier">
-<input id="age" placeholder="Âge">
-<input id="website" placeholder="Site web">
-<button id="modifyBtn" onclick="requestProfileModification()" disabled>Demander modification au admin</button>
-<button id="premiumBtn" class="btn-premium" onclick="openWhatsAppPremium()" disabled>Rejoindre Chat Premium</button>
-<button class="btn-private" onclick="togglePrivate()">Privé/Public</button>
-<button onclick="saveProfile()">Sauvegarder local</button>
-<button onclick="logout()">Se déconnecter</button>
-</div>
+<img id="profilePhoto" src="https://raw.githubusercontent.com/Lfg237/m-dias/main/Screenshot_20260302-170127.jpg" alt="Profil">
+<div id="profileInfo"></div>
+<label>Ajouter médias :</label>
+<input type="file" id="mediaFile" multiple>
+<div id="mediaList"></div>
 </div>
 
-<!-- Admin -->
-<div id="adminPage" class="page">
-<h2>Admin</h2>
-<input type="text" id="searchAdmin" placeholder="Rechercher..." oninput="renderAdminTable()">
-<button onclick="unblockAllUsers()">Débloquer tous les utilisateurs</button>
-<table id="adminTable">
+<hr>
+
+<h2>Chat Public</h2>
+<div id="chatContainer">
+<textarea id="messageInput" placeholder="Écrire un message..." rows="2" style="width:100%;"></textarea>
+<button onclick="sendMessage()">Envoyer</button>
+<div id="chatBox" style="border:1px solid #444; padding:0.5rem; height:150px; overflow-y:auto;"></div>
+</div>
+
+<hr>
+
+<h2>Tableau Administrateur</h2>
+<table>
 <thead>
 <tr>
-<th>Email</th><th>Statut</th><th>Profession</th><th>Ville</th><th>Premium</th><th>Public</th><th>Actions</th>
+<th>Email</th><th>Statut</th><th>Profession</th><th>Ville</th><th>Bloqué</th><th>Actions</th>
 </tr>
 </thead>
-<tbody></tbody>
+<tbody id="adminTableBody"></tbody>
 </table>
-<button onclick="logout()">Se déconnecter</button>
-</div>
 
 <script>
-// Admin fixe
-const ADMIN_CREDENTIALS = {email:'admin@workshopkmer.com', password:'2332333'};
+// --- Stockage ---
+let users = JSON.parse(localStorage.getItem('users')||'[]');
+let messages = JSON.parse(localStorage.getItem('messages')||'[]');
+let currentUser = null;
+let blockedUsers = []; // IDs bloqués
+let allowedToChat = []; // IDs autorisés à envoyer message
 
-// Utilisateurs locaux
-let users = JSON.parse(localStorage.getItem('users') || '[]');
-let user = null;
-let userPhotoBase64 = null;
-
-// Prévisualisation photo inscription
-document.getElementById('regPhotoFile').addEventListener('change', function(){
-  const file = this.files[0];
+// Prévisualisation photo
+document.getElementById('photoFile').addEventListener('change', function(){
+  const file=this.files[0];
   if(file){
-    const reader = new FileReader();
-    reader.onload = function(e){
-      document.getElementById('previewPhoto').src = e.target.result;
-      userPhotoBase64 = e.target.result;
-    }
+    const reader=new FileReader();
+    reader.onload=function(e){document.getElementById('previewPhoto').src=e.target.result;}
     reader.readAsDataURL(file);
   }
 });
 
-// Navigation
-function showPage(id){
-  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
-  document.getElementById(id).classList.add('active');
-}
-
-// Générer ID unique
-function generateId(email){ return 'u_'+Date.now()+'_'+btoa(email); }
-
-// Inscription locale
-function register(){
-  const email = document.getElementById('regEmail').value.trim();
-  const password = document.getElementById('regPassword').value.trim();
-  if(!email || !password){ alert("Veuillez remplir Email et Mot de passe"); return; }
+// Créer compte
+function createAccount(){
+  const email=document.getElementById('email').value.trim();
+  if(!email){ alert("Email requis"); return; }
   if(users.find(u=>u.email===email)){ alert("Email déjà utilisé"); return; }
-
   const newUser = {
-    id: generateId(email),
+    id:'u_'+Date.now(),
     email,
-    password,
-    statut: document.getElementById('regStatus').value,
-    profession: document.getElementById('regProfession').value,
-    phone1: document.getElementById('regPhone1').value,
-    phone2: document.getElementById('regPhone2').value,
-    ville: document.getElementById('regCity').value,
-    quartier: document.getElementById('regQuarter').value,
-    age: document.getElementById('regAge').value,
-    website: document.getElementById('regWebsite').value,
-    photo: userPhotoBase64,
-    isPublic: false,
-    premium: false,
-    modificationRequested:false
-  };
-
-  users.push(newUser);
-  localStorage.setItem('users', JSON.stringify(users));
-
-  user = newUser;
-  localStorage.setItem('currentUser', JSON.stringify(user));
-
-  alert("Inscription réussie ! Votre ID : "+user.id);
-  loadProfile(); 
-  showPage('profilePage');
-}
-
-// Login
-function login(){
-  const email = document.getElementById('loginEmail').value.trim();
-  const password = document.getElementById('loginPassword').value.trim();
-
-  // Vérifie admin
-  if(email === ADMIN_CREDENTIALS.email && password === ADMIN_CREDENTIALS.password){
-    alert("Connexion Admin réussie !");
-    showPage('adminPage');
-    renderAdminTable();
-    return;
-  }
-
-  const u = users.find(u=>u.email===email && u.password===password);
-  if(!u){ alert("Email ou mot de passe incorrect"); return; }
-
-  user = u;
-  localStorage.setItem('currentUser', JSON.stringify(user));
-
-  // Vérifie si code admin a été entré
-  const code = document.getElementById('adminCodeInput').value.trim();
-  if(code==='2332333'){
-    alert("Mode test activé ! Vous pouvez modifier le profil et rejoindre le chat Premium.");
-    user.premium=true;
-    document.getElementById('premiumBtn').disabled=false;
-    document.getElementById('modifyBtn').disabled=false;
-    localStorage.setItem('currentUser', JSON.stringify(user));
-  }
-
-  alert("Connexion réussie !");
-  loadProfile(); 
-  showPage('profilePage');
-}
-
-// Valider code admin dans input
-function validateAdminCode(){
-  const code = document.getElementById('adminCodeInput').value.trim();
-  if(code==='2332333'){
-    alert('Code valide ! Vous pouvez modifier le profil et rejoindre le chat Premium.');
-    user.premium=true;
-    document.getElementById('premiumBtn').disabled=false;
-    document.getElementById('modifyBtn').disabled=false;
-    localStorage.setItem('currentUser', JSON.stringify(user));
-  } else alert('Code invalide !');
-}
-
-// Logout
-function logout(){ user=null; localStorage.removeItem('currentUser'); showPage('loginPage'); }
-
-// Charger profil
-function loadProfile(){
-  if(!user) user = JSON.parse(localStorage.getItem('currentUser'));
-  document.getElementById('photo').src = user.photo||'https://raw.githubusercontent.com/Lfg237/m-dias/main/Screenshot_20260302-170127.jpg';
-  document.getElementById('name').innerText = user.email;
-  document.getElementById('status').value = user.statut||'';
-  document.getElementById('profession').value = user.profession||'';
-  document.getElementById('phone1').value = user.phone1||'';
-  document.getElementById('phone2').value = user.phone2||'';
-  document.getElementById('city').value = user.ville||'';
-  document.getElementById('quarter').value = user.quartier||'';
-  document.getElementById('age').value = user.age||'';
-  document.getElementById('website').value = user.website||'';
-  document.getElementById('premiumBtn').disabled = !user.premium;
-  document.getElementById('modifyBtn').disabled = !user.premium;
-}
-
-// Sauvegarder profil local
-function saveProfile(){
-  const updated = {...user,
-    statut:document.getElementById('status').value,
+    status:document.getElementById('status').value,
     profession:document.getElementById('profession').value,
     phone1:document.getElementById('phone1').value,
     phone2:document.getElementById('phone2').value,
-    ville:document.getElementById('city').value,
-    quartier:document.getElementById('quarter').value,
+    city:document.getElementById('city').value,
+    quarter:document.getElementById('quarter').value,
     age:document.getElementById('age').value,
-    website:document.getElementById('website').value,
-    photo:user.photo
+    photo:document.getElementById('previewPhoto').src,
+    media:[],
+    blocked:false
   };
-  users = users.map(u=>u.id===user.id?updated:u);
+  users.push(newUser);
   localStorage.setItem('users', JSON.stringify(users));
-  user = updated; localStorage.setItem('currentUser', JSON.stringify(updated));
-  alert('Profil sauvegardé localement');
+  currentUser=newUser;
+  displayProfile();
+  renderAdminTable();
+  alert("Compte créé ! Votre ID : "+newUser.id);
 }
 
-// Privé/Public
-function togglePrivate(){ user.isPublic = !user.isPublic; alert('Statut changé: '+(user.isPublic?'Public':'Privé')); saveProfile(); }
-
-// Bouton Premium -> WhatsApp
-function openWhatsAppPremium(){
-  if(!user) return;
-  const message = encodeURIComponent(
-    `Demande Premium:\nID: ${user.id}\nEmail: ${user.email}\nNom: ${user.email}\nStatut: ${user.statut}`
-  );
-  alert("Vous allez ouvrir WhatsApp pour payer 500 F et activer le mode Premium.");
-  window.open(`https://wa.me/237670035609?text=${message}`, "_blank");
+// Contact admin
+function contactAdmin(){
+  if(!currentUser){ alert("Créez d'abord votre compte"); return; }
+  const message=encodeURIComponent("Demande validation compte ID: "+currentUser.id);
+  window.open(`https://wa.me/237670035609?text=${message}`,"_blank");
 }
 
-// Demander modification admin
-function requestProfileModification(){
-  if(!user) return;
-  user.modificationRequested=true;
-  localStorage.setItem('currentUser', JSON.stringify(user));
-  alert("Demande de modification envoyée à l'admin !");
+// Affichage profil
+function displayProfile(){
+  if(!currentUser) return;
+  document.getElementById('profilePhoto').src=currentUser.photo;
+  const info=`<small>Email: ${currentUser.email}</small><br>
+  <small>Statut: ${currentUser.status}</small><br>
+  <small>Profession: ${currentUser.profession}</small><br>
+  <small>Tel1: ${currentUser.phone1}</small><br>
+  <small>Tel2: ${currentUser.phone2}</small><br>
+  <small>Ville: ${currentUser.city}</small><br>
+  <small>Quartier: ${currentUser.quarter}</small><br>
+  <small>Âge: ${currentUser.age}</small>`;
+  document.getElementById('profileInfo').innerHTML=info;
 }
 
-// Admin : tableau
-function renderAdminTable(){
-  const tbody = document.querySelector('#adminTable tbody');
-  tbody.innerHTML='';
-  const search = document.getElementById('searchAdmin').value.toLowerCase();
-  users.forEach(u=>{
-    if(u.email.toLowerCase().includes(search)){
-      const tr=document.createElement('tr');
-      tr.innerHTML=`
-        <td>${u.email}</td>
-        <td>${u.statut}</td>
-        <td>${u.profession}</td>
-        <td>${u.ville}</td>
-        <td>${u.premium?'Oui':'Non'}</td>
-        <td>${u.isPublic?'Oui':'Non'}</td>
-        <td>
-          <button onclick="toggleUserBlock('${u.id}')">${u.blocked?'Débloquer':'Bloquer'}</button>
-        </td>
-      `;
-      tbody.appendChild(tr);
+// Ajout médias
+document.getElementById('mediaFile').addEventListener('change', function(){
+  if(!currentUser) return;
+  const files=Array.from(this.files);
+  files.forEach(file=>{
+    const reader=new FileReader();
+    reader.onload=function(e){ 
+      currentUser.media.push(e.target.result);
+      renderMedia();
+      localStorage.setItem('users', JSON.stringify(users));
     }
+    reader.readAsDataURL(file);
+  });
+});
+
+function renderMedia(){
+  const container=document.getElementById('mediaList');
+  container.innerHTML='';
+  currentUser.media.forEach((m,i)=>{
+    const ext=m.split(';')[0].split('/')[1];
+    let el;
+    if(ext==='jpeg'||ext==='png'||ext==='jpg') el=`<img src="${m}" style="width:50px;height:50px;margin:2px;">`;
+    else if(ext==='mp4') el=`<video src="${m}" controls style="width:80px;height:50px;margin:2px;"></video>`;
+    else if(ext==='mp3') el=`<audio src="${m}" controls style="width:80px;margin:2px;"></audio>`;
+    else el=`<a href="${m}" target="_blank">Fichier ${i+1}</a>`;
+    container.innerHTML+=el;
   });
 }
 
-// Bloquer / débloquer utilisateur
-function toggleUserBlock(id){
-  users = users.map(u=>u.id===id?{...u, blocked: !u.blocked}:u);
-  localStorage.setItem('users', JSON.stringify(users));
-  renderAdminTable();
+// --- Chat ---
+function renderChat(){
+  const chatBox=document.getElementById('chatBox');
+  chatBox.innerHTML='';
+  messages.forEach(msg=>{
+    const blocked=blockedUsers.includes(msg.userId);
+    chatBox.innerHTML+=`<div><b>${msg.email}:</b> ${msg.text} ${blocked?'<small>(Bloqué)</small>':''}</div>`;
+  });
 }
 
-// Débloquer tous les utilisateurs
-function unblockAllUsers(){
-  users.forEach(u => u.blocked=false);
-  localStorage.setItem('users', JSON.stringify(users));
-  renderAdminTable();
-  alert("Tous les utilisateurs ont été débloqués !");
+function sendMessage(){
+  if(!currentUser){ alert("Créez un compte d'abord"); return; }
+  if(blockedUsers.includes(currentUser.id)){ alert("Vous êtes bloqué pour envoyer des messages"); return; }
+  const text=document.getElementById('messageInput').value.trim();
+  if(!text) return;
+  messages.push({userId:currentUser.id,email:currentUser.email,text});
+  localStorage.setItem('messages', JSON.stringify(messages));
+  document.getElementById('messageInput').value='';
+  renderChat();
 }
+
+// --- Tableau Admin ---
+function renderAdminTable(){
+  const tbody=document.getElementById('adminTableBody');
+  tbody.innerHTML='';
+  users.forEach(u=>{
+    const tr=document.createElement('tr');
+    tr.innerHTML=`
+      <td>${u.email}</td>
+      <td>${u.status}</td>
+      <td>${u.profession}</td>
+      <td>${u.city}</td>
+      <td>${u.blocked?'Oui':'Non'}</td>
+      <td>
+        <button class="${u.blocked?'btn-unblock':'btn-block'}" onclick="toggleBlock('${u.id}')">
+        ${u.blocked?'Débloquer':'Bloquer'}</button>
+      </td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
+
+function toggleBlock(id){
+  users=users.map(u=>u.id===id?{...u,blocked:!u.blocked}:u);
+  localStorage.setItem('users', JSON.stringify(users));
+  blockedUsers=users.filter(u=>u.blocked).map(u=>u.id);
+  renderAdminTable();
+  renderChat();
+}
+
+// --- Initialisation ---
+renderAdminTable();
+renderChat();
 </script>
 
 </body>
