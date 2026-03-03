@@ -13,7 +13,6 @@ body{
   color:white;
 }
 
-/* HEADER */
 header{
   background:#111827;
   padding:15px;
@@ -22,12 +21,8 @@ header{
   font-weight:bold;
 }
 
-/* SECTIONS */
-section{
-  padding:15px;
-}
+section{ padding:15px; }
 
-/* INPUTS */
 input, button{
   padding:8px;
   margin:5px 0;
@@ -41,11 +36,8 @@ button{
   cursor:pointer;
 }
 
-button:hover{
-  opacity:0.8;
-}
+button:hover{ opacity:0.8; }
 
-/* USERS TABLE */
 table{
   width:100%;
   border-collapse:collapse;
@@ -56,7 +48,6 @@ td{
   border-bottom:1px solid #333;
 }
 
-/* PROFILE */
 #profilePage{
   display:none;
   background:#1e293b;
@@ -79,21 +70,6 @@ td{
   object-fit:cover;
 }
 
-#mediaList audio{
-  width:250px;
-}
-
-#mediaList a{
-  background:#334155;
-  padding:20px;
-  border-radius:12px;
-  min-width:200px;
-  display:inline-block;
-  color:white;
-  text-decoration:none;
-}
-
-/* CHAT */
 #chatBox{
   height:300px;
   overflow-y:auto;
@@ -103,12 +79,15 @@ td{
   margin-bottom:10px;
 }
 
-.message{
-  margin-bottom:10px;
-}
+.message{ margin-bottom:10px; }
+.message b{ color:#60a5fa; }
 
-.message b{
-  color:#60a5fa;
+#adminPanel{
+  display:none;
+  background:#111827;
+  padding:15px;
+  margin-top:10px;
+  border-radius:12px;
 }
 </style>
 </head>
@@ -135,30 +114,46 @@ td{
 </table>
 
 <div id="profilePage">
-  <h3>Profil</h3>
-  <img id="profilePhoto" width="120" style="border-radius:50%"><br>
-  <div id="profileInfo"></div>
-  <br>
-  <input type="file" id="mediaFile" multiple>
-  <div id="mediaList"></div>
+<button onclick="closeProfile()" style="background:red;float:right;">Fermer ✖</button>
+<h3>Profil</h3>
+<img id="profilePhoto" width="120" style="border-radius:50%"><br>
+<div id="profileInfo"></div>
+<br>
+<input type="file" id="mediaFile" multiple>
+<div id="mediaList"></div>
 </div>
 
 <hr>
 
 <h3>Discussion</h3>
-
 <div id="chatBox"></div>
-
 <input type="text" id="messageInput" placeholder="Votre message">
 <input type="file" id="chatMedia" multiple>
 <button onclick="sendMessage()">Envoyer</button>
+
+<hr>
+
+<h3>Accès Administrateur</h3>
+<input type="password" id="adminCode" placeholder="Code admin">
+<button onclick="openAdmin()">Accéder</button>
+
+<div id="adminPanel">
+<h4>Tableau Administrateur</h4>
+<div id="adminUsersList"></div>
+</div>
 
 </section>
 
 <script>
 
 // ======================
-// STOCKAGE
+// LISTE DES ID VALIDÉS (AJOUTE LES AUTRES ICI)
+// ======================
+const validatedUsers = [
+  "u_1772525310883"
+  // Ajoute ici : "u_XXXXXXXXXXXX",
+];
+
 // ======================
 let users = JSON.parse(localStorage.getItem('users') || '[]');
 let messages = JSON.parse(localStorage.getItem('messages') || '[]');
@@ -181,14 +176,16 @@ function createAccount(){
 
   reader.onload = function(e){
 
+    const generatedId = "u_" + Date.now();
+
     const newUser = {
-      id:"u_" + Date.now(),
-      companyName:document.getElementById('companyName').value,
-      city:document.getElementById('city').value,
+      id: generatedId,
+      companyName: document.getElementById('companyName').value,
+      city: document.getElementById('city').value,
       email,
-      photo:e.target.result || defaultPhoto(),
-      media:[],
-      blocked:false
+      photo: e.target.result || "https://via.placeholder.com/150",
+      media: [],
+      validated: validatedUsers.includes(generatedId)
     };
 
     users.push(newUser);
@@ -204,12 +201,8 @@ function createAccount(){
   if(file){
     reader.readAsDataURL(file);
   } else {
-    reader.onload({target:{result:defaultPhoto()}});
+    reader.onload({target:{result:"https://via.placeholder.com/150"}});
   }
-}
-
-function defaultPhoto(){
-  return "https://via.placeholder.com/150";
 }
 
 // ======================
@@ -221,11 +214,17 @@ function renderUsers(){
   tbody.innerHTML="";
 
   users.forEach(u=>{
+
+    const status = validatedUsers.includes(u.id)
+      ? "✅"
+      : "❌";
+
     tbody.innerHTML += `
       <tr>
         <td><img src="${u.photo}" width="40" style="border-radius:50%"></td>
         <td>${u.companyName}</td>
         <td>${u.city}</td>
+        <td>${status}</td>
         <td><button onclick="openProfile('${u.id}')">Voir Profil</button></td>
       </tr>
     `;
@@ -252,23 +251,21 @@ function openProfile(id){
   renderMedia(user);
 }
 
+function closeProfile(){
+  document.getElementById('profilePage').style.display='none';
+}
+
 function renderMedia(user){
 
   const container = document.getElementById('mediaList');
   container.innerHTML="";
 
-  if(!user.media) return;
-
   user.media.forEach(m=>{
-
     if(m.startsWith("data:image")){
       container.innerHTML += `<img src="${m}">`;
     }
     else if(m.startsWith("data:video")){
       container.innerHTML += `<video src="${m}" controls></video>`;
-    }
-    else if(m.startsWith("data:audio")){
-      container.innerHTML += `<audio src="${m}" controls></audio>`;
     }
   });
 }
@@ -308,6 +305,10 @@ function sendMessage(){
 
   if(!currentUser) return alert("Créez un compte d'abord");
 
+  if(!validatedUsers.includes(currentUser.id)){
+    return alert("Compte non validé par l'administration");
+  }
+
   const text = document.getElementById('messageInput').value.trim();
   if(!text) return;
 
@@ -328,26 +329,10 @@ function renderChat(){
   box.innerHTML="";
 
   messages.forEach(m=>{
-
-    let content = "";
-
-    if(m.text){
-      content = m.text;
-    }
-
-    if(m.media){
-      if(m.media.startsWith("data:image")){
-        content = `<img src="${m.media}" width="200">`;
-      }
-      else if(m.media.startsWith("data:video")){
-        content = `<video src="${m.media}" width="250" controls></video>`;
-      }
-    }
-
     box.innerHTML += `
       <div class="message">
         <b>${m.name}:</b><br>
-        ${content}
+        ${m.text || ""}
       </div>
     `;
   });
@@ -356,33 +341,42 @@ function renderChat(){
 }
 
 // ======================
-// MEDIA CHAT
+// ADMIN
 // ======================
-document.getElementById('chatMedia').addEventListener('change', function(){
+function openAdmin(){
 
-  if(!currentUser) return alert("Créez un compte d'abord");
+  const code = document.getElementById('adminCode').value;
 
-  const files = Array.from(this.files);
+  if(code !== "233233"){
+    alert("Code incorrect");
+    return;
+  }
 
-  files.forEach(file=>{
-    const reader = new FileReader();
+  document.getElementById('adminPanel').style.display="block";
+  renderAdminUsers();
+}
 
-    reader.onload = function(e){
+function renderAdminUsers(){
 
-      messages.push({
-        userId:currentUser.id,
-        name:currentUser.companyName,
-        media:e.target.result
-      });
+  const container = document.getElementById('adminUsersList');
+  container.innerHTML="";
 
-      localStorage.setItem('messages', JSON.stringify(messages));
-      renderChat();
-    };
-
-    reader.readAsDataURL(file);
+  users.forEach(u=>{
+    container.innerHTML += `
+      <div style="margin-bottom:8px;border-bottom:1px solid #333;padding:5px;">
+        ${u.companyName} (${u.id})
+        <button onclick="deleteUser('${u.id}')" style="background:red;">Supprimer</button>
+      </div>
+    `;
   });
+}
 
-});
+function deleteUser(id){
+  users = users.filter(u=>u.id!==id);
+  localStorage.setItem('users', JSON.stringify(users));
+  renderUsers();
+  renderAdminUsers();
+}
 
 // ======================
 renderUsers();
