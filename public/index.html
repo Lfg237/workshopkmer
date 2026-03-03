@@ -21,9 +21,17 @@ th,td{padding:0.4rem;border:1px solid #444;text-align:center;font-size:12px;}
 th{background:#4f46e5;}
 #profilePage{display:none; border:1px solid #444; padding:0.5rem; margin-top:1rem;}
 a{color:#60a5fa;}
+#mediaList{display:flex; overflow-x:auto; gap:5px;}
+#chatBox{border:1px solid #444; padding:0.5rem; height:200px; overflow-y:auto; margin-top:0.5rem;}
+#logoTitle{font-family:'Courier New', monospace; font-size:24px; font-weight:bold; white-space:nowrap; overflow:hidden; border-right:2px solid #fff;}
+#clock{margin-top:0.5rem; font-size:14px;}
 </style>
 </head>
 <body>
+
+<!-- Logo et titre animé -->
+<div id="logoTitle"></div>
+<div id="clock">Heures : </div>
 
 <h2>Créer votre compte</h2>
 <input type="text" id="email" placeholder="Email">
@@ -77,7 +85,7 @@ a{color:#60a5fa;}
 <div id="profileInfo"></div>
 <label>Ajouter médias :</label>
 <input type="file" id="mediaFile" multiple>
-<div id="mediaList" style="display:flex;overflow-x:auto;"></div>
+<div id="mediaList"></div>
 <button onclick="closeProfile()">Fermer Profil</button>
 </div>
 </div>
@@ -89,7 +97,7 @@ a{color:#60a5fa;}
 <textarea id="messageInput" placeholder="Écrire un message..." rows="2" style="width:100%;"></textarea>
 <input type="file" id="chatMedia" multiple>
 <button onclick="sendMessage()">Envoyer</button>
-<div id="chatBox" style="border:1px solid #444; padding:0.5rem; height:200px; overflow-y:auto;"></div>
+<div id="chatBox"></div>
 </div>
 
 <script>
@@ -111,6 +119,27 @@ if(urlUserId){
     }
 }
 
+// --- Logo animé ---
+const logoText = "WorkshopKmer";
+let i = 0;
+function typeLogo(){
+  if(i <= logoText.length){
+    document.getElementById('logoTitle').textContent = logoText.slice(0,i);
+    i++;
+    setTimeout(typeLogo, 150);
+  }
+}
+typeLogo();
+
+// --- Horloge locale et Londres ---
+function updateClock(){
+  const now = new Date();
+  const nowLondon = new Date().toLocaleString("en-GB",{timeZone:"Europe/London"});
+  document.getElementById('clock').innerHTML = `Heure locale : ${now.toLocaleTimeString()} | Londres : ${new Date(nowLondon).toLocaleTimeString()}`;
+}
+setInterval(updateClock, 1000);
+updateClock();
+
 // --- Prévisualisation photo ---
 document.getElementById('photoFile').addEventListener('change', function(){
   const file = this.files[0];
@@ -129,11 +158,8 @@ function createAccount(){
   if(!email){ alert("Email requis"); return; }
   if(users.find(u=>u.email===email)){ alert("Email déjà utilisé"); return; }
 
-  // Récupérer la photo choisie ou image par défaut
   let photoSrc = document.getElementById('previewPhoto').src;
-  if(!photoSrc || photoSrc === ""){
-    photoSrc = "https://raw.githubusercontent.com/Lfg237/m-dias/main/Screenshot_20260302-170127.jpg";
-  }
+  if(!photoSrc || photoSrc === "") photoSrc = "https://raw.githubusercontent.com/Lfg237/m-dias/main/Screenshot_20260302-170127.jpg";
 
   const newUser = {
     id: 'u_' + Date.now(),
@@ -151,7 +177,7 @@ function createAccount(){
 
   users.push(newUser);
   localStorage.setItem('users', JSON.stringify(users));
-  currentUser=newUser;
+  currentUser = newUser;
   localStorage.setItem('currentUser', JSON.stringify(currentUser));
 
   renderUsers();
@@ -185,13 +211,12 @@ function renderUsers(){
   });
 }
 
-// --- Ouvrir profil ---
+// --- Profil utilisateur ---
 function openProfile(id){
-  const user=users.find(u=>u.id===id);
+  const user = users.find(u=>u.id===id);
   if(!user) return;
-  currentUser=user;
+  currentUser = user;
   localStorage.setItem('currentUser', JSON.stringify(currentUser));
-  
   document.getElementById('profilePage').style.display='block';
   document.getElementById('profilePhoto').src=user.photo;
   document.getElementById('profileInfo').innerHTML=`
@@ -208,13 +233,11 @@ function openProfile(id){
   renderMedia(user);
 }
 
-// --- Copier lien profil ---
 function copyLink(id){
   const link = `https://workshopkmer.vercel.app/?user=${id}`;
   navigator.clipboard.writeText(link).then(()=>alert("Lien copié : "+link));
 }
 
-// --- Fermer profil ---
 function closeProfile(){ document.getElementById('profilePage').style.display='none'; }
 
 // --- Ajouter médias ---
@@ -237,7 +260,6 @@ function renderMedia(userForMedia){
   container.innerHTML='';
   const user = userForMedia || currentUser;
   if(!user || !user.media) return;
-
   user.media.forEach((m,i)=>{
     const ext=m.split(';')[0].split('/')[1].toLowerCase();
     let el;
@@ -249,7 +271,7 @@ function renderMedia(userForMedia){
   });
 }
 
-// --- Chat public ---
+// --- Chat ---
 document.getElementById('chatMedia').addEventListener('change', function(){
   if(!currentUser) return;
   if(blockedUsers.includes(currentUser.id)){ alert("Vous êtes bloqué pour envoyer des messages"); return; }
@@ -268,27 +290,27 @@ document.getElementById('chatMedia').addEventListener('change', function(){
 function renderChat(){
   const chatBox=document.getElementById('chatBox');
   chatBox.innerHTML='';
-  const displayMessages = messages.slice(-50); // limite 50 derniers messages
+  const displayMessages = messages.slice(-50);
   displayMessages.forEach(msg=>{
-    const blocked=blockedUsers.includes(msg.userId);
-    let content=msg.text;
+    const blocked = blockedUsers.includes(msg.userId);
+    let content = msg.text;
     if(msg.media){
-      const ext=msg.media.split(';')[0].split('/')[1].toLowerCase();
-      if(['jpeg','png','jpg'].includes(ext)) content+=`<br><img src="${msg.media}" style="width:50px;height:50px;margin:2px;">`;
-      else if(ext==='mp4') content+=`<br><video src="${msg.media}" controls style="width:100px;height:60px;"></video>`;
-      else if(ext==='mp3') content+=`<br><audio src="${msg.media}" controls></audio>`;
-      else content+=`<br><a href="${msg.media}" target="_blank">Fichier</a>`;
+      const ext = msg.media.split(';')[0].split('/')[1].toLowerCase();
+      if(['jpeg','png','jpg'].includes(ext)) content += `<br><img src="${msg.media}" style="width:50px;height:50px;margin:2px;">`;
+      else if(ext==='mp4') content += `<br><video src="${msg.media}" controls style="width:100px;height:60px;"></video>`;
+      else if(ext==='mp3') content += `<br><audio src="${msg.media}" controls></audio>`;
+      else content += `<br><a href="${msg.media}" target="_blank">Fichier</a>`;
     }
-    chatBox.innerHTML+=`<div><b>${msg.email}:</b> ${content} ${blocked?'<small>(Bloqué)</small>':''}</div>`;
+    chatBox.innerHTML += `<div><b>${msg.email}:</b> ${content} ${blocked?'<small>(Bloqué)</small>':''}</div>`;
   });
 }
 
 function sendMessage(){
   if(!currentUser){ alert("Créez un compte d'abord"); return; }
   if(blockedUsers.includes(currentUser.id)){ alert("Vous êtes bloqué pour envoyer des messages"); return; }
-  const text=document.getElementById('messageInput').value.trim();
+  const text = document.getElementById('messageInput').value.trim();
   if(!text) return;
-  const textWithLinks=text.replace(/(https?:\/\/[^\s]+)/g,'<a href="$1" target="_blank">$1</a>');
+  const textWithLinks = text.replace(/(https?:\/\/[^\s]+)/g,'<a href="$1" target="_blank">$1</a>');
   messages.push({userId:currentUser.id,email:currentUser.companyName,text:textWithLinks});
   localStorage.setItem('messages', JSON.stringify(messages));
   document.getElementById('messageInput').value='';
@@ -322,20 +344,20 @@ function renderAdminTable(){
 }
 
 function toggleBlock(id){
-  users=users.map(u=>u.id===id?{...u,blocked:!u.blocked}:u);
+  users = users.map(u=>u.id===id?{...u,blocked:!u.blocked}:u);
   localStorage.setItem('users', JSON.stringify(users));
-  blockedUsers=users.filter(u=>u.blocked).map(u=>u.id);
+  blockedUsers = users.filter(u=>u.blocked).map(u=>u.id);
   renderAdminTable();
   renderChat();
 }
 
 function deleteUser(id){
   if(confirm("Supprimer cet utilisateur et ses médias ?")){
-    users=users.filter(u=>u.id!==id);
+    users = users.filter(u=>u.id!==id);
     localStorage.setItem('users', JSON.stringify(users));
-    messages=messages.filter(m=>m.userId!==id);
+    messages = messages.filter(m=>m.userId!==id);
     localStorage.setItem('messages', JSON.stringify(messages));
-    blockedUsers=users.filter(u=>u.blocked).map(u=>u.id);
+    blockedUsers = users.filter(u=>u.blocked).map(u=>u.id);
     renderAdminTable();
     renderUsers();
     renderChat();
@@ -352,12 +374,10 @@ function clearHalfMessages(){
 // --- Initialisation ---
 renderUsers();
 renderChat();
-blockedUsers=users.filter(u=>u.blocked).map(u=>u.id);
+blockedUsers = users.filter(u=>u.blocked).map(u=>u.id);
 
 // --- Ouvrir profil automatiquement si ID dans URL ---
 if(urlUserId) openProfile(urlUserId);
-
 </script>
-
 </body>
 </html>
