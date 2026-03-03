@@ -224,6 +224,30 @@ function sendMessage(){if(!currentUser){alert("Créez un compte d'abord");return
 renderUsers();
 renderChat();
 </script>
+<div style="max-width:400px;">
+  <input type="text" id="email" placeholder="Email">
+  <input type="text" id="companyName" placeholder="Nom de l'entreprise">
+  <button id="btnCreate">Créer un compte</button>
+  <button id="btnAdmin">Contacter l'administrateur</button>
+</div>
 
+<script>
+// --- Attacher les événements après que le DOM soit chargé ---
+document.getElementById('btnCreate').addEventListener('click', createAccount);
+document.getElementById('btnAdmin').addEventListener('click', contactAdmin);
+
+// --- Fonction création compte ---
+function createAccount(){
+  const email = document.getElementById('email').value.trim();
+  if(!email){ alert("Email requis"); return; }
+  // Ici tu continues la création du compte
+  alert("Fonction createAccount appelée !"); // Test
+}
+
+// --- Fonction contacter admin ---
+function contactAdmin(){
+  alert("Fonction contactAdmin appelée !"); // Test
+}
+</script>
 </body>
 </html>
