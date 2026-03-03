@@ -3,381 +3,392 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>WorkshopKmer - Gestion</title>
+<title>Workshopkmer</title>
+
 <style>
-body { margin:0; font-family:Arial,sans-serif; background:#0b0f1a; color:#fff; padding:1rem; }
-h2{margin-top:1rem;}
-input,textarea,select,button{margin:0.3rem 0; padding:0.5rem; border-radius:8px; border:none;}
-button{cursor:pointer;}
-.btn-whatsapp{background:#25D366;color:#fff;font-weight:bold;}
-.btn-block{background:#f87171;color:#fff;}
-.btn-unblock{background:#34d399;color:#000;}
-.btn-delete{background:#ef4444;color:#fff;}
-.btn-clear{background:#facc15;color:#000;}
-small{font-size:10px;color:#ccc;}
-.profile img{width:50px;height:50px;border-radius:50%;object-fit:cover;margin-right:0.5rem;cursor:pointer;}
-table{width:100%;border-collapse:collapse;margin-top:1rem;}
-th,td{padding:0.4rem;border:1px solid #444;text-align:center;font-size:12px;}
-th{background:#4f46e5;}
-#profilePage{display:none; border:1px solid #444; padding:0.5rem; margin-top:1rem;}
-a{color:#60a5fa;}
-#mediaList{display:flex; overflow-x:auto; gap:5px;}
-#chatBox{border:1px solid #444; padding:0.5rem; height:200px; overflow-y:auto; margin-top:0.5rem;}
-#logoTitle{font-family:'Courier New', monospace; font-size:24px; font-weight:bold; white-space:nowrap; overflow:hidden; border-right:2px solid #fff;}
-#clock{margin-top:0.5rem; font-size:14px;}
+body{
+  margin:0;
+  font-family:Arial, sans-serif;
+  background:#0f172a;
+  color:white;
+}
+
+/* HEADER */
+header{
+  background:#111827;
+  padding:15px;
+  text-align:center;
+  font-size:22px;
+  font-weight:bold;
+}
+
+/* SECTIONS */
+section{
+  padding:15px;
+}
+
+/* INPUTS */
+input, button{
+  padding:8px;
+  margin:5px 0;
+  border-radius:6px;
+  border:none;
+}
+
+button{
+  background:#2563eb;
+  color:white;
+  cursor:pointer;
+}
+
+button:hover{
+  opacity:0.8;
+}
+
+/* USERS TABLE */
+table{
+  width:100%;
+  border-collapse:collapse;
+}
+
+td{
+  padding:8px;
+  border-bottom:1px solid #333;
+}
+
+/* PROFILE */
+#profilePage{
+  display:none;
+  background:#1e293b;
+  padding:15px;
+  margin-top:15px;
+  border-radius:12px;
+}
+
+#mediaList{
+  display:flex;
+  gap:10px;
+  overflow-x:auto;
+  padding:10px 0;
+}
+
+#mediaList img,
+#mediaList video{
+  height:220px;
+  border-radius:12px;
+  object-fit:cover;
+}
+
+#mediaList audio{
+  width:250px;
+}
+
+#mediaList a{
+  background:#334155;
+  padding:20px;
+  border-radius:12px;
+  min-width:200px;
+  display:inline-block;
+  color:white;
+  text-decoration:none;
+}
+
+/* CHAT */
+#chatBox{
+  height:300px;
+  overflow-y:auto;
+  background:#111827;
+  padding:10px;
+  border-radius:10px;
+  margin-bottom:10px;
+}
+
+.message{
+  margin-bottom:10px;
+}
+
+.message b{
+  color:#60a5fa;
+}
 </style>
 </head>
+
 <body>
 
-<!-- Logo et titre animé -->
-<div id="logoTitle"></div>
-<div id="clock">Heures : </div>
+<header>WORKSHOPKMER</header>
 
-<h2>Créer votre compte</h2>
-<input type="text" id="email" placeholder="Email">
-<input type="text" id="companyName" placeholder="Nom de l'entreprise">
-<input type="text" id="phone1" placeholder="Téléphone 1">
-<input type="text" id="phone2" placeholder="Téléphone 2">
-<input type="text" id="city" placeholder="Ville">
-<input type="text" id="quarter" placeholder="Quartier">
-<input type="number" id="age" placeholder="Âge">
-<input type="file" id="photoFile" accept="image/*">
-<img id="previewPhoto" src="https://raw.githubusercontent.com/Lfg237/m-dias/main/Screenshot_20260302-170127.jpg" alt="Aperçu" style="width:50px;height:50px;border-radius:50%;display:block;">
+<section>
+
+<h3>Créer un compte</h3>
+
+<input type="text" id="companyName" placeholder="Nom entreprise"><br>
+<input type="text" id="city" placeholder="Ville"><br>
+<input type="email" id="email" placeholder="Email"><br>
+<input type="file" id="photoFile" accept="image/*"><br>
 <button onclick="createAccount()">Créer un compte</button>
-<button class="btn-whatsapp" onclick="contactAdmin()">Contacter l'administrateur</button>
 
 <hr>
 
-<h2>Utilisateurs</h2>
-<input type="text" id="searchUsers" placeholder="Rechercher utilisateur..." oninput="renderUsers()">
+<h3>Utilisateurs</h3>
 <table>
-<thead>
-<tr>
-<th>Photo</th><th>Nom Entreprise</th><th>Ville</th><th>Profil</th>
-</tr>
-</thead>
 <tbody id="usersTableBody"></tbody>
 </table>
 
-<hr>
-
-<h2>Accès Administrateur</h2>
-<input type="password" id="adminCodeInput" placeholder="Entrez le code admin">
-<button onclick="showAdmin()">Accéder Admin</button>
-<div id="adminSection" style="display:none;">
-<table>
-<thead>
-<tr>
-<th>Nom Entreprise</th><th>Email</th><th>Ville</th><th>Bloqué</th><th>Actions</th>
-</tr>
-</thead>
-<tbody id="adminTableBody"></tbody>
-</table>
-<button class="btn-clear" onclick="clearHalfMessages()">Supprimer 50% des messages</button>
-</div>
-
-<hr>
-
 <div id="profilePage">
-<h2>Profil Utilisateur</h2>
-<div class="profile">
-<img id="profilePhoto" src="" alt="Profil">
-<div id="profileInfo"></div>
-<label>Ajouter médias :</label>
-<input type="file" id="mediaFile" multiple>
-<div id="mediaList"></div>
-<button onclick="closeProfile()">Fermer Profil</button>
-</div>
+  <h3>Profil</h3>
+  <img id="profilePhoto" width="120" style="border-radius:50%"><br>
+  <div id="profileInfo"></div>
+  <br>
+  <input type="file" id="mediaFile" multiple>
+  <div id="mediaList"></div>
 </div>
 
 <hr>
 
-<h2>Chat Public</h2>
-<div id="chatContainer">
-<textarea id="messageInput" placeholder="Écrire un message..." rows="2" style="width:100%;"></textarea>
+<h3>Discussion</h3>
+
+<div id="chatBox"></div>
+
+<input type="text" id="messageInput" placeholder="Votre message">
 <input type="file" id="chatMedia" multiple>
 <button onclick="sendMessage()">Envoyer</button>
-<div id="chatBox"></div>
-</div>
+
+</section>
 
 <script>
-// --- Stockage ---
-let users = JSON.parse(localStorage.getItem('users')||'[]');
-let messages = JSON.parse(localStorage.getItem('messages')||'[]');
-let currentUser = JSON.parse(localStorage.getItem('currentUser')||'null');
-let blockedUsers = [];
 
-// --- Connexion automatique via URL ---
-const urlParams = new URLSearchParams(window.location.search);
-const urlUserId = urlParams.get('user');
-if(urlUserId){
-    const userFromURL = users.find(u=>u.id===urlUserId);
-    if(userFromURL){
-        currentUser = userFromURL;
-        localStorage.setItem('currentUser', JSON.stringify(currentUser));
-        alert("Connexion automatique : "+currentUser.companyName);
-    }
-}
+// ======================
+// STOCKAGE
+// ======================
+let users = JSON.parse(localStorage.getItem('users') || '[]');
+let messages = JSON.parse(localStorage.getItem('messages') || '[]');
+let currentUser = JSON.parse(localStorage.getItem('currentUser') || 'null');
 
-// --- Logo animé ---
-const logoText = "WorkshopKmer";
-let i = 0;
-function typeLogo(){
-  if(i <= logoText.length){
-    document.getElementById('logoTitle').textContent = logoText.slice(0,i);
-    i++;
-    setTimeout(typeLogo, 150);
-  }
-}
-typeLogo();
-
-// --- Horloge locale et Londres ---
-function updateClock(){
-  const now = new Date();
-  const nowLondon = new Date().toLocaleString("en-GB",{timeZone:"Europe/London"});
-  document.getElementById('clock').innerHTML = `Heure locale : ${now.toLocaleTimeString()} | Londres : ${new Date(nowLondon).toLocaleTimeString()}`;
-}
-setInterval(updateClock, 1000);
-updateClock();
-
-// --- Prévisualisation photo ---
-document.getElementById('photoFile').addEventListener('change', function(){
-  const file = this.files[0];
-  if(file){
-    const reader = new FileReader();
-    reader.onload = function(e){
-      document.getElementById('previewPhoto').src = e.target.result;
-    };
-    reader.readAsDataURL(file);
-  }
-});
-
-// --- Créer compte ---
+// ======================
+// CREATION COMPTE
+// ======================
 function createAccount(){
+
   const email = document.getElementById('email').value.trim();
-  if(!email){ alert("Email requis"); return; }
-  if(users.find(u=>u.email===email)){ alert("Email déjà utilisé"); return; }
+  if(!email) return alert("Email requis");
 
-  let photoSrc = document.getElementById('previewPhoto').src;
-  if(!photoSrc || photoSrc === "") photoSrc = "https://raw.githubusercontent.com/Lfg237/m-dias/main/Screenshot_20260302-170127.jpg";
+  if(users.find(u => u.email === email)){
+    return alert("Email déjà utilisé");
+  }
 
-  const newUser = {
-    id: 'u_' + Date.now(),
-    email,
-    companyName: document.getElementById('companyName').value,
-    phone1: document.getElementById('phone1').value,
-    phone2: document.getElementById('phone2').value,
-    city: document.getElementById('city').value,
-    quarter: document.getElementById('quarter').value,
-    age: document.getElementById('age').value,
-    photo: photoSrc,
-    media: [],
-    blocked:false
+  const reader = new FileReader();
+  const file = document.getElementById('photoFile').files[0];
+
+  reader.onload = function(e){
+
+    const newUser = {
+      id:"u_" + Date.now(),
+      companyName:document.getElementById('companyName').value,
+      city:document.getElementById('city').value,
+      email,
+      photo:e.target.result || defaultPhoto(),
+      media:[],
+      blocked:false
+    };
+
+    users.push(newUser);
+    localStorage.setItem('users', JSON.stringify(users));
+
+    currentUser = newUser;
+    localStorage.setItem('currentUser', JSON.stringify(currentUser));
+
+    alert("Compte créé ✅\nID : " + newUser.id);
+    renderUsers();
   };
 
-  users.push(newUser);
-  localStorage.setItem('users', JSON.stringify(users));
-  currentUser = newUser;
-  localStorage.setItem('currentUser', JSON.stringify(currentUser));
-
-  renderUsers();
-  renderAdminTable();
-  alert("Compte créé ! Votre ID : "+newUser.id+"\nLien direct profil : https://workshopkmer.vercel.app/?user="+newUser.id);
+  if(file){
+    reader.readAsDataURL(file);
+  } else {
+    reader.onload({target:{result:defaultPhoto()}});
+  }
 }
 
-// --- Contacter admin ---
-function contactAdmin(){
-  if(!currentUser){ alert("Créez d'abord votre compte"); return; }
-  const message=encodeURIComponent("Demande validation compte ID: "+currentUser.id);
-  window.open(`https://wa.me/237670035609?text=${message}`,"_blank");
+function defaultPhoto(){
+  return "https://via.placeholder.com/150";
 }
 
-// --- Affichage utilisateurs ---
+// ======================
+// USERS LIST
+// ======================
 function renderUsers(){
-  const tbody=document.getElementById('usersTableBody');
-  tbody.innerHTML='';
-  const search=document.getElementById('searchUsers').value.toLowerCase();
+
+  const tbody = document.getElementById('usersTableBody');
+  tbody.innerHTML="";
+
   users.forEach(u=>{
-    if(u.companyName.toLowerCase().includes(search)||u.city.toLowerCase().includes(search)){
-      const tr=document.createElement('tr');
-      tr.innerHTML=`
-        <td><img src="${u.photo}" onclick="openProfile('${u.id}')" style="width:40px;height:40px;border-radius:50%;cursor:pointer;"></td>
+    tbody.innerHTML += `
+      <tr>
+        <td><img src="${u.photo}" width="40" style="border-radius:50%"></td>
         <td>${u.companyName}</td>
         <td>${u.city}</td>
         <td><button onclick="openProfile('${u.id}')">Voir Profil</button></td>
-      `;
-      tbody.appendChild(tr);
-    }
+      </tr>
+    `;
   });
 }
 
-// --- Profil utilisateur ---
+// ======================
+// PROFILE
+// ======================
 function openProfile(id){
+
   const user = users.find(u=>u.id===id);
   if(!user) return;
-  currentUser = user;
-  localStorage.setItem('currentUser', JSON.stringify(currentUser));
+
   document.getElementById('profilePage').style.display='block';
-  document.getElementById('profilePhoto').src=user.photo;
-  document.getElementById('profileInfo').innerHTML=`
-    <small>ID: ${user.id}</small><br>
-    <small>Email: ${user.email}</small><br>
-    <small>Nom Entreprise: ${user.companyName}</small><br>
-    <small>Tel1: ${user.phone1}</small><br>
-    <small>Tel2: ${user.phone2}</small><br>
-    <small>Ville: ${user.city}</small><br>
-    <small>Quartier: ${user.quarter}</small><br>
-    <small>Âge: ${user.age}</small><br>
-    <button onclick="copyLink('${user.id}')">Copier lien du profil</button>
+  document.getElementById('profilePhoto').src = user.photo;
+
+  document.getElementById('profileInfo').innerHTML = `
+    <b>${user.companyName}</b><br>
+    Ville: ${user.city}<br>
+    ID: ${user.id}
   `;
+
   renderMedia(user);
 }
 
-function copyLink(id){
-  const link = `https://workshopkmer.vercel.app/?user=${id}`;
-  navigator.clipboard.writeText(link).then(()=>alert("Lien copié : "+link));
+function renderMedia(user){
+
+  const container = document.getElementById('mediaList');
+  container.innerHTML="";
+
+  if(!user.media) return;
+
+  user.media.forEach(m=>{
+
+    if(m.startsWith("data:image")){
+      container.innerHTML += `<img src="${m}">`;
+    }
+    else if(m.startsWith("data:video")){
+      container.innerHTML += `<video src="${m}" controls></video>`;
+    }
+    else if(m.startsWith("data:audio")){
+      container.innerHTML += `<audio src="${m}" controls></audio>`;
+    }
+  });
 }
 
-function closeProfile(){ document.getElementById('profilePage').style.display='none'; }
-
-// --- Ajouter médias ---
+// ======================
+// AJOUT MEDIA PROFIL
+// ======================
 document.getElementById('mediaFile').addEventListener('change', function(){
-  if(!currentUser) return;
-  const files=Array.from(this.files);
+
+  if(!currentUser) return alert("Créez un compte d'abord");
+
+  const files = Array.from(this.files);
+
   files.forEach(file=>{
-    const reader=new FileReader();
-    reader.onload=function(e){ 
-      currentUser.media.push(e.target.result);
-      renderMedia(currentUser);
+    const reader = new FileReader();
+
+    reader.onload = function(e){
+
+      const index = users.findIndex(u=>u.id===currentUser.id);
+      if(index===-1) return;
+
+      users[index].media.push(e.target.result);
       localStorage.setItem('users', JSON.stringify(users));
-    }
+
+      renderMedia(users[index]);
+    };
+
     reader.readAsDataURL(file);
   });
+
 });
 
-function renderMedia(userForMedia){
-  const container=document.getElementById('mediaList');
-  container.innerHTML='';
-  const user = userForMedia || currentUser;
-  if(!user || !user.media) return;
-  user.media.forEach((m,i)=>{
-    const ext=m.split(';')[0].split('/')[1].toLowerCase();
-    let el;
-    if(['jpeg','png','jpg'].includes(ext)) el=`<img src="${m}" style="width:50px;height:50px;margin:2px;">`;
-    else if(ext==='mp4') el=`<video src="${m}" controls style="width:80px;height:50px;margin:2px;"></video>`;
-    else if(ext==='mp3') el=`<audio src="${m}" controls style="width:80px;margin:2px;"></audio>`;
-    else el=`<a href="${m}" target="_blank">Fichier ${i+1}</a>`;
-    container.innerHTML+=el;
-  });
-}
-
-// --- Chat ---
-document.getElementById('chatMedia').addEventListener('change', function(){
-  if(!currentUser) return;
-  if(blockedUsers.includes(currentUser.id)){ alert("Vous êtes bloqué pour envoyer des messages"); return; }
-  const files=Array.from(this.files);
-  files.forEach(file=>{
-    const reader=new FileReader();
-    reader.onload=function(e){ 
-      messages.push({userId:currentUser.id,email:currentUser.companyName,text:'[Média]',media:e.target.result});
-      localStorage.setItem('messages', JSON.stringify(messages));
-      renderChat();
-    }
-    reader.readAsDataURL(file);
-  });
-});
-
-function renderChat(){
-  const chatBox=document.getElementById('chatBox');
-  chatBox.innerHTML='';
-  const displayMessages = messages.slice(-50);
-  displayMessages.forEach(msg=>{
-    const blocked = blockedUsers.includes(msg.userId);
-    let content = msg.text;
-    if(msg.media){
-      const ext = msg.media.split(';')[0].split('/')[1].toLowerCase();
-      if(['jpeg','png','jpg'].includes(ext)) content += `<br><img src="${msg.media}" style="width:50px;height:50px;margin:2px;">`;
-      else if(ext==='mp4') content += `<br><video src="${msg.media}" controls style="width:100px;height:60px;"></video>`;
-      else if(ext==='mp3') content += `<br><audio src="${msg.media}" controls></audio>`;
-      else content += `<br><a href="${msg.media}" target="_blank">Fichier</a>`;
-    }
-    chatBox.innerHTML += `<div><b>${msg.email}:</b> ${content} ${blocked?'<small>(Bloqué)</small>':''}</div>`;
-  });
-}
-
+// ======================
+// CHAT
+// ======================
 function sendMessage(){
-  if(!currentUser){ alert("Créez un compte d'abord"); return; }
-  if(blockedUsers.includes(currentUser.id)){ alert("Vous êtes bloqué pour envoyer des messages"); return; }
+
+  if(!currentUser) return alert("Créez un compte d'abord");
+
   const text = document.getElementById('messageInput').value.trim();
   if(!text) return;
-  const textWithLinks = text.replace(/(https?:\/\/[^\s]+)/g,'<a href="$1" target="_blank">$1</a>');
-  messages.push({userId:currentUser.id,email:currentUser.companyName,text:textWithLinks});
-  localStorage.setItem('messages', JSON.stringify(messages));
-  document.getElementById('messageInput').value='';
-  renderChat();
-}
 
-// --- Admin ---
-function showAdmin(){
-  const code=document.getElementById('adminCodeInput').value;
-  if(code==='233233'){ document.getElementById('adminSection').style.display='block'; renderAdminTable(); }
-  else alert("Code incorrect");
-}
-
-function renderAdminTable(){
-  const tbody=document.getElementById('adminTableBody');
-  tbody.innerHTML='';
-  users.forEach(u=>{
-    const tr=document.createElement('tr');
-    tr.innerHTML=`
-      <td>${u.companyName}</td>
-      <td>${u.email}</td>
-      <td>${u.city}</td>
-      <td>${u.blocked?'Oui':'Non'}</td>
-      <td>
-        <button class="${u.blocked?'btn-unblock':'btn-block'}" onclick="toggleBlock('${u.id}')">${u.blocked?'Débloquer':'Bloquer'}</button>
-        <button class="btn-delete" onclick="deleteUser('${u.id}')">Supprimer</button>
-      </td>
-    `;
-    tbody.appendChild(tr);
+  messages.push({
+    userId:currentUser.id,
+    name:currentUser.companyName,
+    text
   });
-}
 
-function toggleBlock(id){
-  users = users.map(u=>u.id===id?{...u,blocked:!u.blocked}:u);
-  localStorage.setItem('users', JSON.stringify(users));
-  blockedUsers = users.filter(u=>u.blocked).map(u=>u.id);
-  renderAdminTable();
-  renderChat();
-}
-
-function deleteUser(id){
-  if(confirm("Supprimer cet utilisateur et ses médias ?")){
-    users = users.filter(u=>u.id!==id);
-    localStorage.setItem('users', JSON.stringify(users));
-    messages = messages.filter(m=>m.userId!==id);
-    localStorage.setItem('messages', JSON.stringify(messages));
-    blockedUsers = users.filter(u=>u.blocked).map(u=>u.id);
-    renderAdminTable();
-    renderUsers();
-    renderChat();
-  }
-}
-
-function clearHalfMessages(){
-  const half=Math.floor(messages.length/2);
-  messages=messages.slice(half);
   localStorage.setItem('messages', JSON.stringify(messages));
+  document.getElementById('messageInput').value="";
   renderChat();
 }
 
-// --- Initialisation ---
+function renderChat(){
+
+  const box = document.getElementById('chatBox');
+  box.innerHTML="";
+
+  messages.forEach(m=>{
+
+    let content = "";
+
+    if(m.text){
+      content = m.text;
+    }
+
+    if(m.media){
+      if(m.media.startsWith("data:image")){
+        content = `<img src="${m.media}" width="200">`;
+      }
+      else if(m.media.startsWith("data:video")){
+        content = `<video src="${m.media}" width="250" controls></video>`;
+      }
+    }
+
+    box.innerHTML += `
+      <div class="message">
+        <b>${m.name}:</b><br>
+        ${content}
+      </div>
+    `;
+  });
+
+  box.scrollTop = box.scrollHeight;
+}
+
+// ======================
+// MEDIA CHAT
+// ======================
+document.getElementById('chatMedia').addEventListener('change', function(){
+
+  if(!currentUser) return alert("Créez un compte d'abord");
+
+  const files = Array.from(this.files);
+
+  files.forEach(file=>{
+    const reader = new FileReader();
+
+    reader.onload = function(e){
+
+      messages.push({
+        userId:currentUser.id,
+        name:currentUser.companyName,
+        media:e.target.result
+      });
+
+      localStorage.setItem('messages', JSON.stringify(messages));
+      renderChat();
+    };
+
+    reader.readAsDataURL(file);
+  });
+
+});
+
+// ======================
 renderUsers();
 renderChat();
-blockedUsers = users.filter(u=>u.blocked).map(u=>u.id);
 
-// --- Ouvrir profil automatiquement si ID dans URL ---
-if(urlUserId) openProfile(urlUserId);
 </script>
+
 </body>
 </html>
