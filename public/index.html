@@ -3,11 +3,11 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>WorkshopKmer - Optimisé</title>
+<title>WorkshopKmer - Gestion</title>
 <style>
 body { margin:0; font-family:Arial,sans-serif; background:#0b0f1a; color:#fff; padding:1rem; }
 h2{margin-top:1rem;}
-input,textarea,button{margin:0.3rem 0; padding:0.5rem; border-radius:8px; border:none;}
+input,textarea,select,button{margin:0.3rem 0; padding:0.5rem; border-radius:8px; border:none;}
 button{cursor:pointer;}
 .btn-whatsapp{background:#25D366;color:#fff;font-weight:bold;}
 .btn-block{background:#f87171;color:#fff;}
@@ -20,17 +20,10 @@ table{width:100%;border-collapse:collapse;margin-top:1rem;}
 th,td{padding:0.4rem;border:1px solid #444;text-align:center;font-size:12px;}
 th{background:#4f46e5;}
 #profilePage{display:none; border:1px solid #444; padding:0.5rem; margin-top:1rem;}
-#chatBox{border:1px solid #444; padding:0.5rem; height:200px; overflow-y:auto;}
-#mediaList{display:flex; overflow-x:auto; gap:5px; margin-top:0.5rem;}
+a{color:#60a5fa;}
 </style>
 </head>
 <body>
-
-<h2>Connexion Utilisateur</h2>
-<input type="text" id="loginEmail" placeholder="Email">
-<button onclick="loginUser()">Se connecter</button>
-
-<hr>
 
 <h2>Créer votre compte</h2>
 <input type="text" id="email" placeholder="Email">
@@ -52,7 +45,7 @@ th{background:#4f46e5;}
 <table>
 <thead>
 <tr>
-<th>Photo</th><th>Nom Entreprise</th><th>Ville</th><th>ID</th><th>Profil</th><th>Lien direct</th>
+<th>Photo</th><th>Nom Entreprise</th><th>Ville</th><th>Profil</th>
 </tr>
 </thead>
 <tbody id="usersTableBody"></tbody>
@@ -84,7 +77,7 @@ th{background:#4f46e5;}
 <div id="profileInfo"></div>
 <label>Ajouter médias :</label>
 <input type="file" id="mediaFile" multiple>
-<div id="mediaList"></div>
+<div id="mediaList" style="display:flex;overflow-x:auto;"></div>
 <button onclick="closeProfile()">Fermer Profil</button>
 </div>
 </div>
@@ -96,18 +89,27 @@ th{background:#4f46e5;}
 <textarea id="messageInput" placeholder="Écrire un message..." rows="2" style="width:100%;"></textarea>
 <input type="file" id="chatMedia" multiple>
 <button onclick="sendMessage()">Envoyer</button>
-<div id="chatBox"></div>
+<div id="chatBox" style="border:1px solid #444; padding:0.5rem; height:200px; overflow-y:auto;"></div>
 </div>
 
 <script>
-// URL du site pour les liens directs
-const siteURL = "https://workshopkmer.vercel.app/?user=";
-
 // --- Stockage ---
 let users = JSON.parse(localStorage.getItem('users')||'[]');
 let messages = JSON.parse(localStorage.getItem('messages')||'[]');
 let currentUser = JSON.parse(localStorage.getItem('currentUser')||'null');
-let blockedUsers = users.filter(u=>u.blocked).map(u=>u.id);
+let blockedUsers = [];
+
+// --- Connexion automatique via URL ---
+const urlParams = new URLSearchParams(window.location.search);
+const urlUserId = urlParams.get('user');
+if(urlUserId){
+    const userFromURL = users.find(u=>u.id===urlUserId);
+    if(userFromURL){
+        currentUser = userFromURL;
+        localStorage.setItem('currentUser', JSON.stringify(currentUser));
+        alert("Connexion automatique : "+currentUser.companyName);
+    }
+}
 
 // --- Prévisualisation photo ---
 document.getElementById('photoFile').addEventListener('change', function(){
@@ -118,22 +120,6 @@ document.getElementById('photoFile').addEventListener('change', function(){
     reader.readAsDataURL(file);
   }
 });
-
-// --- Connexion ---
-function loginUser(){
-  const email = document.getElementById('loginEmail').value.trim();
-  if(!email){ alert("Email requis"); return; }
-  const user = users.find(u => u.email === email);
-  if(user){
-    currentUser = user;
-    localStorage.setItem('currentUser', JSON.stringify(currentUser));
-    alert("Connecté ! Bienvenue "+user.companyName);
-    renderUsers();
-    renderChat();
-  } else {
-    alert("Email non trouvé. Veuillez créer un compte.");
-  }
-}
 
 // --- Créer compte ---
 function createAccount(){
@@ -155,11 +141,11 @@ function createAccount(){
   };
   users.push(newUser);
   localStorage.setItem('users', JSON.stringify(users));
-  currentUser = newUser;
+  currentUser=newUser;
   localStorage.setItem('currentUser', JSON.stringify(currentUser));
   renderUsers();
   renderAdminTable();
-  alert("Compte créé ! Votre ID : "+newUser.id);
+  alert("Compte créé ! Votre ID : "+newUser.id+"\nLien direct profil : https://workshopkmer.vercel.app/?user="+newUser.id);
 }
 
 // --- Contacter admin ---
@@ -181,27 +167,20 @@ function renderUsers(){
         <td><img src="${u.photo}" onclick="openProfile('${u.id}')" style="width:40px;height:40px;border-radius:50%;cursor:pointer;"></td>
         <td>${u.companyName}</td>
         <td>${u.city}</td>
-        <td>${u.id}</td>
         <td><button onclick="openProfile('${u.id}')">Voir Profil</button></td>
-        <td><button onclick="copyLink('${u.id}')">Copier lien</button></td>
       `;
       tbody.appendChild(tr);
     }
   });
 }
 
-// --- Copier lien ---
-function copyLink(id){
-  navigator.clipboard.writeText(`${siteURL}${id}`);
-  alert("Lien copié !");
-}
-
-// --- Profil ---
+// --- Ouvrir profil ---
 function openProfile(id){
   const user=users.find(u=>u.id===id);
   if(!user) return;
   currentUser=user;
   localStorage.setItem('currentUser', JSON.stringify(currentUser));
+  
   document.getElementById('profilePage').style.display='block';
   document.getElementById('profilePhoto').src=user.photo;
   document.getElementById('profileInfo').innerHTML=`
@@ -215,26 +194,41 @@ function openProfile(id){
     <small>Âge: ${user.age}</small><br>
     <button onclick="copyLink('${user.id}')">Copier lien du profil</button>
   `;
-  renderMedia();
+  renderMedia(user);
 }
-function closeProfile(){ document.getElementById('profilePage').style.display='none'; currentUser=null; localStorage.removeItem('currentUser'); }
 
-// --- Médias ---
+// --- Copier lien profil ---
+function copyLink(id){
+  const link = `https://workshopkmer.vercel.app/?user=${id}`;
+  navigator.clipboard.writeText(link).then(()=>alert("Lien copié : "+link));
+}
+
+// --- Fermer profil ---
+function closeProfile(){ document.getElementById('profilePage').style.display='none'; }
+
+// --- Ajouter médias ---
 document.getElementById('mediaFile').addEventListener('change', function(){
   if(!currentUser) return;
-  Array.from(this.files).forEach(file=>{
-    const url = URL.createObjectURL(file);
-    currentUser.media.push(url);
-    renderMedia();
-    localStorage.setItem('users', JSON.stringify(users));
-    localStorage.setItem('currentUser', JSON.stringify(currentUser));
+  const files=Array.from(this.files);
+  files.forEach(file=>{
+    const reader=new FileReader();
+    reader.onload=function(e){ 
+      currentUser.media.push(e.target.result);
+      renderMedia(currentUser);
+      localStorage.setItem('users', JSON.stringify(users));
+    }
+    reader.readAsDataURL(file);
   });
 });
-function renderMedia(){
+
+function renderMedia(userForMedia){
   const container=document.getElementById('mediaList');
   container.innerHTML='';
-  currentUser.media.forEach((m,i)=>{
-    const ext=m.split('.').pop().toLowerCase();
+  const user = userForMedia || currentUser;
+  if(!user || !user.media) return;
+
+  user.media.forEach((m,i)=>{
+    const ext=m.split(';')[0].split('/')[1].toLowerCase();
     let el;
     if(['jpeg','png','jpg'].includes(ext)) el=`<img src="${m}" style="width:50px;height:50px;margin:2px;">`;
     else if(ext==='mp4') el=`<video src="${m}" controls style="width:80px;height:50px;margin:2px;"></video>`;
@@ -244,47 +238,50 @@ function renderMedia(){
   });
 }
 
-// --- Chat rapide ---
+// --- Chat public ---
+document.getElementById('chatMedia').addEventListener('change', function(){
+  if(!currentUser) return;
+  if(blockedUsers.includes(currentUser.id)){ alert("Vous êtes bloqué pour envoyer des messages"); return; }
+  const files=Array.from(this.files);
+  files.forEach(file=>{
+    const reader=new FileReader();
+    reader.onload=function(e){ 
+      messages.push({userId:currentUser.id,email:currentUser.companyName,text:'[Média]',media:e.target.result});
+      localStorage.setItem('messages', JSON.stringify(messages));
+      renderChat();
+    }
+    reader.readAsDataURL(file);
+  });
+});
+
 function renderChat(){
   const chatBox=document.getElementById('chatBox');
   chatBox.innerHTML='';
-  const lastMessages = messages.slice(-30); // seulement 30 derniers messages
-  lastMessages.forEach(msg=>{
+  const displayMessages = messages.slice(-50); // limite 50 derniers messages pour performance
+  displayMessages.forEach(msg=>{
     const blocked=blockedUsers.includes(msg.userId);
     let content=msg.text;
     if(msg.media){
-      const ext=msg.media.split('.').pop().toLowerCase();
+      const ext=msg.media.split(';')[0].split('/')[1].toLowerCase();
       if(['jpeg','png','jpg'].includes(ext)) content+=`<br><img src="${msg.media}" style="width:50px;height:50px;margin:2px;">`;
       else if(ext==='mp4') content+=`<br><video src="${msg.media}" controls style="width:100px;height:60px;"></video>`;
       else if(ext==='mp3') content+=`<br><audio src="${msg.media}" controls></audio>`;
       else content+=`<br><a href="${msg.media}" target="_blank">Fichier</a>`;
     }
-    chatBox.innerHTML+=`<div><b>${msg.email}:</b> ${content} <small>${msg.date}</small> ${blocked?'<small>(Bloqué)</small>':''}</div>`;
+    chatBox.innerHTML+=`<div><b>${msg.email}:</b> ${content} ${blocked?'<small>(Bloqué)</small>':''}</div>`;
   });
-  chatBox.scrollTop = chatBox.scrollHeight;
 }
-
-document.getElementById('chatMedia').addEventListener('change', function(){
-  if(!currentUser) return;
-  if(blockedUsers.includes(currentUser.id)){ alert("Vous êtes bloqué"); return; }
-  Array.from(this.files).forEach(file=>{
-    const url = URL.createObjectURL(file);
-    messages.push({userId:currentUser.id,email:currentUser.companyName,text:'[Média]',media:url,date:new Date().toLocaleString()});
-    renderChat();
-    localStorage.setItem('messages', JSON.stringify(messages));
-  });
-});
 
 function sendMessage(){
   if(!currentUser){ alert("Créez un compte d'abord"); return; }
-  if(blockedUsers.includes(currentUser.id)){ alert("Vous êtes bloqué"); return; }
+  if(blockedUsers.includes(currentUser.id)){ alert("Vous êtes bloqué pour envoyer des messages"); return; }
   const text=document.getElementById('messageInput').value.trim();
   if(!text) return;
   const textWithLinks=text.replace(/(https?:\/\/[^\s]+)/g,'<a href="$1" target="_blank">$1</a>');
-  messages.push({userId:currentUser.id,email:currentUser.companyName,text:textWithLinks,date:new Date().toLocaleString()});
+  messages.push({userId:currentUser.id,email:currentUser.companyName,text:textWithLinks});
+  localStorage.setItem('messages', JSON.stringify(messages));
   document.getElementById('messageInput').value='';
   renderChat();
-  localStorage.setItem('messages', JSON.stringify(messages));
 }
 
 // --- Admin ---
@@ -315,19 +312,19 @@ function renderAdminTable(){
 
 function toggleBlock(id){
   users=users.map(u=>u.id===id?{...u,blocked:!u.blocked}:u);
-  blockedUsers=users.filter(u=>u.blocked).map(u=>u.id);
   localStorage.setItem('users', JSON.stringify(users));
+  blockedUsers=users.filter(u=>u.blocked).map(u=>u.id);
   renderAdminTable();
   renderChat();
 }
 
 function deleteUser(id){
-  if(confirm("Supprimer cet utilisateur et ses messages ?")){
+  if(confirm("Supprimer cet utilisateur et ses médias ?")){
     users=users.filter(u=>u.id!==id);
-    messages=messages.filter(m=>m.userId!==id);
-    blockedUsers=users.filter(u=>u.blocked).map(u=>u.id);
     localStorage.setItem('users', JSON.stringify(users));
+    messages=messages.filter(m=>m.userId!==id);
     localStorage.setItem('messages', JSON.stringify(messages));
+    blockedUsers=users.filter(u=>u.blocked).map(u=>u.id);
     renderAdminTable();
     renderUsers();
     renderChat();
@@ -342,10 +339,12 @@ function clearHalfMessages(){
 }
 
 // --- Initialisation ---
-if(currentUser) alert("Connecté automatiquement : "+currentUser.companyName);
 renderUsers();
 renderChat();
 blockedUsers=users.filter(u=>u.blocked).map(u=>u.id);
+
+// --- Ouvrir profil automatiquement si ID dans URL ---
+if(urlUserId) openProfile(urlUserId);
 </script>
 
 </body>
