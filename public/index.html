@@ -3,28 +3,32 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SaaS Travailleurs - Gestion</title>
+<title>SaaS Travailleurs - Gestion Améliorée</title>
 <style>
 body { margin:0; font-family:Arial,sans-serif; background:#0b0f1a; color:#fff; padding:1rem; }
-h2{margin-top:0;}
+h2{margin-top:1rem;}
 input,textarea,select,button{margin:0.3rem 0; padding:0.5rem; border-radius:8px; border:none;}
 button{cursor:pointer;}
 .btn-whatsapp{background:#25D366;color:#fff;font-weight:bold;}
 .btn-block{background:#f87171;color:#fff;}
 .btn-unblock{background:#34d399;color:#000;}
+.btn-delete{background:#ef4444;color:#fff;}
+.btn-clear{background:#facc15;color:#000;}
 small{font-size:10px;color:#ccc;}
-.profile img{width:50px;height:50px;border-radius:50%;object-fit:cover;margin-right:0.5rem;}
+.profile img{width:50px;height:50px;border-radius:50%;object-fit:cover;margin-right:0.5rem;cursor:pointer;}
 table{width:100%;border-collapse:collapse;margin-top:1rem;}
 th,td{padding:0.4rem;border:1px solid #444;text-align:center;font-size:12px;}
 th{background:#4f46e5;}
+#profilePage{display:none; border:1px solid #444; padding:0.5rem; margin-top:1rem;}
+a{color:#60a5fa;}
+#chatBox{border:1px solid #444; padding:0.5rem; height:300px; overflow-y:auto;}
 </style>
 </head>
 <body>
 
 <h2>Créer votre compte</h2>
 <input type="text" id="email" placeholder="Email">
-<input type="text" id="status" placeholder="Statut (Chômeur, Entrepreneur…)">
-<input type="text" id="profession" placeholder="Profession">
+<input type="text" id="companyName" placeholder="Nom de l'entreprise">
 <input type="text" id="phone1" placeholder="Téléphone 1">
 <input type="text" id="phone2" placeholder="Téléphone 2">
 <input type="text" id="city" placeholder="Ville">
@@ -37,45 +41,72 @@ th{background:#4f46e5;}
 
 <hr>
 
+<h2>Utilisateurs</h2>
+<input type="text" id="searchUsers" placeholder="Rechercher utilisateur..." oninput="renderUsers()">
+<table>
+<thead>
+<tr>
+<th>Photo</th><th>Nom Entreprise</th><th>Ville</th><th>Profil</th>
+</tr>
+</thead>
+<tbody id="usersTableBody"></tbody>
+</table>
+
+<hr>
+
+<h2>Accès Administrateur</h2>
+<input type="password" id="adminCodeInput" placeholder="Entrez le code admin">
+<button onclick="showAdmin()">Accéder Admin</button>
+<div id="adminSection" style="display:none;">
+<table>
+<thead>
+<tr>
+<th>Nom Entreprise</th><th>Email</th><th>Ville</th><th>Bloqué</th><th>Actions</th>
+</tr>
+</thead>
+<tbody id="adminTableBody"></tbody>
+</table>
+<button class="btn-clear" onclick="clearHalfMessages()">Supprimer 50% des messages</button>
+</div>
+
+<hr>
+
+<div id="profilePage">
 <h2>Profil Utilisateur</h2>
 <div class="profile">
-<img id="profilePhoto" src="https://raw.githubusercontent.com/Lfg237/m-dias/main/Screenshot_20260302-170127.jpg" alt="Profil">
+<img id="profilePhoto" src="" alt="Profil">
 <div id="profileInfo"></div>
 <label>Ajouter médias :</label>
 <input type="file" id="mediaFile" multiple>
 <div id="mediaList"></div>
+<button onclick="closeProfile()">Fermer Profil</button>
+</div>
 </div>
 
 <hr>
 
 <h2>Chat Public</h2>
 <div id="chatContainer">
-<textarea id="messageInput" placeholder="Écrire un message..." rows="2" style="width:100%;"></textarea>
+<textarea id="messageInput" placeholder="Écrire un message..." rows="3" style="width:100%;"></textarea>
+<input type="file" id="chatMedia" multiple>
 <button onclick="sendMessage()">Envoyer</button>
-<div id="chatBox" style="border:1px solid #444; padding:0.5rem; height:150px; overflow-y:auto;"></div>
+<div id="chatBox"></div>
 </div>
-
-<hr>
-
-<h2>Tableau Administrateur</h2>
-<table>
-<thead>
-<tr>
-<th>Email</th><th>Statut</th><th>Profession</th><th>Ville</th><th>Bloqué</th><th>Actions</th>
-</tr>
-</thead>
-<tbody id="adminTableBody"></tbody>
-</table>
 
 <script>
 // --- Stockage ---
 let users = JSON.parse(localStorage.getItem('users')||'[]');
 let messages = JSON.parse(localStorage.getItem('messages')||'[]');
-let currentUser = null;
-let blockedUsers = []; // IDs bloqués
-let allowedToChat = []; // IDs autorisés à envoyer message
+let currentUser = JSON.parse(localStorage.getItem('currentUser')||'null');
+let blockedUsers = [];
+let allowedToChat = [];
 
-// Prévisualisation photo
+// --- Garder connexion persistante ---
+if(currentUser) {
+  console.log("Utilisateur connecté :", currentUser.companyName);
+}
+
+// --- Prévisualisation photo ---
 document.getElementById('photoFile').addEventListener('change', function(){
   const file=this.files[0];
   if(file){
@@ -85,7 +116,7 @@ document.getElementById('photoFile').addEventListener('change', function(){
   }
 });
 
-// Créer compte
+// --- Créer compte ---
 function createAccount(){
   const email=document.getElementById('email').value.trim();
   if(!email){ alert("Email requis"); return; }
@@ -93,48 +124,73 @@ function createAccount(){
   const newUser = {
     id:'u_'+Date.now(),
     email,
-    status:document.getElementById('status').value,
-    profession:document.getElementById('profession').value,
+    companyName:document.getElementById('companyName').value,
     phone1:document.getElementById('phone1').value,
     phone2:document.getElementById('phone2').value,
     city:document.getElementById('city').value,
     quarter:document.getElementById('quarter').value,
     age:document.getElementById('age').value,
-    photo:document.getElementById('previewPhoto').src,
+    photo:document.getElementById('previewPhoto').src || "https://raw.githubusercontent.com/Lfg237/m-dias/main/Screenshot_20260302-170127.jpg",
     media:[],
     blocked:false
   };
   users.push(newUser);
   localStorage.setItem('users', JSON.stringify(users));
   currentUser=newUser;
-  displayProfile();
+  localStorage.setItem('currentUser', JSON.stringify(currentUser));
+  renderUsers();
   renderAdminTable();
   alert("Compte créé ! Votre ID : "+newUser.id);
 }
 
-// Contact admin
+// --- Contacter admin ---
 function contactAdmin(){
   if(!currentUser){ alert("Créez d'abord votre compte"); return; }
   const message=encodeURIComponent("Demande validation compte ID: "+currentUser.id);
   window.open(`https://wa.me/237670035609?text=${message}`,"_blank");
 }
 
-// Affichage profil
-function displayProfile(){
-  if(!currentUser) return;
-  document.getElementById('profilePhoto').src=currentUser.photo;
-  const info=`<small>Email: ${currentUser.email}</small><br>
-  <small>Statut: ${currentUser.status}</small><br>
-  <small>Profession: ${currentUser.profession}</small><br>
-  <small>Tel1: ${currentUser.phone1}</small><br>
-  <small>Tel2: ${currentUser.phone2}</small><br>
-  <small>Ville: ${currentUser.city}</small><br>
-  <small>Quartier: ${currentUser.quarter}</small><br>
-  <small>Âge: ${currentUser.age}</small>`;
-  document.getElementById('profileInfo').innerHTML=info;
+// --- Affichage utilisateurs ---
+function renderUsers(){
+  const tbody=document.getElementById('usersTableBody');
+  tbody.innerHTML='';
+  const search=document.getElementById('searchUsers').value.toLowerCase();
+  users.forEach(u=>{
+    if(u.companyName.toLowerCase().includes(search)||u.city.toLowerCase().includes(search)){
+      const tr=document.createElement('tr');
+      tr.innerHTML=`
+        <td><img src="${u.photo}" onclick="openProfile('${u.id}')" style="width:40px;height:40px;border-radius:50%;cursor:pointer;"></td>
+        <td>${u.companyName}</td>
+        <td>${u.city}</td>
+        <td><button onclick="openProfile('${u.id}')">Voir Profil</button></td>
+      `;
+      tbody.appendChild(tr);
+    }
+  });
 }
 
-// Ajout médias
+// --- Ouvrir profil ---
+function openProfile(id){
+  const user=users.find(u=>u.id===id);
+  if(!user) return;
+  currentUser=user;
+  document.getElementById('profilePage').style.display='block';
+  document.getElementById('profilePhoto').src=user.photo;
+  const info=`<small>Email: ${user.email}</small><br>
+  <small>Nom Entreprise: ${user.companyName}</small><br>
+  <small>Tel1: ${user.phone1}</small><br>
+  <small>Tel2: ${user.phone2}</small><br>
+  <small>Ville: ${user.city}</small><br>
+  <small>Quartier: ${user.quarter}</small><br>
+  <small>Âge: ${user.age}</small>`;
+  document.getElementById('profileInfo').innerHTML=info;
+  renderMedia();
+}
+
+// --- Fermer profil ---
+function closeProfile(){ document.getElementById('profilePage').style.display='none'; currentUser=null; localStorage.setItem('currentUser', JSON.stringify(currentUser)); }
+
+// --- Ajouter médias ---
 document.getElementById('mediaFile').addEventListener('change', function(){
   if(!currentUser) return;
   const files=Array.from(this.files);
@@ -163,13 +219,36 @@ function renderMedia(){
   });
 }
 
-// --- Chat ---
+// --- Chat public ---
+document.getElementById('chatMedia').addEventListener('change', function(){
+  if(!currentUser) return;
+  if(blockedUsers.includes(currentUser.id)){ alert("Vous êtes bloqué pour envoyer des messages"); return; }
+  const files=Array.from(this.files);
+  files.forEach(file=>{
+    const reader=new FileReader();
+    reader.onload=function(e){ 
+      messages.push({userId:currentUser.id,email:currentUser.companyName,text:'[Média]',media:e.target.result});
+      localStorage.setItem('messages', JSON.stringify(messages));
+      renderChat();
+    }
+    reader.readAsDataURL(file);
+  });
+});
+
 function renderChat(){
   const chatBox=document.getElementById('chatBox');
   chatBox.innerHTML='';
   messages.forEach(msg=>{
     const blocked=blockedUsers.includes(msg.userId);
-    chatBox.innerHTML+=`<div><b>${msg.email}:</b> ${msg.text} ${blocked?'<small>(Bloqué)</small>':''}</div>`;
+    let content=msg.text;
+    if(msg.media){
+      const ext=msg.media.split(';')[0].split('/')[1];
+      if(ext==='jpeg'||ext==='png'||ext==='jpg') content+=`<br><img src="${msg.media}" style="width:50px;height:50px;margin:2px;">`;
+      else if(ext==='mp4') content+=`<br><video src="${msg.media}" controls style="width:100px;height:60px;"></video>`;
+      else if(ext==='mp3') content+=`<br><audio src="${msg.media}" controls></audio>`;
+      else content+=`<br><a href="${msg.media}" target="_blank">Fichier</a>`;
+    }
+    chatBox.innerHTML+=`<div><b>${msg.email}:</b> ${content} ${blocked?'<small>(Bloqué)</small>':''}</div>`;
   });
 }
 
@@ -177,28 +256,34 @@ function sendMessage(){
   if(!currentUser){ alert("Créez un compte d'abord"); return; }
   if(blockedUsers.includes(currentUser.id)){ alert("Vous êtes bloqué pour envoyer des messages"); return; }
   const text=document.getElementById('messageInput').value.trim();
-  if(!text) return;
-  messages.push({userId:currentUser.id,email:currentUser.email,text});
+  if(!text && !document.getElementById('chatMedia').files.length) return;
+  const textWithLinks=text.replace(/(https?:\/\/[^\s]+)/g,'<a href="$1" target="_blank">$1</a>');
+  messages.push({userId:currentUser.id,email:currentUser.companyName,text:textWithLinks});
   localStorage.setItem('messages', JSON.stringify(messages));
   document.getElementById('messageInput').value='';
   renderChat();
 }
 
-// --- Tableau Admin ---
+// --- Admin ---
+function showAdmin(){
+  const code=document.getElementById('adminCodeInput').value;
+  if(code==='233233'){ document.getElementById('adminSection').style.display='block'; renderAdminTable(); }
+  else alert("Code incorrect");
+}
+
 function renderAdminTable(){
   const tbody=document.getElementById('adminTableBody');
   tbody.innerHTML='';
   users.forEach(u=>{
     const tr=document.createElement('tr');
     tr.innerHTML=`
+      <td>${u.companyName}</td>
       <td>${u.email}</td>
-      <td>${u.status}</td>
-      <td>${u.profession}</td>
       <td>${u.city}</td>
       <td>${u.blocked?'Oui':'Non'}</td>
       <td>
-        <button class="${u.blocked?'btn-unblock':'btn-block'}" onclick="toggleBlock('${u.id}')">
-        ${u.blocked?'Débloquer':'Bloquer'}</button>
+        <button class="${u.blocked?'btn-unblock':'btn-block'}" onclick="toggleBlock('${u.id}')">${u.blocked?'Débloquer':'Bloquer'}</button>
+        <button class="btn-delete" onclick="deleteUser('${u.id}')">Supprimer</button>
       </td>
     `;
     tbody.appendChild(tr);
@@ -213,9 +298,30 @@ function toggleBlock(id){
   renderChat();
 }
 
+function deleteUser(id){
+  if(confirm("Supprimer cet utilisateur et ses médias ?")){
+    users=users.filter(u=>u.id!==id);
+    localStorage.setItem('users', JSON.stringify(users));
+    messages=messages.filter(m=>m.userId!==id);
+    localStorage.setItem('messages', JSON.stringify(messages));
+    blockedUsers=users.filter(u=>u.blocked).map(u=>u.id);
+    renderAdminTable();
+    renderUsers();
+    renderChat();
+  }
+}
+
+function clearHalfMessages(){
+  const half=Math.floor(messages.length/2);
+  messages=messages.slice(half);
+  localStorage.setItem('messages', JSON.stringify(messages));
+  renderChat();
+}
+
 // --- Initialisation ---
-renderAdminTable();
+renderUsers();
 renderChat();
+blockedUsers=users.filter(u=>u.blocked).map(u=>u.id);
 </script>
 
 </body>
