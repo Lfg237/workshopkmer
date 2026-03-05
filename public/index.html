@@ -3,312 +3,197 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>WorkshopKmer - Offres d'emploi</title>
+<title>JobBoard Professionnel</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
 <style>
+body{margin:0;font-family:'Segoe UI',sans-serif;background:#0f172a;color:#fff;}
+header{background:#111827;padding:15px;text-align:center;font-size:24px;font-weight:bold;position:relative;}
+header button{position:absolute;top:10px;right:10px;padding:8px 12px;border:none;border-radius:8px;cursor:pointer;font-weight:bold;}
+header button:hover{opacity:0.8;}
+.container{max-width:900px;margin:auto;padding:20px;}
+button{padding:8px 12px;margin:5px;border:none;border-radius:8px;cursor:pointer;font-weight:bold;}
+button:hover{opacity:0.8;}
+.primary{background:#2563eb;color:#fff;}
+.success{background:#16a34a;color:#fff;}
+.danger{background:#dc2626;color:#fff;}
+.category-btn{background:#334155;color:#fff;margin:5px;}
+.offer-card{background:#1e293b;padding:15px;border-radius:12px;margin:10px 0;position:relative;}
+.offer-card h3{margin:0 0 5px 0;}
+.offer-card p{margin:5px 0;}
+.offer-actions{margin-top:10px;display:flex;gap:10px;flex-wrap:wrap;}
+.offer-actions button{flex:1;}
+#formPopup{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.7);display:none;justify-content:center;align-items:center;}
+#formPopupContent{background:#1e293b;padding:20px;border-radius:12px;width:90%;max-width:400px;text-align:center;}
+#chatBox{max-height:300px;overflow-y:auto;background:#111827;padding:10px;border-radius:10px;margin-bottom:10px;}
 
-body{
-font-family:Arial;
-margin:0;
-background:#0f172a;
-color:white;
+/* Bande annonce */
+#tickerContainer{
+  position:fixed;
+  bottom:0;
+  left:0;
+  width:100%;
+  background:#2563eb;
+  color:white;
+  overflow:hidden;
+  height:40px;
+  display:flex;
+  align-items:center;
+  font-weight:bold;
+  z-index:9999;
 }
-
-header{
-background:#1e293b;
-padding:20px;
-text-align:center;
-font-size:28px;
-font-weight:bold;
+#tickerText{
+  white-space:nowrap;
+  display:inline-block;
+  padding-left:100%;
+  animation: tickerMove 20s linear infinite;
 }
-
-.container{
-max-width:900px;
-margin:auto;
-padding:20px;
+@keyframes tickerMove{
+  0%{transform:translateX(0%);}
+  100%{transform:translateX(-100%);}
 }
-
-.category{
-background:#2563eb;
-padding:12px;
-border-radius:10px;
-margin:10px 0;
-cursor:pointer;
-font-size:18px;
-}
-
-.jobs{
-display:none;
-margin-top:10px;
-}
-
-.job{
-background:#1e293b;
-padding:15px;
-border-radius:12px;
-margin-bottom:15px;
-}
-
-button{
-border:none;
-padding:10px 15px;
-border-radius:8px;
-margin:5px;
-cursor:pointer;
-}
-
-.apply{
-background:#22c55e;
-color:white;
-}
-
-.copy{
-background:#eab308;
-}
-
-.whatsapp{
-background:#25D366;
-color:white;
-}
-
-.popup{
-position:fixed;
-top:0;
-left:0;
-width:100%;
-height:100%;
-background:rgba(0,0,0,0.7);
-display:none;
-justify-content:center;
-align-items:center;
-}
-
-.popup-content{
-background:#1e293b;
-padding:20px;
-border-radius:10px;
-width:90%;
-max-width:400px;
-}
-
-input,textarea{
-width:100%;
-padding:10px;
-margin-top:10px;
-border-radius:8px;
-border:none;
-}
-
-.submit{
-background:#2563eb;
-color:white;
-width:100%;
-margin-top:15px;
-}
-
 </style>
 </head>
-
 <body>
 
 <header>
-🚀 WORKSHOPKMER - Offres d'emploi
+  JobBoard Professionnel
+  <button class="primary" onclick="goHome()"><i class="fas fa-home"></i> Accueil</button>
 </header>
 
 <div class="container">
 
-<div class="category" onclick="toggleJobs('nounou')">
-👶 Nounou
-</div>
+<h2>Catégories de postes</h2>
+<div id="categories"></div>
 
-<div class="jobs" id="nounou">
+<hr>
 
-<div class="job" id="job1">
+<h2 id="offersTitle">Offres</h2>
+<div id="offersList"></div>
 
-<h3>👶 Nounou pour enfant</h3>
-
-<p>
-Recherche nounou sérieuse pour garder enfant.
-</p>
-
-<p>📍 Yaoundé</p>
-
-<button class="apply" onclick="openForm('237670000000')">
-📝 Postuler
-</button>
-
-<button class="copy" onclick="copyJobLink('job1')">
-🔗 Copier le lien
-</button>
-
-</div>
-
-<div class="job" id="job2">
-
-<h3>👶 Nounou interne</h3>
-
-<p>
-Famille cherche nounou interne avec expérience.
-</p>
-
-<p>📍 Douala</p>
-
-<button class="apply" onclick="openForm('237670000000')">
-📝 Postuler
-</button>
-
-<button class="copy" onclick="copyJobLink('job2')">
-🔗 Copier le lien
-</button>
-
+<hr>
+<div id="formPopup">
+  <div id="formPopupContent">
+    <h3>Postuler à l'offre</h3>
+    <input type="text" id="applicantName" placeholder="Nom complet"><br>
+    <input type="email" id="applicantEmail" placeholder="Email"><br>
+    <textarea id="applicantMessage" placeholder="Votre message..." rows="4"></textarea><br>
+    <button class="success" id="submitApplication"><i class="fas fa-paper-plane"></i> Envoyer</button>
+    <button class="danger" onclick="closeForm()"><i class="fas fa-times"></i> Annuler</button>
+  </div>
 </div>
 
 </div>
 
-
-<div class="category" onclick="toggleJobs('chauffeur')">
-🚗 Chauffeur
+<!-- Bande annonce défilante -->
+<div id="tickerContainer">
+  <div id="tickerText">🔥 Découvrez nos nouvelles offres d'emploi chaque jour 🔥  ! Postulez vite et contactez directement les recruteur s via WhatsApp ! 🔥 pour qu'on vous contacte directement sur des offres de votre profil inscrivez vous librement a 5000xaf  a what's 670035609 </div>
 </div>
-
-<div class="jobs" id="chauffeur">
-
-<div class="job" id="job3">
-
-<h3>🚗 Chauffeur personnel</h3>
-
-<p>
-Recherche chauffeur expérimenté.
-</p>
-
-<p>📍 Yaoundé</p>
-
-<button class="apply" onclick="openForm('237670000000')">
-📝 Postuler
-</button>
-
-<button class="copy" onclick="copyJobLink('job3')">
-🔗 Copier le lien
-</button>
-
-</div>
-
-</div>
-
-</div>
-
-
-<div class="popup" id="popup">
-
-<div class="popup-content">
-
-<h3>📋 Formulaire de candidature</h3>
-
-<input id="name" placeholder="Nom">
-
-<input id="phone" placeholder="Téléphone">
-
-<textarea id="msg" placeholder="Votre message"></textarea>
-
-<button class="submit" onclick="submitForm()">
-✅ Envoyer candidature
-</button>
-
-</div>
-
-</div>
-
-
-<div class="popup" id="contactPopup">
-
-<div class="popup-content">
-
-<h3>📞 Contacter l'annonceur</h3>
-
-<p id="phoneDisplay"></p>
-
-<a id="waLink" target="_blank">
-<button class="whatsapp">
-💬 WhatsApp
-</button>
-</a>
-
-</div>
-
-</div>
-
-
 
 <script>
-
-let employerPhone=""
-
-function toggleJobs(id){
-
-let el=document.getElementById(id)
-
-el.style.display= el.style.display=="block" ? "none":"block"
-
+// ======================
+// Fonction Accueil
+// ======================
+function goHome(){
+  window.location.href = "/"; 
 }
 
-function openForm(phone){
+// ======================
+// Données initiales
+// ======================
+const categories = ["Nounou","Développeur","Commerçant","Technicien","Marketing"];
+const offers = {
+  "Nounou":[
+    {id:1,title:"Nounou expérimentée",desc:"Garde d'enfants à domicile, 5 ans d'expérience",location:"Yaoundé",whatsapp:"237670035609"},
+    {id:2,title:"Baby-sitter",desc:"Disponible soirées et weekends",location:"Douala",whatsapp:"237670035609"}
+  ],
+  "Développeur":[
+    {id:3,title:"Développeur Web",desc:"HTML, CSS, JS, React",location:"Yaoundé",whatsapp:"237670035609"}
+  ]
+};
 
-employerPhone=phone
+// ======================
+// Affichage catégories
+// ======================
+const catDiv = document.getElementById("categories");
+categories.forEach(cat=>{
+  const btn = document.createElement("button");
+  btn.className="category-btn";
+  btn.innerText=cat;
+  btn.onclick=()=>showOffers(cat);
+  catDiv.appendChild(btn);
+});
 
-document.getElementById("popup").style.display="flex"
-
+// ======================
+// Affichage offres
+// ======================
+let currentCategory = null;
+function showOffers(cat){
+  currentCategory = cat;
+  document.getElementById("offersTitle").innerText=`Offres: ${cat}`;
+  const list = document.getElementById("offersList");
+  list.innerHTML="";
+  offers[cat].forEach(offer=>{
+    const div = document.createElement("div");
+    div.className="offer-card";
+    div.innerHTML=`
+      <h3>${offer.title}</h3>
+      <p>${offer.desc}</p>
+      <p><b>Localisation:</b> ${offer.location}</p>
+      <div class="offer-actions">
+        <button class="primary" onclick="openForm(${offer.id})"><i class="fas fa-edit"></i> Postuler</button>
+        <button class="success" onclick="copyLink(${offer.id})"><i class="fas fa-link"></i> Copier lien</button>
+        <button class="success" onclick="openWhatsApp('${offer.whatsapp}', '${offer.title}')"><i class="fab fa-whatsapp"></i> WhatsApp</button>
+      </div>
+    `;
+    list.appendChild(div);
+  });
 }
 
-function submitForm(){
+// ======================
+// Formulaire candidature
+// ======================
+let selectedOfferId = null;
+function openForm(offerId){
+  selectedOfferId = offerId;
+  document.getElementById("formPopup").style.display="flex";
+}
+function closeForm(){
+  document.getElementById("formPopup").style.display="none";
+  document.getElementById("applicantName").value="";
+  document.getElementById("applicantEmail").value="";
+  document.getElementById("applicantMessage").value="";
+}
+document.getElementById("submitApplication").onclick=function(){
+  const name=document.getElementById("applicantName").value.trim();
+  const email=document.getElementById("applicantEmail").value.trim();
+  const message=document.getElementById("applicantMessage").value.trim();
+  if(!name||!email||!message){ alert("Remplissez tous les champs"); return; }
+  alert(`Candidature envoyée pour l'offre #${selectedOfferId} !\nNom: ${name}\nEmail: ${email}`);
+  closeForm();
+};
 
-let name=document.getElementById("name").value
-let phone=document.getElementById("phone").value
-let msg=document.getElementById("msg").value
-
-if(!name || !phone || !msg){
-
-alert("⚠️ Remplissez tous les champs")
-
-return
-
+// ======================
+// Copier lien
+// ======================
+function copyLink(offerId){
+  const url=`${window.location.href}?offer=${offerId}`;
+  navigator.clipboard.writeText(url);
+  alert("Lien copié: "+url);
 }
 
-document.getElementById("popup").style.display="none"
-
-document.getElementById("phoneDisplay").innerText="☎ "+employerPhone
-
-document.getElementById("waLink").href="https://wa.me/"+employerPhone
-
-document.getElementById("contactPopup").style.display="flex"
-
+// ======================
+// WhatsApp
+// ======================
+function openWhatsApp(number, title){
+  const text=encodeURIComponent(`Bonjour, je souhaite postuler pour: ${title}`);
+  window.open(`https://wa.me/${number}?text=${text}`, "_blank");
 }
 
-function copyJobLink(jobId){
-
-let url=window.location.origin+window.location.pathname+"#"+jobId
-
-navigator.clipboard.writeText(url)
-
-alert("✅ Lien copié")
-
-}
-
-window.onload=function(){
-
-if(window.location.hash){
-
-let el=document.querySelector(window.location.hash)
-
-if(el){
-
-el.scrollIntoView({behavior:"smooth"})
-
-}
-
-}
-
-}
-
+// ======================
+// Initialisation affichage
+// ======================
+showOffers(categories[0]);
 </script>
 
 </body>
