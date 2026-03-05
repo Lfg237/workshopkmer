@@ -3,361 +3,312 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>WORKSHOPKMER</title>
+
+<title>WorkshopKmer - Offres d'emploi</title>
+
 <style>
-body{margin:0;font-family:Arial,sans-serif;background:#0f172a;color:white;padding:1rem;}
-header{background:#111827;padding:15px;text-align:center;font-size:28px;font-weight:bold;display:flex;align-items:center;justify-content:center;gap:10px;}
-header img{height:40px;}
-.animated-title{animation:wave 2s infinite;}
-@keyframes wave{0%{transform:rotate(0deg);}25%{transform:rotate(5deg);}50%{transform:rotate(0deg);}75%{transform:rotate(-5deg);}100%{transform:rotate(0deg);}}
-input,button,textarea{padding:8px;margin:5px 0;border-radius:6px;border:none;}
-button{background:#2563eb;color:white;cursor:pointer;}
-button:hover{opacity:0.8;}
-table{width:100%;border-collapse:collapse;margin-top:1rem;}
-td,th{padding:8px;border-bottom:1px solid #333;text-align:center;}
-#profilePage{display:none;background:#1e293b;padding:15px;margin-top:15px;border-radius:12px;}
-#mediaList{display:flex;gap:10px;overflow-x:auto;padding:10px 0;}
-#mediaList img,#mediaList video{height:220px;border-radius:12px;object-fit:cover;}
-#mediaList audio{width:250px;}
-#chatBox{height:300px;overflow-y:auto;background:#111827;padding:10px;border-radius:10px;margin-bottom:10px;}
-.message{margin-bottom:10px;}
-.message b{color:#60a5fa;}
-#userIdDisplay{margin-top:10px;font-size:14px;color:#60a5fa;}
-.btn-block{background:#f87171;color:#fff;}
-.btn-unblock{background:#34d399;color:#000;}
-.btn-delete{background:#ef4444;color:#fff;}
-.copy-link{background:#facc15;color:#000;}
+
+body{
+font-family:Arial;
+margin:0;
+background:#0f172a;
+color:white;
+}
+
+header{
+background:#1e293b;
+padding:20px;
+text-align:center;
+font-size:28px;
+font-weight:bold;
+}
+
+.container{
+max-width:900px;
+margin:auto;
+padding:20px;
+}
+
+.category{
+background:#2563eb;
+padding:12px;
+border-radius:10px;
+margin:10px 0;
+cursor:pointer;
+font-size:18px;
+}
+
+.jobs{
+display:none;
+margin-top:10px;
+}
+
+.job{
+background:#1e293b;
+padding:15px;
+border-radius:12px;
+margin-bottom:15px;
+}
+
+button{
+border:none;
+padding:10px 15px;
+border-radius:8px;
+margin:5px;
+cursor:pointer;
+}
+
+.apply{
+background:#22c55e;
+color:white;
+}
+
+.copy{
+background:#eab308;
+}
+
+.whatsapp{
+background:#25D366;
+color:white;
+}
+
+.popup{
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
+background:rgba(0,0,0,0.7);
+display:none;
+justify-content:center;
+align-items:center;
+}
+
+.popup-content{
+background:#1e293b;
+padding:20px;
+border-radius:10px;
+width:90%;
+max-width:400px;
+}
+
+input,textarea{
+width:100%;
+padding:10px;
+margin-top:10px;
+border-radius:8px;
+border:none;
+}
+
+.submit{
+background:#2563eb;
+color:white;
+width:100%;
+margin-top:15px;
+}
+
 </style>
 </head>
+
 <body>
 
 <header>
-<img src="https://via.placeholder.com/40" alt="Logo">
-<div class="animated-title">WORKSHOPKMER</div>
+🚀 WORKSHOPKMER - Offres d'emploi
 </header>
-<div id="userIdDisplay"></div>
 
-<section>
-<h3>Créer un compte</h3>
-<input type="text" id="companyName" placeholder="Nom entreprise"><br>
-<input type="text" id="prestations" placeholder="Prestations"><br>
-<input type="text" id="city" placeholder="Ville"><br>
-<input type="email" id="email" placeholder="Email"><br>
-<input type="text" id="whatsapp" placeholder="Numéro WhatsApp"><br>
-<input type="file" id="photoFile" accept="image/*"><br>
-<button onclick="createAccount()">Créer un compte</button>
-<button onclick="contactAdmin()">Contacter Admin</button>
+<div class="container">
 
-<hr>
-
-<h3>Utilisateurs</h3>
-<input type="text" id="searchUsers" placeholder="Rechercher..." oninput="renderUsers()">
-<table>
-<thead><tr><th>Photo</th><th>Nom Entreprise</th><th>Ville</th><th>ID</th><th>Status</th><th>Actions</th></tr></thead>
-<tbody id="usersTableBody"></tbody>
-</table>
-
-<div id="profilePage">
-<h3>Profil</h3>
-<img id="profilePhoto" width="120" style="border-radius:50%"><br>
-<div id="profileInfo"></div>
-<button onclick="closeProfile()">Fermer Profil</button>
-<button id="whatsappBtn">WhatsApp</button>
-<div id="mediaList"></div>
-<input type="file" id="mediaFile" multiple>
+<div class="category" onclick="toggleJobs('nounou')">
+👶 Nounou
 </div>
 
-<hr>
+<div class="jobs" id="nounou">
 
-<h3>Discussion</h3>
-<div id="chatBox"></div>
-<textarea id="messageInput" placeholder="Votre message"></textarea><br>
-<input type="file" id="chatMedia" multiple><br>
-<button onclick="sendMessage()">Envoyer</button>
+<div class="job" id="job1">
 
-<hr>
+<h3>👶 Nounou pour enfant</h3>
 
-<h3>Accès Administrateur</h3>
-<input type="password" id="adminCodeInput" placeholder="Code admin">
-<button onclick="showAdmin()">Accéder Admin</button>
-<div id="adminSection" style="display:none;">
-<table>
-<thead><tr><th>Nom Entreprise</th><th>Email</th><th>Ville</th><th>Bloqué</th><th>Actions</th></tr></thead>
-<tbody id="adminTableBody"></tbody>
-</table>
+<p>
+Recherche nounou sérieuse pour garder enfant.
+</p>
+
+<p>📍 Yaoundé</p>
+
+<button class="apply" onclick="openForm('237670000000')">
+📝 Postuler
+</button>
+
+<button class="copy" onclick="copyJobLink('job1')">
+🔗 Copier le lien
+</button>
+
 </div>
 
-</section>
+<div class="job" id="job2">
+
+<h3>👶 Nounou interne</h3>
+
+<p>
+Famille cherche nounou interne avec expérience.
+</p>
+
+<p>📍 Douala</p>
+
+<button class="apply" onclick="openForm('237670000000')">
+📝 Postuler
+</button>
+
+<button class="copy" onclick="copyJobLink('job2')">
+🔗 Copier le lien
+</button>
+
+</div>
+
+</div>
+
+
+<div class="category" onclick="toggleJobs('chauffeur')">
+🚗 Chauffeur
+</div>
+
+<div class="jobs" id="chauffeur">
+
+<div class="job" id="job3">
+
+<h3>🚗 Chauffeur personnel</h3>
+
+<p>
+Recherche chauffeur expérimenté.
+</p>
+
+<p>📍 Yaoundé</p>
+
+<button class="apply" onclick="openForm('237670000000')">
+📝 Postuler
+</button>
+
+<button class="copy" onclick="copyJobLink('job3')">
+🔗 Copier le lien
+</button>
+
+</div>
+
+</div>
+
+</div>
+
+
+<div class="popup" id="popup">
+
+<div class="popup-content">
+
+<h3>📋 Formulaire de candidature</h3>
+
+<input id="name" placeholder="Nom">
+
+<input id="phone" placeholder="Téléphone">
+
+<textarea id="msg" placeholder="Votre message"></textarea>
+
+<button class="submit" onclick="submitForm()">
+✅ Envoyer candidature
+</button>
+
+</div>
+
+</div>
+
+
+<div class="popup" id="contactPopup">
+
+<div class="popup-content">
+
+<h3>📞 Contacter l'annonceur</h3>
+
+<p id="phoneDisplay"></p>
+
+<a id="waLink" target="_blank">
+<button class="whatsapp">
+💬 WhatsApp
+</button>
+</a>
+
+</div>
+
+</div>
+
+
 
 <script>
-// ======================
-// IDs VALIDÉS
-// ======================
-const validatedUsers = [
-  "u_1772525310883",
-  "u_1772527367504"
-];
 
-// ======================
-// STOCKAGE
-// ======================
-let users = JSON.parse(localStorage.getItem('users') || '[]');
-let messages = JSON.parse(localStorage.getItem('messages') || '[]');
-let currentUser = JSON.parse(localStorage.getItem('currentUser') || 'null');
-let blockedUsers = users.filter(u=>u.blocked).map(u=>u.id);
+let employerPhone=""
 
-// ======================
-// AFFICHAGE ID
-// ======================
-function showCurrentUserId(){
-  if(currentUser){
-    document.getElementById('userIdDisplay').innerText = "Votre ID : " + currentUser.id;
-  } else {
-    document.getElementById('userIdDisplay').innerText = "";
-  }
+function toggleJobs(id){
+
+let el=document.getElementById(id)
+
+el.style.display= el.style.display=="block" ? "none":"block"
+
 }
 
-// ======================
-// CREATION COMPTE
-// ======================
-function createAccount(){
-  const email = document.getElementById('email').value.trim();
-  if(!email){ alert("Email requis"); return; }
-  if(users.find(u=>u.email===email)){ alert("Email déjà utilisé"); return; }
+function openForm(phone){
 
-  const reader = new FileReader();
-  const file = document.getElementById('photoFile').files[0];
-  reader.onload = function(e){
-    const id = "u_" + Date.now();
-    const newUser = {
-      id,
-      companyName:document.getElementById('companyName').value,
-      prestations:document.getElementById('prestations').value,
-      city:document.getElementById('city').value,
-      email,
-      whatsapp:document.getElementById('whatsapp').value,
-      photo:e.target.result || "https://via.placeholder.com/150",
-      media:[],
-      blocked:false,
-      validated: validatedUsers.includes(id)
-    };
-    users.push(newUser);
-    localStorage.setItem('users', JSON.stringify(users));
-    currentUser = newUser;
-    localStorage.setItem('currentUser', JSON.stringify(currentUser));
-    alert("Compte créé ✅\nID : " + id);
-    renderUsers();
-    showCurrentUserId();
-    renderAdminTable();
-  };
-  if(file){ reader.readAsDataURL(file); }
-  else{ reader.onload({target:{result:"https://via.placeholder.com/150"}}); }
+employerPhone=phone
+
+document.getElementById("popup").style.display="flex"
+
 }
 
-// ======================
-// CONTACT ADMIN
-// ======================
-function contactAdmin(){
-  if(!currentUser){ alert("Créez un compte d'abord"); return; }
-  const message = encodeURIComponent("Demande validation compte ID: "+currentUser.id);
-  window.open(`https://wa.me/237670035609?text=${message}`,"_blank");
+function submitForm(){
+
+let name=document.getElementById("name").value
+let phone=document.getElementById("phone").value
+let msg=document.getElementById("msg").value
+
+if(!name || !phone || !msg){
+
+alert("⚠️ Remplissez tous les champs")
+
+return
+
 }
 
-// ======================
-// UTILISATEURS
-// ======================
-function renderUsers(){
-  const tbody = document.getElementById('usersTableBody');
-  const search = document.getElementById('searchUsers').value.toLowerCase();
-  tbody.innerHTML = "";
-  users.forEach(u=>{
-    if(u.companyName.toLowerCase().includes(search)||u.city.toLowerCase().includes(search)){
-      const status = validatedUsers.includes(u.id) ? "✅" : "❌";
-      tbody.innerHTML += `
-        <tr>
-          <td><img src="${u.photo}" width="40" style="border-radius:50%"></td>
-          <td>${u.companyName}</td>
-          <td>${u.city}</td>
-          <td>${u.id}</td>
-          <td>${status}</td>
-          <td>
-            <button onclick="openProfile('${u.id}')">Voir Profil</button>
-            <button class="copy-link" onclick="copyProfileLink('${u.id}')">Copier Lien</button>
-          </td>
-        </tr>
-      `;
-    }
-  });
+document.getElementById("popup").style.display="none"
+
+document.getElementById("phoneDisplay").innerText="☎ "+employerPhone
+
+document.getElementById("waLink").href="https://wa.me/"+employerPhone
+
+document.getElementById("contactPopup").style.display="flex"
+
 }
 
-// ======================
-// PROFIL
-// ======================
-function openProfile(id){
-  const user = users.find(u=>u.id===id);
-  if(!user) return;
-  currentUser = user;
-  document.getElementById('profilePage').style.display='block';
-  document.getElementById('profilePhoto').src = user.photo;
-  document.getElementById('profileInfo').innerHTML = `
-    <b>${user.companyName}</b><br>
-    Prestations: ${user.prestations}<br>
-    Ville: ${user.city}<br>
-    ID: ${user.id}<br>
-    WhatsApp: ${user.whatsapp}<br>
-    Status: ${validatedUsers.includes(user.id)?"✅ Validé":"❌ Non validé"}
-  `;
-  const waBtn = document.getElementById('whatsappBtn');
-  if(user.whatsapp){ waBtn.style.display="inline-block"; waBtn.onclick = ()=> window.open(`https://wa.me/${user.whatsapp}`,"_blank"); }
-  else waBtn.style.display="none";
-  renderMedia(user);
+function copyJobLink(jobId){
+
+let url=window.location.origin+window.location.pathname+"#"+jobId
+
+navigator.clipboard.writeText(url)
+
+alert("✅ Lien copié")
+
 }
 
-function closeProfile(){ 
-  document.getElementById('profilePage').style.display='none'; 
-  currentUser=null; 
-  showCurrentUserId(); 
+window.onload=function(){
+
+if(window.location.hash){
+
+let el=document.querySelector(window.location.hash)
+
+if(el){
+
+el.scrollIntoView({behavior:"smooth"})
+
 }
 
-// ======================
-// MEDIA PROFIL
-// ======================
-document.getElementById('mediaFile').addEventListener('change', function(){
-  if(!currentUser){ alert("Créez un compte d'abord"); return; }
-  const files = Array.from(this.files);
-  files.forEach(file=>{
-    const reader = new FileReader();
-    reader.onload = function(e){
-      const index = users.findIndex(u=>u.id===currentUser.id);
-      if(index===-1) return;
-      users[index].media.push(e.target.result);
-      localStorage.setItem('users', JSON.stringify(users));
-      renderMedia(users[index]);
-    };
-    reader.readAsDataURL(file);
-  });
-});
-
-function renderMedia(user){
-  const container = document.getElementById('mediaList');
-  container.innerHTML="";
-  if(!user.media) return;
-  user.media.forEach((m,i)=>{
-    if(m.startsWith("data:image")) container.innerHTML += `<img src="${m}">`;
-    else if(m.startsWith("data:video")) container.innerHTML += `<video src="${m}" controls></video>`;
-    else if(m.startsWith("data:audio")) container.innerHTML += `<audio src="${m}" controls></audio>`;
-    else container.innerHTML += `<a href="${m}" target="_blank">Fichier ${i+1}</a>`;
-  });
 }
 
-// ======================
-// COPIER LIEN PROFIL
-// ======================
-function copyProfileLink(id){
-  const url = `${window.location.origin}?id=${id}`;
-  navigator.clipboard.writeText(url);
-  alert("Lien copié ! : " + url);
 }
 
-// ======================
-// CHAT
-// ======================
-document.getElementById('chatMedia').addEventListener('change', function(){
-  if(!currentUser){ alert("Créez un compte d'abord"); return; }
-  const files = Array.from(this.files);
-  files.forEach(file=>{
-    const reader = new FileReader();
-    reader.onload = function(e){
-      messages.push({userId:currentUser.id,name:currentUser.companyName,media:e.target.result});
-      localStorage.setItem('messages', JSON.stringify(messages));
-      renderChat();
-    };
-    reader.readAsDataURL(file);
-  });
-});
-
-function sendMessage(){
-  if(!currentUser){ alert("Créez un compte d'abord"); return; }
-  const text = document.getElementById('messageInput').value.trim();
-  if(!text && !document.getElementById('chatMedia').files.length) return;
-  messages.push({userId:currentUser.id,name:currentUser.companyName,text});
-  localStorage.setItem('messages', JSON.stringify(messages));
-  document.getElementById('messageInput').value="";
-  renderChat();
-}
-
-function renderChat(){
-  const box = document.getElementById('chatBox');
-  box.innerHTML="";
-  messages.forEach(m=>{
-    let content = m.text||"";
-    if(m.media){
-      if(m.media.startsWith("data:image")) content+=`<br><img src="${m.media}" width="150">`;
-      else if(m.media.startsWith("data:video")) content+=`<br><video src="${m.media}" width="200" controls></video>`;
-      else if(m.media.startsWith("data:audio")) content+=`<br><audio src="${m.media}" controls></audio>`;
-      else content+=`<br><a href="${m.media}" target="_blank">Fichier</a>`;
-    }
-    content = content.replace(/(https?:\/\/[^\s]+)/g,'<a href="$1" target="_blank">$1</a>');
-    box.innerHTML += `<div class="message"><b>${m.name}:</b> ${content}</div>`;
-  });
-  box.scrollTop = box.scrollHeight;
-}
-
-// ======================
-// ADMIN
-// ======================
-function showAdmin(){
-  const code=document.getElementById('adminCodeInput').value;
-  if(code==='233233'){ document.getElementById('adminSection').style.display='block'; renderAdminTable(); }
-  else alert("Code incorrect");
-}
-
-function renderAdminTable(){
-  const tbody=document.getElementById('adminTableBody');
-  tbody.innerHTML='';
-  users.forEach(u=>{
-    const tr=document.createElement('tr');
-    tr.innerHTML=`
-      <td>${u.companyName}</td>
-      <td>${u.email}</td>
-      <td>${u.city}</td>
-      <td>${u.blocked?'Oui':'Non'}</td>
-      <td>
-        <button class="${u.blocked?'btn-unblock':'btn-block'}" onclick="toggleBlock('${u.id}')">${u.blocked?'Débloquer':'Bloquer'}</button>
-        <button class="btn-delete" onclick="deleteUser('${u.id}')">Supprimer</button>
-      </td>
-    `;
-    tbody.appendChild(tr);
-  });
-}
-
-function toggleBlock(id){
-  users=users.map(u=>u.id===id?{...u,blocked:!u.blocked}:u);
-  localStorage.setItem('users', JSON.stringify(users));
-  blockedUsers=users.filter(u=>u.blocked).map(u=>u.id);
-  renderAdminTable();
-  renderChat();
-}
-
-function deleteUser(id){
-  if(confirm("Supprimer cet utilisateur et ses médias ?")){
-    users=users.filter(u=>u.id!==id);
-    messages=messages.filter(m=>m.userId!==id);
-    localStorage.setItem('users', JSON.stringify(users));
-    localStorage.setItem('messages', JSON.stringify(messages));
-    blockedUsers=users.filter(u=>u.blocked).map(u=>u.id);
-    renderAdminTable();
-    renderUsers();
-    renderChat();
-  }
-}
-
-// ======================
-// INIT
-// ======================
-showCurrentUserId();
-renderUsers();
-renderChat();
 </script>
 
 </body>
