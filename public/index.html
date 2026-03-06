@@ -22,8 +22,20 @@ button:hover{opacity:0.8;}
 .offer-card p{margin:5px 0;}
 .offer-actions{margin-top:10px;display:flex;gap:10px;flex-wrap:wrap;}
 .offer-actions button{flex:1;}
+
 #formPopup{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.85);display:none;justify-content:center;align-items:center;z-index:1000;}
-#formPopupContent{background:#1e293b;padding:20px;border-radius:12px;width:95%;max-width:500px;text-align:center;overflow-y:auto;max-height:90vh;}
+
+#formPopupContent{
+background:#1e293b;
+padding:20px;
+border-radius:12px;
+width:95%;
+max-width:500px;
+text-align:center;
+overflow-y:auto;
+max-height:75vh;
+}
+
 #formPopupContent input, #formPopupContent textarea{width:100%;padding:10px;margin:5px 0;border-radius:8px;border:none;background:#334155;color:#fff;}
 #formPopupContent label{display:block;text-align:left;margin-top:10px;font-weight:bold;}
 #formPopupContent input[type="file"]{padding:3px;}
@@ -33,6 +45,7 @@ button:hover{opacity:0.8;}
 #tickerContainer{position:fixed;bottom:0;left:0;width:100%;background:#2563eb;color:white;overflow:hidden;height:40px;display:flex;align-items:center;font-weight:bold;z-index:9999;}
 #tickerText{white-space:nowrap;display:inline-block;padding-left:100%;animation:tickerMove 20s linear infinite;}
 @keyframes tickerMove{0%{transform:translateX(0%);}100%{transform:translateX(-100%);}}
+
 table{width:100%;border-collapse:collapse;margin-top:10px;}
 th, td{border:1px solid #fff;padding:8px;text-align:left;}
 th{background:#334155;}
@@ -56,209 +69,240 @@ th{background:#334155;}
 <h2 id="offersTitle">Offres</h2>
 <div id="offersList"></div>
 
-<!-- Formulaire candidature -->
 <div id="formPopup">
   <div id="formPopupContent">
     <h3>Postuler à l'offre</h3>
+
     <label>Nom complet</label>
     <input type="text" id="applicantName" placeholder="Nom complet">
+
     <label>Email</label>
     <input type="email" id="applicantEmail" placeholder="Email">
+
     <label>Âge</label>
     <input type="number" id="applicantAge" placeholder="Âge">
+
     <label>Ville</label>
     <input type="text" id="applicantCity" placeholder="Ville">
+
     <label>Quartier</label>
     <input type="text" id="applicantDistrict" placeholder="Quartier">
+
     <label>Poste</label>
     <input type="text" id="applicantPosition" placeholder="Poste sollicité">
+
     <label>Diplôme</label>
     <input type="text" id="applicantDegree" placeholder="Diplôme">
+
     <label>Message</label>
     <textarea id="applicantMessage" placeholder="Votre message..." rows="4"></textarea>
+
     <label>Photo</label>
     <input type="file" id="applicantPhoto">
+
     <label>CV ou autres fichiers</label>
     <input type="file" id="applicantFiles" multiple>
+
     <label>Date d'inscription</label>
     <input type="date" id="applicantDate">
 
-    <div style="margin-top:100px;">
+    <div style="margin-top:10px;">
       <button class="success" id="submitWhatsApp"><i class="fab fa-whatsapp"></i> Envoyer via WhatsApp</button>
       <button class="primary" id="submitEmail"><i class="fas fa-envelope"></i> Envoyer par Email</button>
       <button class="danger" onclick="closeForm()"><i class="fas fa-times"></i> Annuler</button>
     </div>
+
   </div>
 </div>
 
 </div>
 
-<!-- Bande annonce défilante -->
 <div id="tickerContainer">
   <div id="tickerText">🔥 Découvrez nos nouvelles offres d'emploi chaque jour ! Postulez vite et contactez directement les recruteurs via WhatsApp ! 🔥</div>
 </div>
 
 <script>
-// Fonction Accueil
 function goHome(){ window.location.href = "https://business-tv.vercel.app/"; }
 
-
-// Données initiales
 const categories=["Nounou","Développeur","Commerciaux","Technicien","teleconseiller","Marketing"];
+
 const offers={
-  "Nounou":[
-    {id:1,title:"Nounou expérimentée",desc:"Garde d'enfants à domicile, 5 ans d'expérience",location:"Yaoundé",whatsapp:"237670035609", email:"facilitateursgroupe@gmail.com"},
-    
-  ],
-    "teleconseiller":[
-    {id:1,title:"teleconseiller",desc:"sexprimer en franvais",location:"Yaoundé jouvence",whatsapp:"+237690740718", email:"facilitateursgroupe@gmail.com"},
-  
-  ],
-  "Développeur":[
-    {id:3,title:"Développeur Web",desc:"HTML, CSS, JS, React",location:"Yaoundé",whatsapp:"237670035609", email:"facilitateursgroupe@gmail.com"}
-  ],
-  
-  "Commerciaux":[
-    {id:5,title:"commerciaux",desc :"nouvelle agence de  voyage recrute vers emia",location:"Yaoundé emia",whatsapp:"237694167424", email:"facilitateursgroupe@gmail.com"}
-  ],
+"Nounou":[
+{id:1,title:"Nounou expérimentée",desc:"Garde d'enfants à domicile, 5 ans d'expérience",location:"Yaoundé",whatsapp:"237670035609", email:"facilitateursgroupe@gmail.com"},
+],
+"teleconseiller":[
+{id:1,title:"teleconseiller",desc:"sexprimer en franvais",location:"Yaoundé jouvence",whatsapp:"+237690740718", email:"facilitateursgroupe@gmail.com"},
+],
+"Développeur":[
+{id:3,title:"Développeur Web",desc:"HTML, CSS, JS, React",location:"Yaoundé",whatsapp:"237670035609", email:"facilitateursgroupe@gmail.com"}
+],
+"Commerciaux":[
+{id:5,title:"commerciaux",desc :"nouvelle agence de  voyage recrute vers emia",location:"Yaoundé emia",whatsapp:"237694167424", email:"facilitateursgroupe@gmail.com"}
+],
 };
 
-// Affichage catégories
 const catDiv=document.getElementById("categories");
 categories.forEach(cat=>{
-  const btn=document.createElement("button");
-  btn.className="category-btn";
-  btn.innerText=cat;
-  btn.onclick=()=>showOffers(cat);
-  catDiv.appendChild(btn);
+const btn=document.createElement("button");
+btn.className="category-btn";
+btn.innerText=cat;
+btn.onclick=()=>showOffers(cat);
+catDiv.appendChild(btn);
 });
 
-// Affichage offres
 let currentCategory=null;
 let selectedOffer=null;
+
 function showOffers(cat){
-  currentCategory=cat;
-  document.getElementById("offersTitle").innerText=`Offres: ${cat}`;
-  const list=document.getElementById("offersList");
-  list.innerHTML="";
-  offers[cat].forEach(offer=>{
-    selectedOffer=offer;
-    const div=document.createElement("div");
-    div.className="offer-card";
-    div.innerHTML=`
-      <h3>${offer.title}</h3>
-      <p>${offer.desc}</p>
-      <p><b>Localisation:</b> ${offer.location}</p>
-      <div class="offer-actions">
-        <button class="primary" onclick="openForm(${offer.id})"><i class="fas fa-edit"></i> Postuler</button>
-        <button class="success" onclick="copyLink(${offer.id})"><i class="fas fa-link"></i> Copier lien</button>
-        <button class="success" onclick="openWhatsApp('${offer.whatsapp}', '${offer.title}')"><i class="fab fa-whatsapp"></i> WhatsApp</button>
-      </div>
-    `;
-    list.appendChild(div);
-  });
+currentCategory=cat;
+document.getElementById("offersTitle").innerText=`Offres: ${cat}`;
+const list=document.getElementById("offersList");
+list.innerHTML="";
+
+offers[cat].forEach(offer=>{
+selectedOffer=offer;
+
+const div=document.createElement("div");
+div.className="offer-card";
+
+div.innerHTML=`
+<h3>${offer.title}</h3>
+<p>${offer.desc}</p>
+<p><b>Localisation:</b> ${offer.location}</p>
+
+<div class="offer-actions">
+<button class="primary" onclick="openForm(${offer.id})"><i class="fas fa-edit"></i> Postuler</button>
+<button class="success" onclick="copyLink(${offer.id})"><i class="fas fa-link"></i> Copier lien</button>
+<button class="success" onclick="openWhatsApp('${offer.whatsapp}', '${offer.title}')"><i class="fab fa-whatsapp"></i> WhatsApp</button>
+</div>
+`;
+
+list.appendChild(div);
+});
 }
 
-// Formulaire candidature
 let selectedOfferId=null;
+
 function openForm(offerId){
-  selectedOfferId=offerId;
-  selectedOffer=Object.values(offers).flat().find(o=>o.id===offerId);
-  document.getElementById("formPopup").style.display="flex";
+selectedOfferId=offerId;
+selectedOffer=Object.values(offers).flat().find(o=>o.id===offerId);
+document.getElementById("formPopup").style.display="flex";
 }
+
 function closeForm(){
-  document.getElementById("formPopup").style.display="none";
-  ["applicantName","applicantEmail","applicantAge","applicantCity","applicantDistrict","applicantPosition","applicantDegree","applicantMessage","applicantPhoto","applicantFiles","applicantDate"].forEach(id=>document.getElementById(id).value="");
+document.getElementById("formPopup").style.display="none";
+["applicantName","applicantEmail","applicantAge","applicantCity","applicantDistrict","applicantPosition","applicantDegree","applicantMessage","applicantPhoto","applicantFiles","applicantDate"].forEach(id=>document.getElementById(id).value="");
 }
 
-// Envoi WhatsApp
 document.getElementById("submitWhatsApp").onclick=function(){
-  const data=gatherFormData();
-  if(!selectedOffer) return;
-  const text=encodeURIComponent(`Candidature pour: ${selectedOffer.title}\nNom: ${data.name}\nEmail: ${data.email}\nAge: ${data.age}\nVille: ${data.city}\nQuartier: ${data.district}\nPoste: ${data.position}\nDiplôme: ${data.degree}\nMessage: ${data.message}\nDate: ${data.date}`);
-  window.open(`https://wa.me/${selectedOffer.whatsapp}?text=${text}`,"_blank");
-  alert("Candidature envoyée via WhatsApp !");
-  closeForm();
+const data=gatherFormData();
+if(!selectedOffer) return;
+
+const text=encodeURIComponent(
+`Candidature pour: ${selectedOffer.title}
+Nom: ${data.name}
+Email: ${data.email}
+Age: ${data.age}
+Ville: ${data.city}
+Quartier: ${data.district}
+Poste: ${data.position}
+Diplôme: ${data.degree}
+Message: ${data.message}
+Date: ${data.date}`
+);
+
+window.open(`https://wa.me/${selectedOffer.whatsapp}?text=${text}`,"_blank");
+alert("Candidature envoyée via WhatsApp !");
+closeForm();
 };
 
-// Envoi Email
 document.getElementById("submitEmail").onclick=function(){
-  const data=gatherFormData();
-  if(!selectedOffer) return;
-  const subject=encodeURIComponent(`Candidature pour ${selectedOffer.title}`);
-  const body=encodeURIComponent(`Nom: ${data.name}\nEmail: ${data.email}\nAge: ${data.age}\nVille: ${data.city}\nQuartier: ${data.district}\nPoste: ${data.position}\nDiplôme: ${data.degree}\nMessage: ${data.message}\nDate: ${data.date}`);
-  window.open(`mailto:${selectedOffer.email}?subject=${subject}&body=${body}`);
-  alert("Candidature préparée pour Email !");
-  closeForm();
+const data=gatherFormData();
+if(!selectedOffer) return;
+
+const subject=encodeURIComponent(`Candidature pour ${selectedOffer.title}`);
+const body=encodeURIComponent(
+`Nom: ${data.name}
+Email: ${data.email}
+Age: ${data.age}
+Ville: ${data.city}
+Quartier: ${data.district}
+Poste: ${data.position}
+Diplôme: ${data.degree}
+Message: ${data.message}
+Date: ${data.date}`
+);
+
+window.open(`mailto:${selectedOffer.email}?subject=${subject}&body=${body}`);
+alert("Candidature préparée pour Email !");
+closeForm();
 };
 
-// Récupération des données du formulaire
 function gatherFormData(){
-  return {
-    name: document.getElementById("applicantName").value.trim(),
-    email: document.getElementById("applicantEmail").value.trim(),
-    age: document.getElementById("applicantAge").value.trim(),
-    city: document.getElementById("applicantCity").value.trim(),
-    district: document.getElementById("applicantDistrict").value.trim(),
-    position: document.getElementById("applicantPosition").value.trim(),
-    degree: document.getElementById("applicantDegree").value.trim(),
-    message: document.getElementById("applicantMessage").value.trim(),
-    photo: document.getElementById("applicantPhoto").files,
-    files: document.getElementById("applicantFiles").files,
-    date: document.getElementById("applicantDate").value
-  };
+return{
+name:document.getElementById("applicantName").value.trim(),
+email:document.getElementById("applicantEmail").value.trim(),
+age:document.getElementById("applicantAge").value.trim(),
+city:document.getElementById("applicantCity").value.trim(),
+district:document.getElementById("applicantDistrict").value.trim(),
+position:document.getElementById("applicantPosition").value.trim(),
+degree:document.getElementById("applicantDegree").value.trim(),
+message:document.getElementById("applicantMessage").value.trim(),
+photo:document.getElementById("applicantPhoto").files,
+files:document.getElementById("applicantFiles").files,
+date:document.getElementById("applicantDate").value
+};
 }
 
-// Copier lien
 function copyLink(offerId){
-  const url=`${window.location.href}?offer=${offerId}`;
-  navigator.clipboard.writeText(url);
-  alert("Lien copié: "+url);
+const url=`${window.location.href}?offer=${offerId}`;
+navigator.clipboard.writeText(url);
+alert("Lien copié: "+url);
 }
 
-// WhatsApp direct
 function openWhatsApp(number,title){
-  const text=encodeURIComponent(`Bonjour, je souhaite postuler pour: ${title}`);
-  window.open(`https://wa.me/${number}?text=${text}`,"_blank");
+const text=encodeURIComponent(`Bonjour, je souhaite postuler pour: ${title}`);
+window.open(`https://wa.me/${number}?text=${text}`,"_blank");
 }
 
-// Initialisation affichage
 showOffers(categories[0]);
 
-// Liste des profils premium
 const premiumUsers=[
-  {name:"Alice Dupont", age:28, city:"Yaoundé", district:"Bastos", position:"Développeur", degree:"Licence", date:"2026-03-05", phone:"670035609"},
-  {name:"Jean Martin", age:32, city:"Douala", district:"Bonapriso", position:"Nounou", degree:"Baccalauréat", date:"2026-03-01", phone:"699112233"}
+{name:"Alice Dupont", age:28, city:"Yaoundé", district:"Bastos", position:"Développeur", degree:"Licence", date:"2026-03-05", phone:"670035609"},
+{name:"Jean Martin", age:32, city:"Douala", district:"Bonapriso", position:"Nounou", degree:"Baccalauréat", date:"2026-03-01", phone:"699112233"}
 ];
 
 function showPremium(){
-  const list=document.getElementById("offersList");
-  document.getElementById("offersTitle").innerText="Liste des inscrits Premium";
-  list.innerHTML="";
 
-  const table=document.createElement("table");
+const list=document.getElementById("offersList");
+document.getElementById("offersTitle").innerText="Liste des inscrits Premium";
+list.innerHTML="";
 
-  // En-tête
-  const headerRow=document.createElement("tr");
-  ["Nom","Âge","Ville","Quartier","Poste","Diplôme","Date d'inscription","Téléphone"].forEach(h=>{
-    const th=document.createElement("th");
-    th.innerText=h;
-    headerRow.appendChild(th);
-  });
-  table.appendChild(headerRow);
+const table=document.createElement("table");
 
-  // Lignes
-  premiumUsers.forEach(u=>{
-    const row=document.createElement("tr");
-    [u.name,u.age,u.city,u.district,u.position,u.degree,u.date,u.phone].forEach(val=>{
-      const td=document.createElement("td");
-      td.innerText=val;
-      row.appendChild(td);
-    });
-    table.appendChild(row);
-  });
+const headerRow=document.createElement("tr");
 
-  list.appendChild(table);
+["Nom","Âge","Ville","Quartier","Poste","Diplôme","Date d'inscription","Téléphone"].forEach(h=>{
+const th=document.createElement("th");
+th.innerText=h;
+headerRow.appendChild(th);
+});
+
+table.appendChild(headerRow);
+
+premiumUsers.forEach(u=>{
+const row=document.createElement("tr");
+
+[u.name,u.age,u.city,u.district,u.position,u.degree,u.date,u.phone].forEach(val=>{
+const td=document.createElement("td");
+td.innerText=val;
+row.appendChild(td);
+});
+
+table.appendChild(row);
+});
+
+list.appendChild(table);
 }
 </script>
 
