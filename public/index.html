@@ -5,25 +5,105 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Workshopkmer</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
 <style>
 body{margin:0;font-family:'Segoe UI',sans-serif;background:#0f172a;color:#fff;}
-header{background:#111827;padding:15px;text-align:center;font-size:24px;font-weight:bold;position:relative;display:flex;align-items:center;justify-content:center;gap:10px;}
-header button{position:relative;padding:8px 12px;border:none;border-radius:8px;cursor:pointer;font-weight:bold;}
+
+header{
+background:#111827;
+padding:15px;
+text-align:center;
+font-size:24px;
+font-weight:bold;
+display:flex;
+align-items:center;
+justify-content:center;
+gap:10px;
+flex-wrap:wrap;
+}
+
+header button{
+padding:8px 12px;
+border:none;
+border-radius:8px;
+cursor:pointer;
+font-weight:bold;
+}
+
 header button:hover{opacity:0.8;}
-.container{max-width:900px;margin:auto;padding:20px;}
-button{padding:8px 12px;margin:5px;border:none;border-radius:8px;cursor:pointer;font-weight:bold;}
+
+.container{
+max-width:900px;
+margin:auto;
+padding:20px;
+}
+
+button{
+padding:8px 12px;
+margin:5px;
+border:none;
+border-radius:8px;
+cursor:pointer;
+font-weight:bold;
+}
+
 button:hover{opacity:0.8;}
+
 .primary{background:#2563eb;color:#fff;}
 .success{background:#16a34a;color:#fff;}
 .danger{background:#dc2626;color:#fff;}
-.category-btn{background:#334155;color:#fff;margin:5px;}
-.offer-card{background:#1e293b;padding:15px;border-radius:12px;margin:10px 0;position:relative;}
+
+.category-btn{
+background:#334155;
+color:#fff;
+margin:5px;
+}
+
+.offer-card{
+background:#1e293b;
+padding:15px;
+border-radius:12px;
+margin:10px 0;
+}
+
 .offer-card h3{margin:0 0 5px 0;}
-.offer-card p{margin:5px 0;}
-.offer-actions{margin-top:10px;display:flex;gap:10px;flex-wrap:wrap;}
+
+.offer-actions{
+margin-top:10px;
+display:flex;
+gap:10px;
+flex-wrap:wrap;
+}
+
 .offer-actions button{flex:1;}
 
-#formPopup{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.85);display:none;justify-content:center;align-items:center;z-index:1000;}
+.search-box{
+margin:15px 0;
+}
+
+.search-box input{
+width:100%;
+padding:10px;
+border-radius:8px;
+border:none;
+background:#334155;
+color:white;
+}
+
+/* popup */
+
+#formPopup{
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
+background:rgba(0,0,0,0.85);
+display:none;
+justify-content:center;
+align-items:center;
+z-index:1000;
+}
 
 #formPopupContent{
 background:#1e293b;
@@ -36,97 +116,138 @@ overflow-y:auto;
 max-height:75vh;
 }
 
-#formPopupContent input, #formPopupContent textarea{width:100%;padding:10px;margin:5px 0;border-radius:8px;border:none;background:#334155;color:#fff;}
-#formPopupContent label{display:block;text-align:left;margin-top:10px;font-weight:bold;}
-#formPopupContent input[type="file"]{padding:3px;}
-#chatBox{max-height:300px;overflow-y:auto;background:#111827;padding:10px;border-radius:10px;margin-bottom:10px;}
+#formPopupContent input,
+#formPopupContent textarea{
+width:100%;
+padding:10px;
+margin:5px 0;
+border-radius:8px;
+border:none;
+background:#334155;
+color:#fff;
+}
 
-/* Bande annonce */
-#tickerContainer{position:fixed;bottom:0;left:0;width:100%;background:#2563eb;color:white;overflow:hidden;height:40px;display:flex;align-items:center;font-weight:bold;z-index:9999;}
-#tickerText{white-space:nowrap;display:inline-block;padding-left:100%;animation:tickerMove 20s linear infinite;}
-@keyframes tickerMove{0%{transform:translateX(0%);}100%{transform:translateX(-100%);}}
+/* premium table */
 
-table{width:100%;border-collapse:collapse;margin-top:10px;}
-th, td{border:1px solid #fff;padding:8px;text-align:left;}
+table{
+width:100%;
+border-collapse:collapse;
+margin-top:10px;
+}
+
+th,td{
+border:1px solid #fff;
+padding:8px;
+text-align:left;
+}
+
 th{background:#334155;}
+
+#tickerContainer{
+position:fixed;
+bottom:0;
+left:0;
+width:100%;
+background:#2563eb;
+color:white;
+overflow:hidden;
+height:40px;
+display:flex;
+align-items:center;
+font-weight:bold;
+}
+
+#tickerText{
+white-space:nowrap;
+display:inline-block;
+padding-left:100%;
+animation:tickerMove 20s linear infinite;
+}
+
+@keyframes tickerMove{
+0%{transform:translateX(0%)}
+100%{transform:translateX(-100%)}
+}
 </style>
 </head>
+
 <body>
 
 <header>
-  🛠️ workshopkmer🪄
-  <button class="primary" onclick="goHome()"><i class="fas fa-home"></i> Accueil</button>
-  <button class="success" onclick="showPremium()"><i class="fas fa-star"></i> Premium</button>
-  <!-- Nouveau bouton WhatsApp -->
-  <button class="success" onclick="openWhatsAppChannel()"><i class="fab fa-whatsapp"></i> WhatsApp</button>
+🛠️ workshopkmer🪄
+<button class="primary" onclick="goHome()"><i class="fas fa-home"></i> Accueil</button>
+<button class="success" onclick="showPremium()"><i class="fas fa-star"></i> Premium</button>
+<button class="success" onclick="openWhatsAppChannel()"><i class="fab fa-whatsapp"></i> WhatsApp</button>
 </header>
+
 <div class="container">
 
 <h2>Catégories de postes</h2>
 <div id="categories"></div>
+
+<div class="search-box">
+<input type="text" id="searchOffer" placeholder="🔎 Rechercher une offre..." onkeyup="searchOffers()">
+</div>
 
 <hr>
 
 <h2 id="offersTitle">Offres</h2>
 <div id="offersList"></div>
 
-<div id="formPopup">
-  <div id="formPopupContent">
-    <h3>Postuler à l'offre</h3>
-
-    <label>Nom complet</label>
-    <input type="text" id="applicantName" placeholder="Nom complet">
-
-    <label>Email</label>
-    <input type="email" id="applicantEmail" placeholder="Email">
-
-    <label>Âge</label>
-    <input type="number" id="applicantAge" placeholder="Âge">
-
-    <label>Ville</label>
-    <input type="text" id="applicantCity" placeholder="Ville">
-
-    <label>Quartier</label>
-    <input type="text" id="applicantDistrict" placeholder="Quartier">
-
-    <label>Poste</label>
-    <input type="text" id="applicantPosition" placeholder="Poste sollicité">
-
-    <label>Diplôme</label>
-    <input type="text" id="applicantDegree" placeholder="Diplôme">
-
-    <label>Message</label>
-    <textarea id="applicantMessage" placeholder="Votre message..." rows="4"></textarea>
-
-    <label>Photo</label>
-    <input type="file" id="applicantPhoto">
-
-    <label>CV ou autres fichiers</label>
-    <input type="file" id="applicantFiles" multiple>
-
-    <label>Date d'inscription</label>
-    <input type="date" id="applicantDate">
-
-    <div style="margin-top:10px;">
-      <button class="success" id="submitWhatsApp"><i class="fab fa-whatsapp"></i> Envoyer via WhatsApp</button>
-      <button class="primary" id="submitEmail"><i class="fas fa-envelope"></i> Envoyer par Email</button>
-      <button class="danger" onclick="closeForm()"><i class="fas fa-times"></i> Annuler</button>
-    </div>
-
-  </div>
 </div>
 
+<!-- FORMULAIRE -->
+
+<div id="formPopup">
+<div id="formPopupContent">
+
+<h3>Postuler à l'offre</h3>
+
+<input type="text" id="applicantName" placeholder="Nom complet">
+<input type="email" id="applicantEmail" placeholder="Email">
+<input type="number" id="applicantAge" placeholder="Âge">
+<input type="text" id="applicantCity" placeholder="Ville">
+<input type="text" id="applicantDistrict" placeholder="Quartier">
+<input type="text" id="applicantPosition" placeholder="Poste sollicité">
+<input type="text" id="applicantDegree" placeholder="Diplôme">
+
+<textarea id="applicantMessage" placeholder="Votre message"></textarea>
+
+<input type="date" id="applicantDate">
+
+<div style="margin-top:10px">
+
+<button class="success" id="submitWhatsApp">
+<i class="fab fa-whatsapp"></i> Envoyer via WhatsApp
+</button>
+
+<button class="primary" id="submitEmail">
+<i class="fas fa-envelope"></i> Email
+</button>
+
+<button class="danger" onclick="closeForm()">Annuler</button>
+
+</div>
+</div>
 </div>
 
 <div id="tickerContainer">
-  <div id="tickerText">🔥 Découvrez nos nouvelles offres d'emploi chaque jour ! Postulez vite et contactez directement les recruteurs via WhatsApp ! 🔥</div>
+<div id="tickerText">
+🔥 Découvrez nos nouvelles offres d'emploi chaque jour ! 🔥
+</div>
 </div>
 
 <script>
-function goHome(){ window.location.href = "https://business-tv.vercel.app/"; }
-function openWhatsAppChannel(){
-  window.open("https://whatsapp.com/channel/0029Vb8CxB25Ui2VYo0Ylt2w", "_blank");
+
+function goHome(){
+window.location.href="https://business-tv.vercel.app/";
 }
+
+function openWhatsAppChannel(){
+window.open("https://whatsapp.com/channel/0029Vb8CxB25Ui2VYo0Ylt2w");
+}
+
+/* catégories */
 
 const categories=["Nounou","Développeur","Commerciaux",'prothesiste ongulaire',"Technicien","teleconseiller","Marketing"];
 
@@ -148,7 +269,9 @@ const offers={
 ],
 };
 
+
 const catDiv=document.getElementById("categories");
+
 categories.forEach(cat=>{
 const btn=document.createElement("button");
 btn.className="category-btn";
@@ -157,56 +280,127 @@ btn.onclick=()=>showOffers(cat);
 catDiv.appendChild(btn);
 });
 
-let currentCategory=null;
 let selectedOffer=null;
 
+/* afficher offres */
+
 function showOffers(cat){
-currentCategory=cat;
-document.getElementById("offersTitle").innerText=`Offres: ${cat}`;
+
 const list=document.getElementById("offersList");
+
 list.innerHTML="";
 
-offers[cat].forEach(offer=>{
-selectedOffer=offer;
+offers[cat]?.forEach(offer=>{
 
 const div=document.createElement("div");
+
 div.className="offer-card";
 
 div.innerHTML=`
+
 <h3>${offer.title}</h3>
 <p>${offer.desc}</p>
 <p><b>Localisation:</b> ${offer.location}</p>
 
 <div class="offer-actions">
-<button class="primary" onclick="openForm(${offer.id})"><i class="fas fa-edit"></i> Postuler</button>
-<button class="success" onclick="copyLink(${offer.id})"><i class="fas fa-link"></i> Copier lien</button>
-<button class="success" onclick="openWhatsApp('${offer.whatsapp}', '${offer.title}')"><i class="fab fa-whatsapp"></i> WhatsApp</button>
+
+<button class="primary" onclick="openForm(${offer.id})">
+Postuler
+</button>
+
+<button class="success" onclick="copyLink(${offer.id})">
+Lien
+</button>
+
+<button class="success"
+onclick="openWhatsApp('${offer.whatsapp}','${offer.title}',${offer.id})">
+WhatsApp
+</button>
+
 </div>
 `;
 
 list.appendChild(div);
+
 });
+
 }
 
-let selectedOfferId=null;
+/* recherche */
 
-function openForm(offerId){
-selectedOfferId=offerId;
-selectedOffer=Object.values(offers).flat().find(o=>o.id===offerId);
+function searchOffers(){
+
+const term=document.getElementById("searchOffer").value.toLowerCase();
+
+document.querySelectorAll(".offer-card").forEach(card=>{
+
+card.style.display=card.innerText.toLowerCase().includes(term)
+? "block":"none";
+
+});
+
+}
+
+/* ouvrir formulaire */
+
+function openForm(id){
+
+selectedOffer=Object.values(offers).flat().find(o=>o.id===id);
+
 document.getElementById("formPopup").style.display="flex";
+
 }
 
 function closeForm(){
 document.getElementById("formPopup").style.display="none";
-["applicantName","applicantEmail","applicantAge","applicantCity","applicantDistrict","applicantPosition","applicantDegree","applicantMessage","applicantPhoto","applicantFiles","applicantDate"].forEach(id=>document.getElementById(id).value="");
 }
 
+/* récupérer données */
+
+function gatherFormData(){
+
+return{
+
+name:document.getElementById("applicantName").value,
+email:document.getElementById("applicantEmail").value,
+age:document.getElementById("applicantAge").value,
+city:document.getElementById("applicantCity").value,
+district:document.getElementById("applicantDistrict").value,
+position:document.getElementById("applicantPosition").value,
+degree:document.getElementById("applicantDegree").value,
+message:document.getElementById("applicantMessage").value,
+date:document.getElementById("applicantDate").value
+
+};
+
+}
+
+/* WhatsApp candidature */
+
 document.getElementById("submitWhatsApp").onclick=function(){
+
 const data=gatherFormData();
-if(!selectedOffer) return;
+
+let filled=0;
+
+Object.values(data).forEach(v=>{
+if(v && v.length>0)filled++;
+});
+
+if(filled<2){
+alert("Remplir au moins 2 informations");
+return;
+}
+
+const link=`https://workshopkmer.vercel.app/#job${selectedOffer.id}`;
 
 const text=encodeURIComponent(
-`Candidature pour: ${selectedOffer.title}
+
+`Candidature pour ${selectedOffer.title}
+
+Lien du poste:
+${link}
+
 Nom: ${data.name}
 Email: ${data.email}
 Age: ${data.age}
@@ -216,63 +410,43 @@ Poste: ${data.position}
 Diplôme: ${data.degree}
 Message: ${data.message}
 Date: ${data.date}`
+
 );
 
-window.open(`https://wa.me/${selectedOffer.whatsapp}?text=${text}`,"_blank");
-alert("Candidature envoyée via WhatsApp !");
-closeForm();
+window.open(`https://wa.me/${selectedOffer.whatsapp}?text=${text}`);
+
 };
 
-document.getElementById("submitEmail").onclick=function(){
-const data=gatherFormData();
-if(!selectedOffer) return;
+/* whatsapp simple */
 
-const subject=encodeURIComponent(`Candidature pour ${selectedOffer.title}`);
-const body=encodeURIComponent(
-`Nom: ${data.name}
-Email: ${data.email}
-Age: ${data.age}
-Ville: ${data.city}
-Quartier: ${data.district}
-Poste: ${data.position}
-Diplôme: ${data.degree}
-Message: ${data.message}
-Date: ${data.date}`
+function openWhatsApp(number,title,id){
+
+const link=`https://workshopkmer.vercel.app/#job${id}`;
+
+const text=encodeURIComponent(
+`Bonjour je souhaite postuler pour ${title}
+
+Lien:
+${link}`
 );
 
-window.open(`mailto:${selectedOffer.email}?subject=${subject}&body=${body}`);
-alert("Candidature préparée pour Email !");
-closeForm();
-};
+window.open(`https://wa.me/${number}?text=${text}`);
 
-function gatherFormData(){
-return{
-name:document.getElementById("applicantName").value.trim(),
-email:document.getElementById("applicantEmail").value.trim(),
-age:document.getElementById("applicantAge").value.trim(),
-city:document.getElementById("applicantCity").value.trim(),
-district:document.getElementById("applicantDistrict").value.trim(),
-position:document.getElementById("applicantPosition").value.trim(),
-degree:document.getElementById("applicantDegree").value.trim(),
-message:document.getElementById("applicantMessage").value.trim(),
-photo:document.getElementById("applicantPhoto").files,
-files:document.getElementById("applicantFiles").files,
-date:document.getElementById("applicantDate").value
-};
 }
 
-function copyLink(offerId){
-const url=`${window.location.href}?offer=${offerId}`;
+/* copier lien */
+
+function copyLink(id){
+
+const url=`https://workshopkmer.vercel.app/#job${id}`;
+
 navigator.clipboard.writeText(url);
-alert("Lien copié: "+url);
+
+alert("Lien copié");
+
 }
 
-function openWhatsApp(number,title){
-const text=encodeURIComponent(`Bonjour, je souhaite postuler pour: ${title}`);
-window.open(`https://wa.me/${number}?text=${text}`,"_blank");
-}
-
-showOffers(categories[0]);
+/* premium */
 
 const premiumUsers=[
 	{	name:"diane miriam", age:25, city:"Yaoundé", district:"ekounou", position:"lessiveuse", degree:"bepc", date:"2026-03-06", phone:"+237656388065"},
@@ -284,35 +458,69 @@ const premiumUsers=[
 function showPremium(){
 
 const list=document.getElementById("offersList");
-document.getElementById("offersTitle").innerText="Liste des inscrits Premium";
-list.innerHTML="";
 
-const table=document.createElement("table");
+list.innerHTML=`
 
-const headerRow=document.createElement("tr");
+<input type="text" id="searchPremium" placeholder="🔎 rechercher candidat" onkeyup="searchPremium()">
 
-["Nom","Âge","Ville","Quartier","Poste","Diplôme","Date d'inscription","Téléphone"].forEach(h=>{
-const th=document.createElement("th");
-th.innerText=h;
-headerRow.appendChild(th);
-});
+<table id="premiumTable">
 
-table.appendChild(headerRow);
+<tr>
+<th>Nom</th>
+<th>Age</th>
+<th>Ville</th>
+<th>Quartier</th>
+<th>Poste</th>
+<th>Diplôme</th>
+<th>Date</th>
+<th>Téléphone</th>
+</tr>
+
+</table>
+`;
+
+const table=document.getElementById("premiumTable");
 
 premiumUsers.forEach(u=>{
-const row=document.createElement("tr");
 
-[u.name,u.age,u.city,u.district,u.position,u.degree,u.date,u.phone].forEach(val=>{
-const td=document.createElement("td");
-td.innerText=val;
-row.appendChild(td);
+const row=table.insertRow();
+
+row.innerHTML=`
+
+<td>${u.name}</td>
+<td>${u.age}</td>
+<td>${u.city}</td>
+<td>${u.district}</td>
+<td>${u.position}</td>
+<td>${u.degree}</td>
+<td>${u.date}</td>
+<td>${u.phone}</td>
+
+`;
+
 });
 
-table.appendChild(row);
-});
-
-list.appendChild(table);
 }
+
+/* recherche premium */
+
+function searchPremium(){
+
+const term=document.getElementById("searchPremium").value.toLowerCase();
+
+document.querySelectorAll("#premiumTable tr").forEach((row,i)=>{
+
+if(i===0)return;
+
+row.style.display=row.innerText.toLowerCase().includes(term)
+? "":"none";
+
+});
+
+}
+
+showOffers("Nounou");
+
 </script>
 
 </body>
