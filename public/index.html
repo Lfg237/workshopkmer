@@ -57,8 +57,9 @@ th{background:#334155;}
   🛠️ workshopkmer🪄
   <button class="primary" onclick="goHome()"><i class="fas fa-home"></i> Accueil</button>
   <button class="success" onclick="showPremium()"><i class="fas fa-star"></i> Premium</button>
+  <!-- Nouveau bouton WhatsApp -->
+  <button class="success" onclick="openWhatsAppChannel()"><i class="fab fa-whatsapp"></i> WhatsApp</button>
 </header>
-
 <div class="container">
 
 <h2>Catégories de postes</h2>
@@ -122,7 +123,10 @@ th{background:#334155;}
 </div>
 
 <script>
-function goHome(){ window.location.href = "https://business-tv.vercel.app/"; }
+function goHome(){ window.location.href = "https://business-tv.vercel.app/"; },
+function openWhatsAppChannel(){
+  window.open("https://whatsapp.com/channel/0029Vb8CxB25Ui2VYo0Ylt2w", "_blank");
+}
 
 const categories=["Nounou","Développeur","Commerciaux","Technicien","teleconseiller","Marketing"];
 
