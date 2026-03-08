@@ -190,7 +190,8 @@ animation:tickerMove 20s linear infinite;
 </div>
 
 <hr>
-<h2 id="offersTitle">Offres emploi disponibles</h2>
+
+<h2 id="offersTitle">Offres</h2>
 <div id="offersList"></div>
 
 </div>
@@ -232,7 +233,7 @@ animation:tickerMove 20s linear infinite;
 
 <div id="tickerContainer">
 <div id="tickerText">
-🔥 Découvrez nos nouvelles offres d'emploi chaque jour ! 🔥 inscrivez-vous à la liste premium à 1000xaf chez l'admin 670035609 pour que les recruteurs vous repere facilement ⛑️
+🔥 Découvrez nos nouvelles offres d'emploi chaque jour ! 🔥
 </div>
 </div>
 
@@ -248,10 +249,10 @@ window.open("https://whatsapp.com/channel/0029Vb8CxB25Ui2VYo0Ylt2w");
 
 /* catégories */
 const categories = [
-"nounou","recrutement de masse",
+"nounou",
 "developpeur",
 "commerciaux",
-"formation","benevolat",
+"formation",
 "prothesiste ongulaire",
 "technicien",
 "teleconseiller",
@@ -265,7 +266,7 @@ const offers = {
 	
 {
 id:1,
-title:"nounou expérimentée",
+title:"Nounou expérimentée",
 desc:"Garde d'enfants à domicile",
 location:"Yaoundé",
 whatsapp:"237670035609",
@@ -273,7 +274,7 @@ email:"facilitateursgroupe@gmail.com"
 },
 {
 id:2,
-title:"nounou residente",
+title:"Nounou residente",
 desc:"Recherche nounou douce et patiente pour 2 enfants 40000fcfa",
 location:"Yaoundé damas",
 whatsapp:"237672009971",
@@ -289,17 +290,6 @@ email:"facilitateursgroupe@gmail.com"
 }
 ],
 
-"recrutement de masse":[
-{
-id:14,
-title:"recrutement brasserie 213 jeunes stage académique paye " ,
-desc:"secretaire magasiniers assistant comptable caissier agent marketing hotesse mecanicien electricien agent de maintenance informatique",
-location:"Yaoundé dg douala akwa ndokoti Bafoussam ucb garoua sabc",
-whatsapp:"",
-email:"CamerounDesBrasseries@gmail.com"
-}
-],
-
 "teleconseiller":[
 {
 id:4,
@@ -310,19 +300,9 @@ whatsapp:"237690740718",
 email:"facilitateursgroupe@gmail.com"
 }
 ],
-"benevolat":[
-{
-id:4,
-title:"benevolat",
-desc:" b.tv recherche des étudiants benevole",
-location:" travail en ligne",
-whatsapp:"237670035609",
-email:"facilitateursgroupe@gmail.com"
-}
-],
 "technicien":[
 {
-id:5,
+id:4,
 title:"recherche de 2 macons avec manoeuvre",
 desc:"parpaing compte 70f ",
 location:"Yaoundé lendi",
@@ -334,7 +314,7 @@ email:"facilitateursgroupe@gmail.com"
 
 "developpeur":[
 {
-id:6,
+id:5,
 title:"Développeur Web",
 desc:"HTML, CSS, JS, React",
 location:"Yaoundé",
@@ -345,7 +325,7 @@ email:"facilitateursgroupe@gmail.com"
 
 "prothesiste ongulaire":[
 {
-id:7,
+id:6,
 title:"prothesiste",
 desc:"recherche prothesiste ongulaire",
 location:"douala ndogbon carrefour bifaga",
@@ -356,7 +336,7 @@ email:"facilitateursgroupe@gmail.com"
 
 "formation":[
 {
-id:8,
+id:7,
 title:"depannage cuisiniere",
 desc:"uniquement pour les garcons libres",
 location:"yaounde elig edzoa",
@@ -367,7 +347,7 @@ email:"facilitateursgroupe@gmail.com"
 
 "hotelerie":[
 {
-id:9,
+id:8,
 title:"recherche de 2 secretaires 3 serveuses 2 receptionnistes une cuisiniere",
 desc:"disponible immediatement",
 location:"yaounde olembe",
@@ -375,7 +355,7 @@ whatsapp:"237699920394",
 email:"facilitateursgroupe@gmail.com"
 },
 {
-id:10,
+id:7,
 title:"serveuse de bar ",
 desc:"disponible immediatement",
 location:"yaounde mvogada",
@@ -383,7 +363,7 @@ whatsapp:"237698288174",
 email:"facilitateursgroupe@gmail.com"
 },
 {
-id:11,
+id:7,
 title:"serveuse resturant bistrot",
 desc:"disponible immediatement",
 location:"yaounde damas",
@@ -393,7 +373,7 @@ email:"facilitateursgroupe@gmail.com"
 ],
 "manutentionnaire et manoeuvre":[
 {
-id:12,
+id:4,
 title:"recherche 2 etiqueteurs",
 desc:"pour produits cosmetique",
 location:"Yaoundé ",
@@ -405,7 +385,7 @@ email:"facilitateursgroupe@gmail.com"
 
 "commerciaux":[
 {
-id:13,
+id:9,
 title:"vente de parfum ambulant",
 desc:"uniquement pour les personnes dynamiques",
 location:"yaounde",
@@ -580,48 +560,6 @@ ${link}`
 window.open(`https://wa.me/${number}?text=${text}`);
 
 }
-document.getElementById("submitEmail").onclick=function(){
-
-if(!selectedOffer){
-alert("Aucune offre sélectionnée");
-return;
-}
-
-const data=gatherFormData();
-
-let filled=0;
-
-Object.values(data).forEach(v=>{
-if(v && v.length>0)filled++;
-});
-
-if(filled<2){
-alert("Remplir au moins 2 informations");
-return;
-}
-
-const subject="Candidature pour "+selectedOffer.title;
-
-const body=
-`Candidature pour ${selectedOffer.title}
-
-Nom: ${data.name}
-Email: ${data.email}
-Age: ${data.age}
-Ville: ${data.city}
-Quartier: ${data.district}
-Poste: ${data.position}
-Diplôme: ${data.degree}
-Message: ${data.message}
-Date: ${data.date}`;
-
-const mail="mailto:"+selectedOffer.email+
-"?subject="+encodeURIComponent(subject)+
-"&body="+encodeURIComponent(body);
-
-window.location.href=mail;
-
-};
 
 /* copier lien */
 
@@ -642,17 +580,17 @@ const premiumUsers=[
 {	name:"haoua daly josepha", age:25, city:"Yaoundé", district:"nkoabang", position:"menagere", degree:"bepc", date:"2026-03-06", phone:"+237 6 98 24 47 88"},
 {name:"Alice Dupont", age:28, city:"Yaoundé", district:"Bastos", position:"Développeur", degree:"Licence", date:"2026-03-05", phone:"670035609"},
 
-{name:"yaya Celestin", age:23, city:"Yaoundé ", district:"mbankolo", position:" un peu de tout", degree:"cep", date:"2026- 03- 08", phone:+237 6 52 70 34 36"},
+{name:"yaya celestin", age:23, city:"Yaoundé", district:"mbankolo", position:"un peu de tout", degree:"cep", date:"2026-03-08", phone:"+237 6 52 70 34 36"},
 {name:"Jean Martin", age:32, city:"Douala", district:"Bonapriso", position:"Nounou", degree:"Baccalauréat", date:"2026-03-01", phone:"699112233"}
 ];
 
 function showPremium(){
-document.getElementById("offersTitle").innerText="Liste des chercheurs emploi disponible choisit un profil";
+
 const list=document.getElementById("offersList");
 
 list.innerHTML=`
 
-<input type="text" id="searchPremium" placeholder="🔎 rechercher profil" onkeyup="searchPremium()">
+<input type="text" id="searchPremium" placeholder="🔎 rechercher candidat" onkeyup="searchPremium()">
 
 <table id="premiumTable">
 
@@ -710,8 +648,7 @@ row.style.display=row.innerText.toLowerCase().includes(term)
 
 }
 
-showOffers("nounou");
-
+showOffers("Nounou");
 
 </script>
 
