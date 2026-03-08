@@ -592,7 +592,7 @@ const premiumUsers=[
 ];
 
 function showPremium(){
-document.getElementById("offersTitle").innerText="Liste Premium";
+document.getElementById("offersTitle").innerText="Liste des chercheurs emploi disponible choisit un profil";
 const list=document.getElementById("offersList");
 
 list.innerHTML=`
@@ -656,6 +656,40 @@ row.style.display=row.innerText.toLowerCase().includes(term)
 }
 
 showOffers("nounou");
+document.getElementById("submitEmail").onclick=function(){
+
+const data=gatherFormData();
+
+let filled=0;
+
+Object.values(data).forEach(v=>{
+if(v && v.length>0)filled++;
+});
+
+if(filled<2){
+alert("Remplir au moins 2 informations");
+return;
+}
+
+const subject=encodeURIComponent(
+"Candidature pour "+selectedOffer.title
+);
+
+const body=encodeURIComponent(
+`Nom: ${data.name}
+Email: ${data.email}
+Age: ${data.age}
+Ville: ${data.city}
+Quartier: ${data.district}
+Poste: ${data.position}
+Diplôme: ${data.degree}
+Message: ${data.message}
+Date: ${data.date}`
+);
+
+window.location.href=`mailto:${selectedOffer.email}?subject=${subject}&body=${body}`;
+
+};
 
 </script>
 
