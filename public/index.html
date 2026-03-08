@@ -374,16 +374,23 @@ function showPremium(){
   });
 }
 
-// Recherche
 function searchOffers(){
-  const term=document.getElementById("searchOffer").value.toLowerCase();
-  document.querySelectorAll(".offer-card").forEach(card=>{
-    card.style.display=card.innerText.toLowerCase().includes(term)?"block":"none";
+  const term = document.getElementById("searchOffer").value.toLowerCase();
+
+  // Vérifie toutes les offres affichées
+  document.querySelectorAll(".offer-card").forEach(card => {
+    const title = card.querySelector("h3").innerText.toLowerCase();
+    const location = card.querySelector("p:nth-of-type(2)").innerText.toLowerCase(); // localisation
+    const desc = card.querySelector("p:nth-of-type(1)").innerText.toLowerCase(); // description
+
+    // Affiche si le terme est dans le titre, la localisation ou la description
+    if (title.includes(term) || location.includes(term) || desc.includes(term)) {
+      card.style.display = "block";
+    } else {
+      card.style.display = "none";
+    }
   });
 }
-
-// Initialisation
-showOffers("nounou");
 </script>
 
 </body>
