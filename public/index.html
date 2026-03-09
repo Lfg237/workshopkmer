@@ -33,17 +33,28 @@ th{background:#334155;}
 #tickerContainer{ position:fixed; bottom:0; left:0; width:100%; background:#2563eb; color:white; overflow:hidden; height:40px; display:flex; align-items:center; font-weight:bold; }
 #tickerText{ white-space:nowrap; display:inline-block; padding-left:100%; animation:tickerMove 20s linear infinite; }
 @keyframes tickerMove{0%{transform:translateX(0%)}100%{transform:translateX(-100%)}}
-
-/* --- parrainage bouton --- */
-#inviteBox { display:none; background:#111; color:white; padding:20px; border-radius:10px; margin-top:20px; text-align:center; }
-#inviteBox input { width:90%; padding:8px; margin-top:10px; border-radius:5px; border:none; }
-#inviteBox button { margin-top:10px; padding:8px 12px; border-radius:5px; cursor:pointer; }
 </style>
 </head>
 
 <body>
 
 <header>
+	<!-- BOUTON PARRAINAGE -->
+<div style="text-align:center; margin-top:20px;">
+  <button id="inviteFriendsBtn" class="success">📢 Inviter ses amis à postuler</button>
+</div>
+
+<!-- POPUP PARRAINAGE FLOTTANT -->
+<div id="inviteBox" style="display:none; position:fixed; top:60px; right:20px; width:300px; background:#111; color:white; padding:20px; border-radius:10px; z-index:1001; box-shadow:0 4px 10px rgba(0,0,0,0.5);">
+  <h3>Inviter des amis</h3>
+  <p>Gagnez <b>❣️</b> pour chaque ami qui postule avec votre lien unique.</p>
+  <input id="inviteLink" readonly>
+  <br>
+  <button onclick="copyInviteLink()" style="background:#2563eb; color:white;">📋 Copier</button>
+  <button onclick="shareInviteWhatsApp()" style="background:#25D366; color:white;">📤 WhatsApp</button>
+</div>
+
+</div>
 🛠️ workshopkmer🪄
 <button class="primary" onclick="goHome()"><i class="fas fa-home"></i> Accueil</button>
 <button class="success" onclick="showPremium()"><i class="fas fa-star"></i> Premium</button>
@@ -64,21 +75,7 @@ th{background:#334155;}
 <h2 id="offersTitle">Offres</h2>
 <div id="offersList" style="max-height:500px; overflow-y:auto;"></div>
 
-<!-- BOUTON PARRAINAGE -->
-<div style="text-align:center; margin-top:20px;">
-  <button id="inviteFriendsBtn" class="success">📢 Inviter ses amis à postuler</button>
-</div>
 
-<div id="inviteBox">
-  <h3>Inviter des amis</h3>
-  <p>Gagnez <b>1F</b> pour chaque ami qui postule avec votre lien unique.</p>
-  <input id="inviteLink" readonly>
-  <br><br>
-  <button onclick="copyInviteLink()" style="background:#2563eb; color:white;">📋 Copier</button>
-  <button onclick="shareInviteWhatsApp()" style="background:#25D366; color:white;">📤 WhatsApp</button>
-</div>
-
-</div>
 
 <!-- FORMULAIRE -->
 <div id="formPopup">
@@ -232,24 +229,30 @@ const premiumUsers=[
 {name:"ndeme carelle", age:20, city:"yaounde", district:"Bonas", position:"etudiante", degree:"Baccalauréat", date:"2026-03-09", phone:"+237672259151"}
 ];
 
-
-function showPremium(){
-  const list=document.getElementById("offersList");
-  list.innerHTML=`
+function showPremium() {
+  const list = document.getElementById("offersList");
+  list.innerHTML = `
     <p>Liste des chercheurs d'emploi disponibles. Contactez le profil qui vous intéresse :</p>
     <div class="scrollable-table">
       <table id="premiumTable">
         <tr>
-          <th>Nom</th><th>Age</th><th>Ville</th><th>Quartier</th>
-          <th>Poste</th><th>Diplôme</th><th>Date</th><th>Téléphone</th><th>Contacter</th>
+          <th>Nom</th>
+          <th>Age</th>
+          <th>Ville</th>
+          <th>Quartier</th>
+          <th>Poste</th>
+          <th>Diplôme</th>
+          <th>Date</th>
+          <th>Téléphone</th>
+          <th>Contacter</th>
         </tr>
       </table>
     </div>
   `;
-  const table=document.getElementById("premiumTable");
-  premiumUsers.forEach(u=>{
-    const row=table.insertRow();
-    row.innerHTML=`
+  const table = document.getElementById("premiumTable");
+  premiumUsers.forEach(u => {
+    const row = table.insertRow();
+    row.innerHTML = `
       <td>${u.name}</td>
       <td>${u.age}</td>
       <td>${u.city}</td>
@@ -264,29 +267,37 @@ function showPremium(){
 }
 
 // --- RECHERCHE OFFRES
-function searchOffers(){
-  const term=document.getElementById("searchOffer").value.toLowerCase();
-  document.querySelectorAll(".offer-card").forEach(card=>{
-    card.style.display=card.innerText.toLowerCase().includes(term)?"block":"none";
+function searchOffers() {
+  const term = document.getElementById("searchOffer").value.toLowerCase();
+  document.querySelectorAll(".offer-card").forEach(card => {
+    card.style.display = card.innerText.toLowerCase().includes(term) ? "block" : "none";
   });
 }
 
 // --- PARRAINAGE / INVITATION AMIS
-const inviteBtn=document.getElementById("inviteFriendsBtn");
-const inviteBox=document.getElementById("inviteBox");
-const inviteInput=document.getElementById("inviteLink");
-inviteBtn.onclick=function(){
-  const userId=Math.floor(Math.random()*100000); // ID unique simulé
-  const link=`https://workshopkmer.vercel.app/?ref=${userId}`;
-  inviteInput.value=link;
-  inviteBox.style.display="block";
+const inviteBtn = document.getElementById("inviteFriendsBtn");
+const inviteBox = document.getElementById("inviteBox");
+const inviteInput = document.getElementById("inviteLink");
+
+inviteBtn.onclick = function() {
+  // Toggle ouverture / fermeture
+  if (inviteBox.style.display === "block") {
+    inviteBox.style.display = "none";
+  } else {
+    const userId = Math.floor(Math.random() * 100000); // ID unique simulé
+    const link = `https://workshopkmer.vercel.app/?ref=${userId}`;
+    inviteInput.value = link;
+    inviteBox.style.display = "block";
+  }
 }
-function copyInviteLink(){
+
+function copyInviteLink() {
   navigator.clipboard.writeText(inviteInput.value);
   alert("Lien copié !");
 }
-function shareInviteWhatsApp(){
-  const text=encodeURIComponent(`Rejoins Workshopkmer et gagne avec mon lien : ${inviteInput.value}`);
+
+function shareInviteWhatsApp() {
+  const text = encodeURIComponent(`Rejoins Workshopkmer et gagne avec mon lien : ${inviteInput.value}`);
   window.open(`https://wa.me/?text=${text}`);
 }
 
