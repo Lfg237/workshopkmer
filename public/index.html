@@ -262,8 +262,9 @@ function showPremium() {
       <td>${u.degree}</td>
       <td>${u.date}</td>
       <td>${u.phone}</td>
-      <td><button onclick="window.open('https://wa.me/${u.phone.replace(/\s+/g,'')}', '_blank')">WhatsApp</button></td>
-    `;
+      <td>
+<button onclick="contactPremium('${u.phone}')">WhatsApp</button>
+</td>  `;
   });
 }
 
@@ -304,6 +305,17 @@ function shareInviteWhatsApp() {
 
 // --- INITIALISATION
 showOffers("nounou menagere lessiveuse");
+function contactPremium(phone){
+
+const number = phone.replace(/\D/g,'');
+
+const message = encodeURIComponent(
+"Bonjour, j'ai eu votre contact à Workshopkmer comme chercheur d'emploi. Je vous propose une opportunité. Êtes-vous intéressé ?\n\nhttps://workshopkmer.vercel.app/"
+);
+
+window.open(`https://wa.me/${number}?text=${message}`,"_blank");
+
+}
 </script>
 
 </body>
