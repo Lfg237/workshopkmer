@@ -41,13 +41,13 @@ th{background:#334155;}
 <header>
 	<!-- BOUTON PARRAINAGE -->
 <div style="text-align:center; margin-top:20px;">
-  <button id="inviteFriendsBtn" class="success">📢 Inviter ses amis à postuler</button>
+  <button id="inviteFriendsBtn" class="success">📢 Invite tes amis à postuler</button>
 </div>
 
 <!-- POPUP PARRAINAGE FLOTTANT -->
 <div id="inviteBox" style="display:none; position:fixed; top:60px; right:20px; width:300px; background:#111; color:white; padding:20px; border-radius:10px; z-index:1001; box-shadow:0 4px 10px rgba(0,0,0,0.5);">
   <h3>Inviter des amis</h3>
-  <p>Gagnez <b>❣️</b> pour chaque ami qui postule avec votre lien unique.</p>
+  <p>Gagne un  <b>❣️</b> pour chaque ami invite avec ton lien </p>
   <input id="inviteLink" readonly>
   <br>
   <button onclick="copyInviteLink()" style="background:#2563eb; color:white;">📋 Copier</button>
@@ -66,9 +66,9 @@ th{background:#334155;}
 <h2>Catégories de postes</h2>
 <div id="categories"></div>
 
-<div class="search-box">
-<input type="text" id="searchOffer" placeholder="🔎 Rechercher une offre..." onkeyup="searchOffers()">
-</div>
+<input type="text" id="searchOffer"
+placeholder="🔎 Rechercher nom, profession, téléphone ou offre..."
+onkeyup="searchOffers()">
 
 <hr>
 
