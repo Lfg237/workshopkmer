@@ -268,11 +268,54 @@ function showPremium() {
   });
 }
 
-// --- RECHERCHE OFFRES
 function searchOffers() {
   const term = document.getElementById("searchOffer").value.toLowerCase();
-  document.querySelectorAll(".offer-card").forEach(card => {
-    card.style.display = card.innerText.toLowerCase().includes(term) ? "block" : "none";
+  const list = document.getElementById("offersList");
+  list.innerHTML = "";
+
+  // rechercher dans les OFFRES
+  Object.keys(offers).forEach(cat=>{
+    offers[cat].forEach(offer=>{
+      const text = (offer.title + offer.desc + offer.location + offer.whatsapp).toLowerCase();
+
+      if(text.includes(term)){
+        const div=document.createElement("div");
+        div.className="offer-card";
+        div.innerHTML=`
+          <h3>${offer.title}</h3>
+          <p>${offer.desc}</p>
+          <p><b>Localisation:</b> ${offer.location}</p>
+          <p><b>Téléphone:</b> ${offer.whatsapp}</p>
+          <div class="offer-actions">
+            <button class="primary" onclick="openForm(${offer.id})">Postuler</button>
+            <button class="success" onclick="copyLink(${offer.id})">Lien</button>
+            <button class="success" onclick="openWhatsApp('${offer.whatsapp}','${offer.title}',${offer.id})">WhatsApp</button>
+          </div>
+        `;
+        list.appendChild(div);
+      }
+    });
+  });
+
+  // rechercher dans les PROFILS PREMIUM
+  premiumUsers.forEach(user=>{
+    const text = (user.name + user.position + user.phone + user.city + user.district).toLowerCase();
+
+    if(text.includes(term)){
+      const div=document.createElement("div");
+      div.className="offer-card";
+      div.innerHTML=`
+        <h3>${user.name}</h3>
+        <p><b>Profession:</b> ${user.position}</p>
+        <p><b>Ville:</b> ${user.city}</p>
+        <p><b>Téléphone:</b> ${user.phone}</p>
+
+        <div class="offer-actions">
+          <button class="success" onclick="contactPremium('${user.phone}')">WhatsApp</button>
+        </div>
+      `;
+      list.appendChild(div);
+    }
   });
 }
 
