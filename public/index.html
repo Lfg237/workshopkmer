@@ -474,55 +474,6 @@ premiumData=data
 afficherPremium(data)
 })
 
-function afficherPremium(data){
-
-let container=document.getElementById("premium")
-container.innerHTML=""
-
-data.forEach(p=>{
-
-let statut=(p["statut"]||"attente").toLowerCase()
-
-if(statut=="refuse"){return}
-
-let badgeClass="attente"
-let badgeText="⏳ En attente"
-
-if(statut=="verifie"){badgeClass="verifie";badgeText="✔ Vérifié"}
-if(statut=="premium"){badgeClass="premium";badgeText="⭐ Premium"}
-
-container.innerHTML+=`
-
-<div class="profil">
-
-<span class="badge ${badgeClass}">${badgeText}</span>
-
-<img src="https://raw.githubusercontent.com/Lfg237/m-dias/main/Polish_20260304_122805013.png">
-
-<h4>${p["nom et prénom :"]||""}</h4>
-
-<p><b>Âge :</b> ${p["âge :"]||""}</p>
-
-<p><b>Profession :</b> ${p["profession :"]||""}</p>
-
-<p><b>Ville :</b> ${p["ville et quartier :"]||""}</p>
-
-<p><b>Expérience :</b> ${p["expérience :"]||""}</p>
-
-<p style="font-size:12px">${p["description :"]||""}</p>
-
-<button onclick="contactProfil('${p["WhatsApp :"]||""}')">
-
-<i class="fab fa-whatsapp"></i> Contacter
-
-</button>
-
-</div>
-
-`
-
-})
-
 }
 
 function contactProfil(numero){
@@ -543,6 +494,62 @@ function ouvrirFormPremium(){
 document.getElementById("popupPremium").style.display="flex"
 }
 
+function afficherPremium(data){
+
+let container=document.getElementById("premium")
+container.innerHTML=""
+
+data.forEach(p=>{
+
+let statut=(p["statut"]||"attente").toLowerCase()
+if(statut=="refuse"){return}
+
+let badgeClass="attente"
+let badgeText="⏳"
+
+if(statut=="verifie"){badgeClass="verifie";badgeText="✔"}
+if(statut=="premium"){badgeClass="premium";badgeText="⭐"}
+
+let infos=""
+
+for (let key in p){
+
+if(
+key.toLowerCase().includes("statut") ||
+key.toLowerCase().includes("whatsapp") ||
+key.toLowerCase().includes("nom")
+){
+continue
+}
+
+infos+=`<p><b>${key}</b> ${p[key]}</p>`
+}
+
+container.innerHTML+=`
+
+<div class="profil">
+
+<span class="badge ${badgeClass}">${badgeText}</span>
+
+<img src="https://raw.githubusercontent.com/Lfg237/m-dias/main/Polish_20260304_122805013.png">
+
+<h4>${p["nom et prénom :"] || p["Nom et prénom"] || ""}</h4>
+
+${infos}
+
+<button onclick="contactProfil('${p["WhatsApp :"] || p["WhatsApp"] || ""}')">
+
+<i class="fab fa-whatsapp"></i> Contacter
+
+</button>
+
+</div>
+
+`
+
+})
+
+}
 function fermerPopup(id){
 document.getElementById(id).style.display="none"
 }
