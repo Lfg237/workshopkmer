@@ -337,68 +337,54 @@ function searchOffers() {
     });
   });
 
-  // rechercher dans les PROFILS PREMIUM
+  // rechercher dans les profils premium
   premiumUsers.forEach(user=>{
-    const text = (user.name + user.position + user.phone + user.city + user.district).toLowerCase();
+    const text = (user.name + user.city + user.position + user.phone).toLowerCase();
 
     if(text.includes(term)){
       const div=document.createElement("div");
       div.className="offer-card";
       div.innerHTML=`
         <h3>${user.name}</h3>
-        <p><b>Profession:</b> ${user.position}</p>
+        <p><b>Age:</b> ${user.age}</p>
         <p><b>Ville:</b> ${user.city}</p>
+        <p><b>Quartier:</b> ${user.district}</p>
+        <p><b>Poste:</b> ${user.position}</p>
         <p><b>Téléphone:</b> ${user.phone}</p>
-
-        <div class="offer-actions">
-          <button class="success" onclick="contactPremium('${user.phone}')">WhatsApp</button>
-        </div>
+        <button onclick="contactPremium('${user.phone}')">WhatsApp</button>
       `;
       list.appendChild(div);
     }
   });
 }
 
-// --- PARRAINAGE / INVITATION AMIS
-const inviteBtn = document.getElementById("inviteFriendsBtn");
-const inviteBox = document.getElementById("inviteBox");
-const inviteInput = document.getElementById("inviteLink");
-
-inviteBtn.onclick = function() {
-  // Toggle ouverture / fermeture
-  if (inviteBox.style.display === "block") {
-    inviteBox.style.display = "none";
-  } else {
-    const userId = Math.floor(Math.random() * 100000); // ID unique simulé
-    const link = `https://workshopkmer.vercel.app/?ref=${userId}`;
-    inviteInput.value = link;
-    inviteBox.style.display = "block";
-  }
+// contact premium
+function contactPremium(phone){
+  window.open(`https://wa.me/${phone}`);
 }
 
-function copyInviteLink() {
-  navigator.clipboard.writeText(inviteInput.value);
+// INVITATION
+const inviteBtn = document.getElementById("inviteFriendsBtn");
+const inviteBox = document.getElementById("inviteBox");
+const inviteLink = document.getElementById("inviteLink");
+
+inviteLink.value = "https://workshopkmer.vercel.app/?ref=invite";
+
+inviteBtn.onclick = () =>{
+  inviteBox.style.display =
+  inviteBox.style.display === "none" ? "block" : "none";
+};
+
+function copyInviteLink(){
+  navigator.clipboard.writeText(inviteLink.value);
   alert("Lien copié !");
 }
 
-function shareInviteWhatsApp() {
-  const text = encodeURIComponent(`Rejoins Workshopkmer et gagne avec mon lien : ${inviteInput.value}`);
-  window.open(`https://wa.me/?text=${text}`);
+function shareInviteWhatsApp(){
+  const text = encodeURIComponent("Rejoins Workshopkmer pour trouver un travail : " + inviteLink.value);
+  window.open("https://wa.me/?text="+text);
 }
 
-// --- INITIALISATION
-showOffers("nounou menagere lessiveuse");
-function contactPremium(phone){
-
-const number = phone.replace(/\D/g,'');
-
-const message = encodeURIComponent(
-"Bonjour, j'ai eu votre contact à Workshopkmer comme chercheur d'emploi. Je vous propose une opportunité. Êtes-vous intéressé ?\n\nhttps://workshopkmer.vercel.app/"
-);
-
-window.open(`https://wa.me/${number}?text=${message}`,"_blank");
-
-}
 </script>
 
 </body>
