@@ -1,12 +1,11 @@
 <!DOCTYPE html>
 <html lang="fr">
-
 <head>
 
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
-<title>Business TV Jobs</title>
+<title>workshopkmer</title>
 
 <link rel="stylesheet"
 href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
@@ -167,7 +166,7 @@ padding:10px;
 }
 
 .profil{
-min-width:180px;
+min-width:200px;
 background:white;
 color:black;
 padding:10px;
@@ -247,17 +246,33 @@ cursor:pointer;
 color:black;
 }
 
-/* FOOTER */
+/* WhatsApp flottant */
 
-footer{
-text-align:center;
-padding:20px;
-background:#00000066;
-margin-top:20px;
+.whatsapp-float{
+position:fixed;
+bottom:80px;
+right:20px;
+background:#25d366;
+color:white;
+font-size:28px;
+padding:15px;
+border-radius:50%;
+z-index:999;
+}
+
+/* BANDE ANNONCE */
+
+.ticker{
+position:fixed;
+bottom:0;
+width:100%;
+background:black;
+color:white;
+padding:8px;
+font-size:14px;
 }
 
 </style>
-
 </head>
 
 <body>
@@ -269,7 +284,7 @@ margin-top:20px;
 <img class="logo"
 src="https://raw.githubusercontent.com/Lfg237/m-dias/main/Polish_20260304_122805013.png">
 
-<span class="site-title">Business TV Jobs</span>
+<span class="site-title">workshopkmer</span>
 
 </div>
 
@@ -335,18 +350,32 @@ onkeyup="rechercher()">
 
 </div>
 
-<footer>
+<!-- WhatsApp flottant -->
 
-© Business TV Cameroun
+<a class="whatsapp-float"
+href="https://wa.me/237670035609?text=Bonjour%20Business%20TV%20Jobs"
+target="_blank">
+<i class="fab fa-whatsapp"></i>
+</a>
 
-</footer>
+<!-- Bande annonce -->
 
+<div class="ticker">
+
+<marquee>
+
+📢 Publiez vos offres d'emploi gratuitement sur workshopkmer• 
+⭐ Créez votre profil premium pour  plus de visibilite et etre contacté par les employeurs • 
+📲 Rejoignez notre chaîne WhatsApp pour recevoir les dernieres nouvelles , workshopkmer la bible du travailleur
+
+</marquee>
+
+</div>
 
 <!-- POPUP OFFRE -->
 
 <div id="popupOffre" class="popup">
 <div class="popup-content">
-
 <span class="close" onclick="fermerPopup('popupOffre')">×</span>
 
 <iframe src="https://docs.google.com/forms/d/e/1FAIpQLSfNr8QMkc50VaNmoQUOmfomlyt2hZq26klD5Vp98ZMYYZCkEA/viewform?embedded=true"></iframe>
@@ -354,12 +383,10 @@ onkeyup="rechercher()">
 </div>
 </div>
 
-
 <!-- POPUP PREMIUM -->
 
 <div id="popupPremium" class="popup">
 <div class="popup-content">
-
 <span class="close" onclick="fermerPopup('popupPremium')">×</span>
 
 <iframe src="https://docs.google.com/forms/d/e/1FAIpQLSegi7tExGEbUwL3dEsUnI9lT73bO4Z8jpSK2Tfca0Nj0Kbb2Q/viewform?embedded=true"></iframe>
@@ -367,13 +394,10 @@ onkeyup="rechercher()">
 </div>
 </div>
 
-
 <script>
 
 let offresData=[]
 let premiumData=[]
-
-/* OFFRES */
 
 fetch("https://sheetdb.io/api/v1/xfp4ufhy8zirg")
 .then(res=>res.json())
@@ -422,8 +446,6 @@ window.open("https://wa.me/237"+numero+"?text="+encodeURIComponent(message))
 
 }
 
-/* CATEGORIES */
-
 function genererCategories(){
 
 let cats=new Set()
@@ -451,8 +473,6 @@ afficherOffres(offres)
 
 }
 
-/* RECHERCHE */
-
 function rechercher(){
 
 let mot=document.getElementById("search").value.toLowerCase()
@@ -474,26 +494,6 @@ premiumData=data
 afficherPremium(data)
 })
 
-}
-
-function contactProfil(numero){
-
-let message="Bonjour, je viens de voir votre profil sur Business TV Jobs"
-
-window.open("https://wa.me/237"+numero+"?text="+encodeURIComponent(message))
-
-}
-
-/* POPUP FORM */
-
-function ouvrirFormOffre(){
-document.getElementById("popupOffre").style.display="flex"
-}
-
-function ouvrirFormPremium(){
-document.getElementById("popupPremium").style.display="flex"
-}
-
 function afficherPremium(data){
 
 let container=document.getElementById("premium")
@@ -512,15 +512,13 @@ if(statut=="premium"){badgeClass="premium";badgeText="⭐"}
 
 let infos=""
 
-for (let key in p){
+for(let key in p){
 
 if(
-key.toLowerCase().includes("statut") ||
-key.toLowerCase().includes("whatsapp") ||
+key.toLowerCase().includes("statut")||
+key.toLowerCase().includes("whatsapp")||
 key.toLowerCase().includes("nom")
-){
-continue
-}
+){continue}
 
 infos+=`<p><b>${key}</b> ${p[key]}</p>`
 }
@@ -533,11 +531,11 @@ container.innerHTML+=`
 
 <img src="https://raw.githubusercontent.com/Lfg237/m-dias/main/Polish_20260304_122805013.png">
 
-<h4>${p["nom et prénom :"] || p["Nom et prénom"] || ""}</h4>
+<h4>${p["nom et prénom :"] || ""}</h4>
 
 ${infos}
 
-<button onclick="contactProfil('${p["WhatsApp :"] || p["WhatsApp"] || ""}')">
+<button onclick="contactProfil('${p["WhatsApp :"]||""}')">
 
 <i class="fab fa-whatsapp"></i> Contacter
 
@@ -550,16 +548,32 @@ ${infos}
 })
 
 }
+
+function contactProfil(numero){
+
+let message="Bonjour, je viens de voir votre profil sur Business TV Jobs"
+
+window.open("https://wa.me/237"+numero+"?text="+encodeURIComponent(message))
+
+}
+
+function ouvrirFormOffre(){
+document.getElementById("popupOffre").style.display="flex"
+}
+
+function ouvrirFormPremium(){
+document.getElementById("popupPremium").style.display="flex"
+}
+
 function fermerPopup(id){
 document.getElementById(id).style.display="none"
 }
-
-/* SCROLL PREMIUM */
 
 function voirPremium(){
 document.getElementById("premium").scrollIntoView({behavior:"smooth"})
 }
 
 </script>
+
 </body>
 </html>
