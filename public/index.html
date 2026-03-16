@@ -1,85 +1,259 @@
 <!DOCTYPE html>
 <html lang="fr">
+
 <head>
+
 <meta charset="UTF-8">
-<title>Offres d'emploi Cameroun</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Business TV Jobs</title>
+
+<link rel="stylesheet"
+href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
 <style>
 
-body{
-font-family:Arial;
-background:#f2f2f2;
+*{
 margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:Arial;
 }
 
-header{
-background:#0a66c2;
+body{
+background:linear-gradient(135deg,#1e3c72,#2a5298);
 color:white;
-padding:15px;
-text-align:center;
 }
+
+/* HEADER */
+
+header{
+display:flex;
+justify-content:space-between;
+align-items:center;
+padding:15px;
+background:#00000066;
+}
+
+.logo{
+display:flex;
+align-items:center;
+gap:10px;
+}
+
+.logo img{
+width:45px;
+height:45px;
+border-radius:50%;
+}
+
+/* SEARCH */
+
+.search{
+padding:15px;
+}
+
+.search input{
+width:100%;
+padding:12px;
+border-radius:10px;
+border:none;
+font-size:16px;
+}
+
+/* CATEGORIES AUTO */
+
+.categories{
+display:flex;
+gap:10px;
+overflow-x:auto;
+padding:10px;
+}
+
+.categories button{
+background:#ff9800;
+border:none;
+color:white;
+padding:8px 12px;
+border-radius:20px;
+cursor:pointer;
+}
+
+/* OFFRES */
 
 .section{
 padding:15px;
 }
 
-.search{
-padding:10px;
-width:95%;
-font-size:16px;
-border-radius:8px;
-border:1px solid #ccc;
-margin-bottom:15px;
-}
-
 .offre{
 background:white;
-padding:10px;
+color:black;
+padding:12px;
+border-radius:10px;
 margin-bottom:10px;
-border-radius:8px;
+box-shadow:0 4px 10px rgba(0,0,0,0.2);
 }
+
+.offre h4{
+color:#0a66c2;
+}
+
+.offre button{
+background:#25d366;
+border:none;
+padding:8px;
+border-radius:6px;
+color:white;
+cursor:pointer;
+margin-top:5px;
+}
+
+/* PREMIUM */
 
 #premium{
 display:flex;
-overflow-x:auto;
 gap:10px;
+overflow-x:auto;
 }
 
 .profil{
-min-width:150px;
+min-width:180px;
 background:white;
+color:black;
 padding:10px;
-border-radius:8px;
+border-radius:10px;
+text-align:center;
 }
 
-button{
-background:#0a66c2;
-color:white;
+.profil img{
+width:70px;
+height:70px;
+border-radius:50%;
+object-fit:cover;
+margin-bottom:5px;
+}
+
+.profil button{
+background:#25d366;
 border:none;
-padding:6px 10px;
-border-radius:5px;
+padding:6px;
+border-radius:6px;
+color:white;
+cursor:pointer;
 }
 
+footer{
+text-align:center;
+padding:20px;
+background:#00000066;
+margin-top:20px;
+}
+.header-links{
+display:flex;
+gap:15px;
+font-size:22px;
+}
+
+.header-links a{
+color:white;
+transition:0.3s;
+}
+
+.header-links a:hover{
+color:#25d366;
+transform:scale(1.2);
+}
+.menu{
+display:flex;
+align-items:center;
+gap:10px;
+}
+
+.menu a{
+text-decoration:none;
+}
+
+.menu i{
+font-size:20px;
+color:white;
+}
+
+.btn-offre{
+background:#ff9800;
+border:none;
+padding:8px 12px;
+border-radius:6px;
+color:white;
+cursor:pointer;
+}
+
+.btn-premium{
+background:#e91e63;
+border:none;
+padding:8px 12px;
+border-radius:6px;
+color:white;
+cursor:pointer;
+}
 </style>
+
 </head>
 
 <body>
 
 <header>
-<h2>Offres d'emploi Cameroun</h2>
+
+<div class="logo">
+
+<img src="https://raw.githubusercontent.com/Lfg237/m-dias/main/Polish_20260304_122805013.png">
+
+<h2>whorkshopkmer la bible du travailleur </h2>
+
+</div>
+
+<div class="menu">
+
+<a href="https://business-tv.vercel.app/" target="_blank">
+<i class="fa-solid fa-house"></i>
+</a>
+
+<a href="https://www.facebook.com/profile.php?id=61587742360056" target="_blank">
+<i class="fa-brands fa-facebook"></i>
+</a>
+
+<a href="https://whatsapp.com/channel/0029Vb8CxB25Ui2VYo0Ylt2w" target="_blank">
+<i class="fa-brands fa-whatsapp"></i>
+</a>
+
+<a href="https://forms.gle/SgeUAdndex6Ch9Fh8" target="_blank">
+<button class="btn-offre">
+➕ Publier une offre
+</button>
+</a>
+
+<a href="https://forms.gle/qNs3xAPf2UUU7NhC9" target="_blank">
+<button class="btn-premium">
+⭐ Profil Premium
+</button>
+</a>
+
+</div>
+
 </header>
 
-<div class="section">
+<div class="search">
 
-<input type="text" id="search" class="search"
-placeholder="Rechercher ville, quartier, profession, âge..."
+<input type="text" id="search"
+placeholder="Rechercher ville, quartier, profession..."
 onkeyup="rechercher()">
 
 </div>
 
+<div class="categories" id="categories"></div>
+
 <div class="section">
 
-<h3>Offres d'emploi</h3>
+<h3><i class="fa-solid fa-briefcase"></i> Offres d'emploi</h3>
 
 <div id="offres"></div>
 
@@ -87,101 +261,221 @@ onkeyup="rechercher()">
 
 <div class="section">
 
-<h3>Profils Premium</h3>
+<h3><i class="fa-solid fa-star"></i> Profils Premium</h3>
 
 <div id="premium"></div>
 
 </div>
+
+<footer>
+
+© workshopkmer 2026 Cameroun
+
+</footer>
 
 <script>
 
 let offresData=[];
 let premiumData=[];
 
+/* CHARGER OFFRES */
+
 fetch("https://sheetdb.io/api/v1/xfp4ufhy8zirg")
-.then(res => res.json())
-.then(data => {
+.then(res=>res.json())
+.then(data=>{
+
 offresData=data;
+
 afficherOffres(data);
+
+genererCategories();
+
 });
+
+/* AFFICHER OFFRES */
 
 function afficherOffres(data){
 
 let container=document.getElementById("offres");
+
 container.innerHTML="";
 
-data.forEach(o => {
+data.forEach((o,i)=>{
 
-container.innerHTML += `
+container.innerHTML+=`
+
 <div class="offre">
 
-<h3>${o["nom entreprise ou employeur "]}</h3>
+<h4>${o["nom entreprise ou employeur "]}</h4>
 
-<p>Catégorie : ${o["catégories "]}</p>
+<p><b>Catégorie :</b> ${o["catégories "]}</p>
 
-<p>Poste : ${o["type d'employer recherché "]}</p>
+<p><b>Poste :</b> ${o["type d'employer recherché "]}</p>
 
-<p>Lieu : ${o["ville quartier où localisation "]}</p>
+<p><b>Lieu :</b> ${o["ville quartier où localisation "]}</p>
 
 <p>${o["description "]}</p>
 
-<a href="https://wa.me/${o["contact WhatsApp "]}">
-<button>Contacter WhatsApp</button>
-</a>
+<button onclick="contactOffre('${o["contact WhatsApp "]}' , '${o["type d'employer recherché "]}' , ${i})">
+
+<i class="fab fa-whatsapp"></i> Contacter
+
+</button>
 
 </div>
+
 `;
 
 });
 
 }
 
-fetch("https://sheetdb.io/api/v1/14gkkcq7cvn8v")
-.then(res => res.json())
-.then(data => {
-premiumData=data;
-afficherPremium(data);
+/* GENERER CATEGORIES AUTO */
+
+function genererCategories(){
+
+let cats=new Set();
+
+offresData.forEach(o=>{
+
+cats.add(o["catégories "]);
+
 });
 
-function afficherPremium(data){
+let container=document.getElementById("categories");
 
-let container=document.getElementById("premium");
 container.innerHTML="";
 
-data.forEach(p => {
+cats.forEach(c=>{
 
-container.innerHTML += `
-<div class="profil">
+container.innerHTML+=`
 
-<h4>${p["nom et prénom :"]}</h4>
+<button onclick="filtrer('${c}')">${c}</button>
 
-<p>${p["ville et quartier :"]}</p>
-
-</div>
 `;
 
 });
 
 }
+
+/* FILTRER */
+
+function filtrer(cat){
+
+let offres=offresData.filter(o=>
+
+o["catégories "].toLowerCase().includes(cat.toLowerCase())
+
+);
+
+afficherOffres(offres);
+
+}
+
+/* RECHERCHE */
 
 function rechercher(){
 
 let mot=document.getElementById("search").value.toLowerCase();
 
-let offresFiltrees=offresData.filter(o =>
+let offres=offresData.filter(o=>
+
 JSON.stringify(o).toLowerCase().includes(mot)
+
 );
 
-let premiumFiltres=premiumData.filter(p =>
+let premium=premiumData.filter(p=>
+
 JSON.stringify(p).toLowerCase().includes(mot)
+
 );
 
-afficherOffres(offresFiltrees);
-afficherPremium(premiumFiltres);
+afficherOffres(offres);
+
+afficherPremium(premium);
+
+}
+
+/* WHATSAPP OFFRE */
+
+function contactOffre(numero,poste,id){
+
+let message=encodeURIComponent(
+
+"Bonjour je vous contacte pour l'offre "+poste+
+
+" vue sur Business TV Jobs https://business-tv.vercel.app/#offre"+id
+
+);
+
+window.open("https://wa.me/237"+numero+"?text="+message);
+
+}
+
+/* PREMIUM */
+
+fetch("https://sheetdb.io/api/v1/14gkkcq7cvn8v")
+
+.then(res=>res.json())
+
+.then(data=>{
+
+premiumData=data;
+
+afficherPremium(data);
+
+});
+
+function afficherPremium(data){
+
+let container=document.getElementById("premium");
+
+container.innerHTML="";
+
+data.forEach(p=>{
+
+container.innerHTML+=`
+
+<div class="profil">
+
+<img src="https://raw.githubusercontent.com/Lfg237/m-dias/main/Polish_20260304_122805013.png">
+
+<h4>${p["nom et prénom :"]}</h4>
+
+<p>${p["ville et quartier :"]}</p>
+
+<button onclick="contactProfil('${p["nom et prénom :"]}')">
+
+<i class="fab fa-whatsapp"></i> Contacter
+
+</button>
+
+</div>
+
+`;
+
+});
+
+}
+
+/* WHATSAPP PROFIL */
+
+function contactProfil(nom){
+
+let message=encodeURIComponent(
+
+"Bonjour "+nom+
+
+", j'ai vu votre profil sur Business TV Jobs https://business-tv.vercel.app"
+
+);
+
+window.open("https://wa.me/237670035609?text="+message);
 
 }
 
 </script>
 
 </body>
+
 </html>
