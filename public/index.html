@@ -99,23 +99,12 @@ border-radius:10px;
 border:none;
 }
 
-/* PREMIUM BUTTONS */
+/* ACTIONS */
 
-.premium-actions{
+.actions{
 display:flex;
-gap:10px;
 justify-content:center;
 padding:10px;
-flex-wrap:wrap;
-}
-
-.btn-voir-premium{
-background:#ff9800;
-border:none;
-padding:10px 15px;
-border-radius:10px;
-color:white;
-cursor:pointer;
 }
 
 .btn-creer-premium{
@@ -184,6 +173,7 @@ color:black;
 padding:10px;
 border-radius:10px;
 text-align:center;
+position:relative;
 }
 
 .profil img{
@@ -201,6 +191,63 @@ border-radius:6px;
 color:white;
 cursor:pointer;
 }
+
+/* BADGES */
+
+.badge{
+position:absolute;
+top:5px;
+right:5px;
+font-size:11px;
+padding:3px 8px;
+border-radius:10px;
+color:white;
+}
+
+.attente{background:#f1c40f;color:black;}
+.verifie{background:#2ecc71;}
+.premium{background:#9b59b6;}
+
+/* POPUP */
+
+.popup{
+display:none;
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
+background:rgba(0,0,0,0.7);
+justify-content:center;
+align-items:center;
+z-index:999;
+}
+
+.popup-content{
+background:white;
+width:90%;
+height:90%;
+border-radius:10px;
+overflow:hidden;
+position:relative;
+}
+
+.popup iframe{
+width:100%;
+height:100%;
+border:none;
+}
+
+.close{
+position:absolute;
+top:10px;
+right:15px;
+font-size:30px;
+cursor:pointer;
+color:black;
+}
+
+/* FOOTER */
 
 footer{
 text-align:center;
@@ -244,13 +291,11 @@ src="https://raw.githubusercontent.com/Lfg237/m-dias/main/Polish_20260304_122805
 
 <div class="header-right">
 
-<a href="https://forms.gle/SgeUAdndex6Ch9Fh8" target="_blank">
-<button class="btn-offre">➕ Publier</button>
-</a>
+<button class="btn-offre" onclick="ouvrirFormOffre()">➕ Publier</button>
 
-<a href="https://forms.gle/qNs3xAPf2UUU7NhC9" target="_blank">
-<button class="btn-premium">⭐ Premium</button>
-</a>
+<button onclick="voirPremium()" class="btn-premium">
+⭐ Premium
+</button>
 
 </div>
 
@@ -264,17 +309,11 @@ onkeyup="rechercher()">
 
 </div>
 
-<div class="premium-actions">
+<div class="actions">
 
-<button onclick="voirPremium()" class="btn-voir-premium">
-⭐ Voir les profils Premium
-</button>
-
-<a href="https://forms.gle/qNs3xAPf2UUU7NhC9" target="_blank">
-<button class="btn-creer-premium">
+<button class="btn-creer-premium" onclick="ouvrirFormPremium()">
 👤 Créer profil Premium
 </button>
-</a>
 
 </div>
 
@@ -302,6 +341,30 @@ onkeyup="rechercher()">
 
 </footer>
 
+<!-- POPUP OFFRE -->
+
+<div id="popupOffre" class="popup">
+<div class="popup-content">
+
+<span class="close" onclick="fermerPopup('popupOffre')">×</span>
+
+<iframe src="https://docs.google.com/forms/d/e/1FAIpQLSeOffre/viewform?embedded=true"></iframe>
+
+</div>
+</div>
+
+<!-- POPUP PREMIUM -->
+
+<div id="popupPremium" class="popup">
+<div class="popup-content">
+
+<span class="close" onclick="fermerPopup('popupPremium')">×</span>
+
+<iframe src="https://docs.google.com/forms/d/e/1FAIpQLSePremium/viewform?embedded=true"></iframe>
+
+</div>
+</div>
+
 <script>
 
 let offresData=[]
@@ -321,7 +384,7 @@ let container=document.getElementById("offres")
 
 container.innerHTML=""
 
-data.forEach((o,i)=>{
+data.forEach((o)=>{
 
 container.innerHTML+=`
 
@@ -349,24 +412,27 @@ container.innerHTML+=`
 
 }
 
+function contactOffre(numero){
+
+let message="Bonjour, je vous contacte pour votre annonce sur Business TV Jobs : https://business-tv.vercel.app/"
+
+window.open("https://wa.me/237"+numero+"?text="+encodeURIComponent(message))
+
+}
+
 function genererCategories(){
 
 let cats=new Set()
 
 offresData.forEach(o=>{
-
 cats.add(o["catégories "])
-
 })
 
 let container=document.getElementById("categories")
+container.innerHTML=""
 
 cats.forEach(c=>{
-
-container.innerHTML+=
-
-`<button onclick="filtrer('${c}')">${c}</button>`
-
+container.innerHTML+=`<button onclick="filtrer('${c}')">${c}</button>`
 })
 
 }
@@ -374,9 +440,7 @@ container.innerHTML+=
 function filtrer(cat){
 
 let offres=offresData.filter(o=>
-
 o["catégories "].toLowerCase().includes(cat.toLowerCase())
-
 )
 
 afficherOffres(offres)
@@ -388,20 +452,14 @@ function rechercher(){
 let mot=document.getElementById("search").value.toLowerCase()
 
 let offres=offresData.filter(o=>
-
 JSON.stringify(o).toLowerCase().includes(mot)
-
 )
 
 afficherOffres(offres)
 
 }
 
-function contactOffre(numero){
-
-window.open("https://wa.me/237"+numero)
-
-}
+/* PREMIUM */
 
 fetch("https://sheetdb.io/api/v1/14gkkcq7cvn8v")
 .then(res=>res.json())
@@ -413,22 +471,34 @@ afficherPremium(data)
 function afficherPremium(data){
 
 let container=document.getElementById("premium")
-
 container.innerHTML=""
 
 data.forEach(p=>{
+
+let statut=(p["statut"]||"attente").toLowerCase()
+if(statut=="refuse"){return}
+
+let badgeClass="attente"
+let badgeText="⏳"
+
+if(statut=="verifie"){badgeClass="verifie";badgeText="✔"}
+if(statut=="premium"){badgeClass="premium";badgeText="⭐"}
 
 container.innerHTML+=`
 
 <div class="profil">
 
+<span class="badge ${badgeClass}">${badgeText}</span>
+
 <img src="https://raw.githubusercontent.com/Lfg237/m-dias/main/Polish_20260304_122805013.png">
 
 <h4>${p["nom et prénom :"]}</h4>
 
+<p>${p["âge :"]||""}</p>
+
 <p>${p["ville et quartier :"]}</p>
 
-<button onclick="contactProfil()">
+<button onclick="contactProfil('${p["WhatsApp :"]||"670035609"}')">
 
 <i class="fab fa-whatsapp"></i> Contacter
 
@@ -442,21 +512,31 @@ container.innerHTML+=`
 
 }
 
-function contactProfil(){
+function contactProfil(numero){
 
-window.open("https://wa.me/237670035609")
+let message="Bonjour, je viens de voir votre profil sur Business TV Jobs : https://business-tv.vercel.app/"
+
+window.open("https://wa.me/237"+numero+"?text="+encodeURIComponent(message))
 
 }
 
 function voirPremium(){
+document.getElementById("premium").scrollIntoView({behavior:"smooth"})
+}
 
-document.getElementById("premium")
-.scrollIntoView({behavior:"smooth"})
+function ouvrirFormOffre(){
+document.getElementById("popupOffre").style.display="flex"
+}
 
+function ouvrirFormPremium(){
+document.getElementById("popupPremium").style.display="flex"
+}
+
+function fermerPopup(id){
+document.getElementById(id).style.display="none"
 }
 
 </script>
 
 </body>
-
 </html>
