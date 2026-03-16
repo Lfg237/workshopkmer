@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="fr">
 <head>
 <meta charset="UTF-8">
 <title>Offres d'emploi Cameroun</title>
@@ -23,6 +23,15 @@ text-align:center;
 padding:15px;
 }
 
+.search{
+padding:10px;
+width:95%;
+font-size:16px;
+border-radius:8px;
+border:1px solid #ccc;
+margin-bottom:15px;
+}
+
 .offre{
 background:white;
 padding:10px;
@@ -30,30 +39,25 @@ margin-bottom:10px;
 border-radius:8px;
 }
 
-button{
-padding:8px 12px;
-margin:5px;
-border:none;
-background:#0a66c2;
-color:white;
-border-radius:5px;
-}
-
-.ville{
-margin-top:20px;
-}
-
-.scroll{
+#premium{
 display:flex;
 overflow-x:auto;
 gap:10px;
 }
 
 .profil{
-min-width:160px;
+min-width:150px;
 background:white;
 padding:10px;
 border-radius:8px;
+}
+
+button{
+background:#0a66c2;
+color:white;
+border:none;
+padding:6px 10px;
+border-radius:5px;
 }
 
 </style>
@@ -67,12 +71,9 @@ border-radius:8px;
 
 <div class="section">
 
-<h3>Catégories</h3>
-
-<button onclick="filtrer('Vente')">Vente</button>
-<button onclick="filtrer('Informatique')">Informatique</button>
-<button onclick="filtrer('Marketing')">Marketing</button>
-<button onclick="filtrer('Tous')">Tous</button>
+<input type="text" id="search" class="search"
+placeholder="Rechercher ville, quartier, profession, âge..."
+onkeyup="rechercher()">
 
 </div>
 
@@ -94,36 +95,38 @@ border-radius:8px;
 
 <script>
 
-let toutesOffres=[];
+let offresData=[];
+let premiumData=[];
 
-fetch("https://opensheet.elk.sh/1klJHm6_gXU7EHqKBAe9cFL3i0LMu-u8S1ehz2bCD0AA/Form Responses 1")
-.then(res=>res.json())
-.then(data=>{
-toutesOffres=data;
+fetch("https://sheetdb.io/api/v1/xfp4ufhy8zirg")
+.then(res => res.json())
+.then(data => {
+offresData=data;
 afficherOffres(data);
 });
 
 function afficherOffres(data){
 
 let container=document.getElementById("offres");
-
 container.innerHTML="";
 
-data.forEach(o=>{
+data.forEach(o => {
 
-container.innerHTML+=`
+container.innerHTML += `
 <div class="offre">
 
-<h4>${o.Titre}</h4>
+<h3>${o["nom entreprise ou employeur "]}</h3>
 
-<p>${o.Ville}</p>
+<p>Catégorie : ${o["catégories "]}</p>
 
-<p>${o.Categorie}</p>
+<p>Poste : ${o["type d'employer recherché "]}</p>
 
-<p>${o.Description}</p>
+<p>Lieu : ${o["ville quartier où localisation "]}</p>
 
-<a href="https://wa.me/${o.WhatsApp}">
-<button>Contacter</button>
+<p>${o["description "]}</p>
+
+<a href="https://wa.me/${o["contact WhatsApp "]}">
+<button>Contacter WhatsApp</button>
 </a>
 
 </div>
@@ -133,78 +136,50 @@ container.innerHTML+=`
 
 }
 
-function filtrer(cat){
-
-if(cat==="Tous"){
-afficherOffres(toutesOffres);
-return;
-}
-
-let result=toutesOffres.filter(o=>o.Categorie===cat);
-
-afficherOffres(result);
-
-}
-
-fetch("https://opensheet.elk.sh/1J3oLyFZNPU-DJRSrhNjsxbEZX0ZGY_aebuuqIDW9sVU/Form Responses 1")
-.then(res=>res.json())
-.then(data=>{
-
-let villes={};
-
-data.forEach(p=>{
-
-if(!villes[p.Ville]){
-villes[p.Ville]=[];
-}
-
-villes[p.Ville].push(p);
-
+fetch("https://sheetdb.io/api/v1/14gkkcq7cvn8v")
+.then(res => res.json())
+.then(data => {
+premiumData=data;
+afficherPremium(data);
 });
+
+function afficherPremium(data){
 
 let container=document.getElementById("premium");
+container.innerHTML="";
 
-for(let ville in villes){
+data.forEach(p => {
 
-container.innerHTML+=`
-
-<div class="ville">
-
-<h4>${ville}</h4>
-
-<div class="scroll" id="ville-${ville}"></div>
-
-</div>
-
-`;
-
-let zone=document.getElementById("ville-"+ville);
-
-villes[ville].forEach(p=>{
-
-zone.innerHTML+=`
-
+container.innerHTML += `
 <div class="profil">
 
-<h5>${p.Nom}</h5>
+<h4>${p["nom et prénom :"]}</h4>
 
-<p>${p.Age} ans</p>
-
-<p>${p.Quartier}</p>
-
-<a href="https://wa.me/${p.WhatsApp}">
-<button>WhatsApp</button>
-</a>
+<p>${p["ville et quartier :"]}</p>
 
 </div>
-
 `;
 
 });
 
 }
 
-});
+function rechercher(){
+
+let mot=document.getElementById("search").value.toLowerCase();
+
+let offresFiltrees=offresData.filter(o =>
+JSON.stringify(o).toLowerCase().includes(mot)
+);
+
+let premiumFiltres=premiumData.filter(p =>
+JSON.stringify(p).toLowerCase().includes(mot)
+);
+
+afficherOffres(offresFiltrees);
+afficherPremium(premiumFiltres);
+
+}
 
 </script>
 
