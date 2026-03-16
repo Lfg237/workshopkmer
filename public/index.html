@@ -9,7 +9,12 @@
 
 <link rel="stylesheet"
 href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-
+.ville-scroll{
+display:flex;
+gap:10px;
+overflow-x:auto;
+padding:10px;
+}
 <style>
 
 *{
@@ -500,10 +505,39 @@ function afficherPremium(data){
 let container=document.getElementById("premium")
 container.innerHTML=""
 
+let villes={}
+
+/* regrouper par ville */
+
 data.forEach(p=>{
 
 let statut=(p["statut"]||"attente").toLowerCase()
 if(statut=="refuse"){return}
+
+let ville=p["ville et quartier :"] || "Autres"
+
+if(!villes[ville]){
+villes[ville]=[]
+}
+
+villes[ville].push(p)
+
+})
+
+/* afficher par ville */
+
+for(let ville in villes){
+
+container.innerHTML+=`
+<h3 style="margin-top:15px">${ville}</h3>
+<div class="ville-scroll" id="ville-${ville}"></div>
+`
+
+let villeContainer=document.getElementById("ville-"+ville)
+
+villes[ville].forEach(p=>{
+
+let statut=(p["statut"]||"attente").toLowerCase()
 
 let badgeClass="attente"
 let badgeText="⏳"
@@ -524,7 +558,7 @@ key.toLowerCase().includes("nom")
 infos+=`<p><b>${key}</b> ${p[key]}</p>`
 }
 
-container.innerHTML+=`
+villeContainer.innerHTML+=`
 
 <div class="profil">
 
@@ -547,6 +581,8 @@ ${infos}
 `
 
 })
+
+}
 
 }
 
