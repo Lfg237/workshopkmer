@@ -1,388 +1,477 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
+
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Workshopkmer</title>
+
+<title>WORKSHOPKMER</title>
+
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
 <style>
-body { margin:0; font-family:'Segoe UI',sans-serif; background:#0f172a; color:#fff; }
-header { background:#111827; padding:15px; text-align:center; font-size:24px; font-weight:bold; display:flex; align-items:center; justify-content:center; gap:10px; flex-wrap:wrap; }
-header button { padding:8px 12px; border:none; border-radius:8px; cursor:pointer; font-weight:bold; }
-header button:hover {opacity:0.8;}
-.container { max-width:900px; margin:auto; padding:20px; display:flex; flex-direction:column; gap:10px; }
-button { padding:8px 12px; margin:5px; border:none; border-radius:8px; cursor:pointer; font-weight:bold; }
-button:hover {opacity:0.8;}
-.primary{background:#2563eb;color:#fff;}
-.success{background:#16a34a;color:#fff;}
-.danger{background:#dc2626;color:#fff;}
-.category-btn{background:#334155;color:#fff;margin:5px;}
-.offer-card { background:#1e293b; padding:15px; border-radius:12px; margin:10px 0; }
-.offer-actions{ margin-top:10px; display:flex; gap:10px; flex-wrap:wrap; }
-.offer-actions button{flex:1;}
-.search-box{margin:15px 0;}
-.search-box input{ width:100%; padding:10px; border-radius:8px; border:none; background:#334155; color:white; }
-#formPopup{ position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.85); display:none; justify-content:center; align-items:center; z-index:1000; }
-#formPopupContent{ background:#1e293b; padding:20px; border-radius:12px; width:95%; max-width:500px; text-align:center; overflow-y:auto; max-height:75vh; }
-#formPopupContent input,#formPopupContent textarea{ width:100%; padding:10px; margin:5px 0; border-radius:8px; border:none; background:#334155; color:#fff; }
-.scrollable-table{ max-height:400px; overflow-y:auto; }
-table{ width:100%; border-collapse:collapse; margin-top:10px; }
-th,td{ border:1px solid #fff; padding:8px; text-align:left; }
-th{background:#334155;}
-#tickerContainer{ position:fixed; bottom:0; left:0; width:100%; background:#2563eb; color:white; overflow:hidden; height:40px; display:flex; align-items:center; font-weight:bold; }
-#tickerText{ white-space:nowrap; display:inline-block; padding-left:100%; animation:tickerMove 20s linear infinite; }
-@keyframes tickerMove{0%{transform:translateX(0%)}100%{transform:translateX(-100%)}}
+
+body{
+margin:0;
+font-family:Arial;
+background:#0f172a;
+color:white;
+}
+
+header{
+background:#111827;
+padding:15px;
+display:flex;
+gap:10px;
+align-items:center;
+justify-content:center;
+flex-wrap:wrap;
+font-weight:bold;
+}
+
+button{
+padding:8px 12px;
+border:none;
+border-radius:8px;
+cursor:pointer;
+font-weight:bold;
+}
+
+.primary{background:#2563eb;color:white;}
+.success{background:#16a34a;color:white;}
+
+.container{
+max-width:900px;
+margin:auto;
+padding:20px;
+}
+
+.category-btn{
+background:#334155;
+color:white;
+margin:5px;
+}
+
+.offer-card{
+background:#1e293b;
+padding:15px;
+border-radius:10px;
+margin:10px 0;
+}
+
+.offer-actions{
+margin-top:10px;
+display:flex;
+gap:10px;
+flex-wrap:wrap;
+}
+
+input{
+width:100%;
+padding:10px;
+border-radius:8px;
+border:none;
+background:#334155;
+color:white;
+margin:10px 0;
+}
+
+/* PREMIUM */
+
+.premium-city{
+margin-bottom:30px;
+}
+
+.premium-scroll{
+display:flex;
+overflow-x:auto;
+gap:10px;
+padding:10px 0;
+}
+
+.premium-card{
+min-width:200px;
+background:#1e293b;
+padding:10px;
+border-radius:10px;
+flex-shrink:0;
+}
+
+/* BANDE ANNONCE */
+
+#tickerContainer{
+position:fixed;
+bottom:0;
+left:0;
+width:100%;
+background:#2563eb;
+height:40px;
+display:flex;
+align-items:center;
+overflow:hidden;
+}
+
+#tickerText{
+white-space:nowrap;
+padding-left:100%;
+animation:tickerMove 20s linear infinite;
+}
+
+@keyframes tickerMove{
+0%{transform:translateX(0)}
+100%{transform:translateX(-100%)}
+}
+
 </style>
+
 </head>
 
 <body>
 
 <header>
-	<!-- BOUTON PARRAINAGE -->
-<div style="text-align:center; margin-top:20px;">
-  <button id="inviteFriendsBtn" class="success">📢 Invite tes amis à postuler</button>
-</div>
 
-<!-- POPUP PARRAINAGE FLOTTANT -->
-<div id="inviteBox" style="display:none; position:fixed; top:60px; right:20px; width:300px; background:#111; color:white; padding:20px; border-radius:10px; z-index:1001; box-shadow:0 4px 10px rgba(0,0,0,0.5);">
-  <h3>Inviter des amis</h3>
-  <p>Gagne un  <b>❣️</b> pour chaque ami invite avec ton lien </p>
-  <input id="inviteLink" readonly>
-  <br>
-  <button onclick="copyInviteLink()" style="background:#2563eb; color:white;">📋 Copier</button>
-  <button onclick="shareInviteWhatsApp()" style="background:#25D366; color:white;">📤 WhatsApp</button>
-</div>
+WORKSHOPKMER
 
-</div>
-🛠️ workshopkmer🪄
-<button class="primary" onclick="goHome()"><i class="fas fa-home"></i> Accueil</button>
-<button class="success" onclick="showPremium()"><i class="fas fa-star"></i> Premium</button>
-<button class="success" onclick="openWhatsAppChannel()"><i class="fab fa-whatsapp"></i> WhatsApp</button>
+<button class="primary" onclick="goHome()">Accueil</button>
+
+<button class="success" onclick="showPremium()">Premium</button>
+
+<button class="success" onclick="openWhatsAppChannel()">WhatsApp</button>
+
 </header>
 
 <div class="container">
 
-<h2>Catégories de postes</h2>
+<h2>Catégories</h2>
+
 <div id="categories"></div>
 
-<input type="text" id="searchOffer"
-placeholder="🔎 Rechercher nom, profession, téléphone ou offre..."
-onkeyup="searchOffers()">
+<input id="searchOffer" placeholder="Rechercher..." onkeyup="searchOffers()">
 
-<hr>
+<h2>Offres</h2>
 
-<h2 id="offersTitle">Offres</h2>
-<div id="offersList" style="max-height:500px; overflow-y:auto;"></div>
+<div id="offersList"></div>
 
-
-
-<!-- FORMULAIRE -->
-<div id="formPopup">
-<div id="formPopupContent">
-<h3>Postuler à l'offre</h3>
-<input type="text" id="applicantName" placeholder="Nom complet">
-<input type="email" id="applicantEmail" placeholder="Email">
-<input type="number" id="applicantAge" placeholder="Âge">
-<input type="text" id="applicantCity" placeholder="Ville">
-<input type="text" id="applicantDistrict" placeholder="Quartier">
-<input type="text" id="applicantPosition" placeholder="Poste sollicité">
-<input type="text" id="applicantDegree" placeholder="Diplôme">
-<textarea id="applicantMessage" placeholder="Votre message"></textarea>
-<input type="date" id="applicantDate">
-<div style="margin-top:10px">
-<button class="success" id="submitWhatsApp"><i class="fab fa-whatsapp"></i> Envoyer via WhatsApp</button>
-<button class="primary" id="submitEmail"><i class="fas fa-envelope"></i> Email</button>
-<button class="danger" onclick="closeForm()">Annuler</button>
-</div>
-</div>
 </div>
 
 <div id="tickerContainer">
 <div id="tickerText">
-🔥 Découvrez nos nouvelles offres d'emploi chaque jour ! 🔥 postuler en contact direct avec les recruteurs 🌍 INSCRIPTION à notre liste premium des chômeurs 1000xaf 🎲  WORKSHOPKMER la bible du travailleur 💥 🌍si vous avez des offres contact admin pour partager 670035609 🛠️ 
+🔥 Nouvelles offres chaque jour 🔥 Contact recruteurs direct WhatsApp 🔥 Admin 670035609 🔥 WORKSHOPKMER la bible du travailleur
 </div>
 </div>
 
 <script>
-// --- NAVIGATION
-function goHome(){window.location.href="https://business-tv.vercel.app/";}
-function openWhatsAppChannel(){window.open("https://whatsapp.com/channel/0029Vb8CxB25Ui2VYo0Ylt2w");}
 
-// --- CATEGORIES & OFFRES
+function goHome(){
+window.location.href="https://business-tv.vercel.app/";
+}
+
+function openWhatsAppChannel(){
+window.open("https://whatsapp.com/channel/0029Vb8CxB25Ui2VYo0Ylt2w");
+}
+
 const categories=[
-"nounou menagere lessiveuse","developpeur","chauffeur","medecine auxiliaire de vie infirmiere","commerciaux",
-"formation","prothesiste ongulaire beaute coiffure","technicien","teleconseiller","securite","annonce commercial tout a vendre",
-"marketing","manutentionnaire et manoeuvre","hotelerie"
+
+"nounou menagere lessiveuse",
+"developpeur",
+"chauffeur",
+"medecine auxiliaire de vie infirmiere",
+"commerciaux",
+"formation",
+"prothesiste ongulaire beaute coiffure",
+"technicien",
+"teleconseiller",
+"securite",
+"annonce commercial tout a vendre",
+"marketing",
+"manutentionnaire et manoeuvre",
+"hotelerie"
+
 ];
 
-// --- OBJET OFFRES COMPLET
 const offers={
+
 "nounou menagere lessiveuse":[
-{id:1,title:"Nounou expérimentée",desc:"Garde d'enfants à domicile",location:"Yaoundé",whatsapp:"237670035609",email:"facilitateursgroupe@gmail.com"},
-{id:2,title:"Nounou residente",desc:"Recherche nounou douce et patiente pour 2 enfants 40000fcfa",location:"Yaoundé damas",whatsapp:"237672009971",email:"facilitateursgroupe@gmail.com"},
-{id:3,title:"Baby sitter",desc:"Garde d'enfant les week-ends",location:"Yaoundé Mendong",whatsapp:"23765500",email:"facilitateursgroupe@gmail.com"},
-{id:4,title:"recherche menagere nounou residente",desc:"douce",location:"Yaoundé",whatsapp:"237673002813",email:"facilitateursgroupe@gmail.com"},
-{id:5,title:"recrutement massifs des lessiveuses",desc:"disponible",location:"Yaoundé douala limbe",whatsapp:"237656550128",email:"facilitateursgroupe@gmail.com"}
+
+{id:1,title:"Nounou expérimentée",desc:"Garde d'enfants à domicile",location:"Yaoundé",whatsapp:"237670035609"},
+{id:2,title:"Nounou residente",desc:"Recherche nounou douce et patiente pour 2 enfants salaire 40000",location:"Yaoundé Damas",whatsapp:"237672009971"},
+{id:3,title:"Baby sitter",desc:"Garde d'enfant les week-ends",location:"Yaoundé Mendong",whatsapp:"237655000000"},
+{id:4,title:"Recherche ménagère nounou résidente",desc:"Douce et sérieuse",location:"Yaoundé",whatsapp:"237673002813"},
+{id:5,title:"Recrutement de lessiveuses",desc:"Disponible immédiatement",location:"Yaoundé Douala Limbe",whatsapp:"237656550128"}
+
 ],
-"securite":[{id:6,title:"recherche 2 vigiles",desc:"pour un immeuble jour et nuit",location:"douala akwa",whatsapp:"+237694523427",email:"facilitateursgroupe@gmail.com"},
-{id:25,title:"recrutement des vigiles",desc:"best security services sarl",location:"Yaoundé douala",whatsapp:"+237 657952847",email:"facilitateursgroupe@gmail.com"}],
-"teleconseiller":[{id:7,title:"teleconseiller",desc:"s'exprimer en français",location:"Yaoundé jouvence",whatsapp:"237690740718",email:"facilitateursgroupe@gmail.com"}],
 
+"securite":[
 
-  "annonce commercial tout a vendre": [
-    {
-      "id": 14,
-      "title": "fond de commerce a vendre",
-      "desc": "sans marchandises 700k avec marchandises 1.200million loyer 50k",
-      "location": "yaounde montée zoe",
-      "whatsapp": "237670035609",
-      "email": "facilitateursgroupe@gmail.com"
-    },
-    {
-      "id": 15,
-      "title": "fond de commerce a vendre",
-      "desc": "avec où sans emplacement",
-      "location": "yaounde obobogo",
-      "whatsapp": "237670035609",
-      "email": "facilitateursgroupe@gmail.com"
-    }
-  ],
+{id:6,title:"Recherche 2 vigiles",desc:"Pour un immeuble jour et nuit",location:"Douala Akwa",whatsapp:"237694523427"},
+{id:7,title:"Recrutement des vigiles",desc:"Best Security Services SARL",location:"Yaoundé Douala",whatsapp:"237657952847"}
 
-"chauffeur":[{id:8,title:"chauffeur",desc:"yango recrute des chauffeurs avec véhicule",location:"Yaoundé",whatsapp:"237651978113",email:"facilitateursgroupe@gmail.com"}],
-"technicien":[{id:9,title:"recherche de 2 macons avec manoeuvre",desc:"parpaing compte 70f",location:"Yaoundé lendi",whatsapp:"237653997463",email:"facilitateursgroupe@gmail.com"},
-{id:28,title:"recrutement des mecaniciens camion toliers",desc:"pour farage",location:"douala",whatsapp:"+237 6 89 62 53 82",email:"facilitateursgroupe@gmail.com"},
-{id:9,title:"recherche de 3 macons avec manoeuvre",desc:"pour 2 mois de travail 8000//jours ",location:"bafang ",whatsapp:"237656486042",email:"facilitateursgroupe@gmail.com"}],
-"developpeur":[{id:10,title:"Développeur Web",desc:"HTML, CSS, JS, React",location:"Yaoundé",whatsapp:"237670035609",email:"facilitateursgroupe@gmail.com"}],
-"prothesiste ongulaire beaute coiffure":[
-{id:14,title:"recherche esthéticienne polyvalente",desc:"ngomba beauty",location:"Douala akwa nord",whatsapp:"+237 673 442 884",email:"facilitateursgroupe@gmail.com"},
-{id:14,title:"recherche des coiffeurs",desc:"dans un salon de coiffure",location:"Douala au niveau de la bank atlantique egalari Congo ancien 3e ",whatsapp:"+237687262154",email:"facilitateursgroupe@gmail.com"},
-{id:11,title:"prothesiste",desc:"recherche prothesiste ongulaire",location:"douala ndogbon",whatsapp:"237677857164",email:"facilitateursgroupe@gmail.com"},
-{id:12,title:"Laura",desc:"1 coiffeur 4 estheticienne masseuse expérimentés",location:"Bali douala",whatsapp:"+237690302387",email:"facilitateursgroupe@gmail.com"},
-{id:13,title:"recherche une coiffeuse ",desc:"pour salon de coiffure",location:"douala derriere tradex makepe",whatsapp:"+237692546046",email:"facilitateursgroupe@gmail.com"}
 ],
-"formation":[{id:14,title:"depannage cuisiniere",desc:"uniquement pour les garcons libres",location:"yaounde elig edzoa",whatsapp:"237656237988",email:"facilitateursgroupe@gmail.com"},
-{id:15,title:"recyclage grue ",desc:"formation 500000xaf au port autonome",location:"douala",whatsapp:"+237 6 91 56 49 67",email:"facilitateursgroupe@gmail.com"}],
+
+"teleconseiller":[
+
+{id:8,title:"Téléconseiller",desc:"Savoir bien s'exprimer en français",location:"Yaoundé Jouvence",whatsapp:"237690740718"}
+
+],
+
+"annonce commercial tout a vendre":[
+
+{id:9,title:"Fond de commerce à vendre",desc:"Sans marchandises 700k avec marchandises 1.200.000 loyer 50k",location:"Yaoundé Montée Zoé",whatsapp:"237670035609"},
+{id:10,title:"Fond de commerce à vendre",desc:"Avec ou sans emplacement",location:"Yaoundé Obobogo",whatsapp:"237670035609"}
+
+],
+
+"chauffeur":[
+
+{id:11,title:"Chauffeur Yango",desc:"Avec véhicule personnel",location:"Yaoundé",whatsapp:"237651978113"}
+
+],
+
+"technicien":[
+
+{id:12,title:"Recherche 2 maçons avec manoeuvre",desc:"Parpaing compte 70f",location:"Yaoundé Lendi",whatsapp:"237653997463"},
+{id:13,title:"Recrutement mécaniciens camion toliers",desc:"Travaux forage",location:"Douala",whatsapp:"237689625382"},
+{id:14,title:"Recherche 3 maçons avec manoeuvre",desc:"2 mois travail salaire 8000/jour",location:"Bafang",whatsapp:"237656486042"}
+
+],
+
+"developpeur":[
+
+{id:15,title:"Développeur Web",desc:"HTML CSS JavaScript React",location:"Yaoundé",whatsapp:"237670035609"}
+
+],
+
+"formation":[
+
+{id:16,title:"Formation dépannage cuisinière",desc:"Uniquement pour garçons libres",location:"Yaoundé Elig-Edzoa",whatsapp:"237656237988"},
+{id:17,title:"Formation recyclage grue",desc:"Formation 500000 au port autonome",location:"Douala",whatsapp:"237691564967"}
+
+],
+
 "hotelerie":[
-{id:15,title:"recherche secretaires serveuses receptionnistes cuisiniere",desc:"disponible immediatement",location:"yaounde olembe",whatsapp:"237699920394",email:"facilitateursgroupe@gmail.com"},
-{id:16,title:"serveuse de bar",desc:"disponible immediatement",location:"yaounde mvogada",whatsapp:"237698288174",email:"facilitateursgroupe@gmail.com"},
-{id:17,title:"serveuse restaurant bistrot",desc:"disponible immediatement",location:"yaounde damas",whatsapp:"237675139927",email:"facilitateursgroupe@gmail.com"}
+
+{id:18,title:"Recherche serveuses réceptionnistes cuisinières",desc:"Disponible immédiatement",location:"Yaoundé Olembe",whatsapp:"237699920394"},
+{id:19,title:"Serveuse de bar",desc:"Disponible immédiatement",location:"Yaoundé Mvogada",whatsapp:"237698288174"},
+{id:20,title:"Serveuse restaurant bistrot",desc:"Disponible immédiatement",location:"Yaoundé Damas",whatsapp:"237675139927"}
+
 ],
+
 "manutentionnaire et manoeuvre":[
-{id:18,title:"recherche 2 etiqueteurs",desc:"pour produits cosmetique",location:"Yaoundé",whatsapp:"237691674694",email:"facilitateursgroupe@gmail.com"},
-{id:19,title:"recherche des manutentionnaires",desc:"pour societe de recyclage",location:"Yaoundé bariere",whatsapp:"237695548297",email:"facilitateursgroupe@gmail.com"},
-{id:20,title:"recherche des laveurs",desc:"pour une nouvelle laverie",location:"Yaoundé biyrmassi superette",whatsapp:"237655544556",email:"facilitateursgroupe@gmail.com"}
+
+{id:21,title:"Recherche 2 étiqueteurs",desc:"Produits cosmétiques",location:"Yaoundé",whatsapp:"237691674694"},
+{id:22,title:"Recherche manutentionnaires",desc:"Société de recyclage",location:"Yaoundé Barrière",whatsapp:"237695548297"},
+{id:23,title:"Recherche laveurs",desc:"Nouvelle laverie",location:"Yaoundé Biyemassi",whatsapp:"237655544556"}
+
 ],
-"medecine auxiliaire de vie infirmiere":[{id:21,title:"auxiliaire de vie pour un papa de +70 ans",desc:"experience salaire 70000xaf",location:"Yaoundé anguissa",whatsapp:"237656109081",email:"facilitateursgroupe@gmail.com"}],
+
+"medecine auxiliaire de vie infirmiere":[
+
+{id:24,title:"Auxiliaire de vie",desc:"S'occuper d'un papa de +70 ans salaire 70000",location:"Yaoundé Anguissa",whatsapp:"237656109081"}
+
+],
+
 "commerciaux":[
-{id:14,title:"sésame market recrute",desc:" manutentionnaire hôte hôtesse de caisse caissière agent de sécurité",location:"Douala siège générale",whatsapp:"",email:"facilitateursgroupe@gmail.com"},
-{id:14,title:"megalux industrie",desc:"livreurs technicien",location:"au siège générale Douala Yaoundé Bafoussam ",whatsapp:"",email:"facilitateursgroupe@gmail.com"},
-{id:14,title:"compagnie Fermière du Cameroun cfc",desc:"ouvriers de ferme animateurs qhse agent de production magasinier chauffeur",location:"Yaoundé",whatsapp:"+237 233 42 93 00",email:"facilitateursgroupe@gmail.com"},
-{id:14,title:"Atlas holding transformation farine et produit locaux",desc:"ouvriers de production agents de conditionnement commerciaux et livreurs",location:"Douala 
-",whatsapp:"",email:"facilitateursgroupe@gmail.com"},
-{id:14,title:"agid Cameroun sarl",desc:"ouvriers agricoles agents de transformation commerciaux livreurs",location:"Douala ",whatsapp:"",email:"facilitateursgroupe@gmail.com"},
-{id:14,title:"recherche agent commercial hôtesse de vente",desc:"salaire 50k plus commission sur les ventes",location:"Douala akwa",whatsapp:"237687526827",email:"facilitateursgroupe@gmail.com"},
-{id:14,title:"recrutement massif a dovv",desc:"caissière vendeuse rayonniste agent de sécurité gestionnaire de restauration",location:" siège générale Yaoundé",whatsapp:"",email:"facilitateursgroupe@gmail.com"},
-{id:22,title:"vente de parfum ambulant",desc:"personnes dynamiques",location:"yaounde",whatsapp:"237695353382",email:"facilitateursgroupe@gmail.com"},
-{id:23,title:"recherche gerant boutique de telephone",desc:"savoir au moins soude un citcuit de charge 70000xaf",location:"Yaoundé",whatsapp:"237692215670",email:"facilitateursgroupe@gmail.com"},
-{id:24,title:"recherche des chargers de clientels",desc:"a mokolo",location:"Yaoundé",whatsapp:"237698912831",email:"facilitateursgroupe@gmail.com"},
-{id:24,title:"recherche 3 vendeuses a mokolo",desc:" dans une parfumerie",location:"Yaoundé",whatsapp:"237640 44 97 91",email:"facilitateursgroupe@gmail.com"},
-{id:26,title:"recherche des vendeurs ambul1ant",desc:"a yaounde",location:"Yaoundé",whatsapp:"237674284872",email:"facilitateursgroupe@gmail.com"}
+
+{id:25,title:"Vente de parfum ambulant",desc:"Personnes dynamiques",location:"Yaoundé",whatsapp:"237695353382"},
+{id:26,title:"Gérant boutique téléphone",desc:"Savoir souder circuit charge salaire 70000",location:"Yaoundé",whatsapp:"237692215670"},
+{id:27,title:"Chargé clientèle",desc:"Poste à Mokolo",location:"Yaoundé",whatsapp:"237698912831"},
+{id:28,title:"3 vendeuses parfumerie",desc:"Poste à Mokolo",location:"Yaoundé",whatsapp:"237640449791"}
+
 ]
+
 };
 
-// --- BOUTONS CATEGORIES
+const premiumUsers={
+
+"Yaoundé":[
+{name:"Diane Miriam",age:25,district:"Ekounou",position:"Lessiveuse",degree:"BEPC",date:"2026-03-06",phone:"237656388065"},
+{name:"Haoua Daly Josepha",age:25,district:"Nkoabang",position:"Menagere",degree:"BEPC",date:"2026-03-06",phone:"237698244788"},
+{name:"Alice Dupont",age:28,district:"Bastos",position:"Développeur",degree:"Licence",date:"2026-03-05",phone:"237670035609"},
+{name:"Yaya Celestin",age:23,district:"Mbankolo",position:"Un peu de tout",degree:"CEP",date:"2026-03-08",phone:"237652703436"},
+{name:"Ndeme Carelle",age:20,district:"Bonas",position:"Etudiante",degree:"Baccalauréat",date:"2026-03-09",phone:"237672259151"},
+{name:"Ndifor Clinton",age:27,district:"Ngousso",position:"Cuisinier",degree:"Baccalauréat",date:"2026-03-14",phone:"237650260023"},
+{name:"Maah Nguene",age:25,district:"Carroussel",position:"Secrétaire restauratrice",degree:"Baccalauréat",date:"2026-03-09",phone:"237694950832"}
+],
+
+"Douala":[
+{name:"Jean Martin",age:32,district:"Bonapriso",position:"Nounou",degree:"Baccalauréat",date:"2026-03-01",phone:"237699112233"},
+{name:"Silac Azock",age:27,district:"Nyalla Entrée Ecole",position:"Un peu de tout",degree:"Licence",date:"2026-03-08",phone:"237658415604"},
+{name:"Nzega Ndjenou",age:41,district:"Beedi",position:"Électricien",degree:"PF3",date:"2026-03-14",phone:"237673077547"}
+]
+
+};
+
 const catDiv=document.getElementById("categories");
+
 categories.forEach(cat=>{
-  const btn=document.createElement("button");
-  btn.className="category-btn";
-  btn.innerText=cat;
-  btn.onclick=()=>showOffers(cat);
-  catDiv.appendChild(btn);
+
+const btn=document.createElement("button");
+
+btn.className="category-btn";
+
+btn.innerText=cat;
+
+btn.onclick=()=>showOffers(cat);
+
+catDiv.appendChild(btn);
+
 });
 
-let selectedOffer=null;
-
-// --- AFFICHAGE OFFRES
 function showOffers(cat){
-  const list=document.getElementById("offersList");
-  list.innerHTML="";
-  offers[cat]?.forEach(offer=>{
-    const div=document.createElement("div");
-    div.className="offer-card";
-    div.innerHTML=`
-      <h3>${offer.title}</h3>
-      <p>${offer.desc}</p>
-      <p><b>Localisation:</b> ${offer.location}</p>
-      <div class="offer-actions">
-        <button class="primary" onclick="openForm(${offer.id})">Postuler</button>
-        <button class="success" onclick="copyLink(${offer.id})">Lien</button>
-        <button class="success" onclick="openWhatsApp('${offer.whatsapp}','${offer.title}',${offer.id})">WhatsApp</button>
-      </div>
-    `;
-    list.appendChild(div);
-  });
+
+const list=document.getElementById("offersList");
+
+list.innerHTML="";
+
+if(!offers[cat]) return;
+
+offers[cat].forEach(offer=>{
+
+const div=document.createElement("div");
+
+div.className="offer-card";
+
+div.innerHTML=`
+
+<h3>${offer.title}</h3>
+<p>${offer.desc}</p>
+<p>${offer.location}</p>
+
+<div class="offer-actions">
+
+<button class="primary" onclick="applyOffer('${offer.title}','${offer.whatsapp}')">
+Postuler
+</button>
+
+<button class="success" onclick="copyLink(${offer.id})">
+Lien
+</button>
+
+<button class="success" onclick="contactOffer('${offer.whatsapp}','${offer.title}')">
+WhatsApp
+</button>
+
+</div>
+
+`;
+
+list.appendChild(div);
+
+});
+
 }
 
-// --- FORMULAIRE
-function openForm(id){ selectedOffer=Object.values(offers).flat().find(o=>o.id===id); document.getElementById("formPopup").style.display="flex"; }
-function closeForm(){document.getElementById("formPopup").style.display="none";}
-function gatherFormData(){return {
-  name:applicantName.value,email:applicantEmail.value,age:applicantAge.value,
-  city:applicantCity.value,district:applicantDistrict.value,position:applicantPosition.value,
-  degree:applicantDegree.value,message:applicantMessage.value,date:applicantDate.value
-}}
+function applyOffer(title,phone){
 
-// WhatsApp / Email
-document.getElementById("submitWhatsApp").onclick=function(){
-  const data=gatherFormData();
-  const text=encodeURIComponent(`Candidature ${selectedOffer.title}\nNom:${data.name}\nEmail:${data.email}\nMessage:${data.message}`);
-  window.open(`https://wa.me/${selectedOffer.whatsapp}?text=${text}`);
+const text=encodeURIComponent("Bonjour je souhaite postuler pour "+title);
+
+window.open("https://wa.me/"+phone+"?text="+text);
+
 }
-document.getElementById("submitEmail").onclick=function(){
-  const data=gatherFormData();
-  const subject=`Candidature ${selectedOffer.title}`;
-  const body=encodeURIComponent(`Nom:${data.name}\nEmail:${data.email}\nVille:${data.city}\nPoste:${data.position}\nMessage:${data.message}`);
-  window.location.href=`mailto:${selectedOffer.email}?subject=${subject}&body=${body}`;
+
+function contactOffer(phone,title){
+
+const text=encodeURIComponent("Bonjour concernant l'offre "+title);
+
+window.open("https://wa.me/"+phone+"?text="+text);
+
 }
-function openWhatsApp(number,title,id){
-  const link=`https://workshopkmer.vercel.app/#job${id}`;
-  const text=encodeURIComponent(`Bonjour je souhaite postuler pour ${title}\nLien:${link}`);
-  window.open(`https://wa.me/${number}?text=${text}`);
-}
+
 function copyLink(id){
-  const url=`https://workshopkmer.vercel.app/#job${id}`;
-  navigator.clipboard.writeText(url); alert("Lien copié");
+
+const url=location.href+"#job"+id;
+
+navigator.clipboard.writeText(url);
+
+alert("Lien copié");
+
 }
 
-// --- PREMIUM USERS
-const premiumUsers=[
-{name:"Diane Miriam",age:25,city:"Yaoundé",district:"Ekounou",position:"Lessiveuse",degree:"BEPC",date:"2026-03-06",phone:"+237656388065"},
-{name:"Haoua Daly Josepha",age:25,city:"Yaoundé",district:"Nkoabang",position:"Menagere",degree:"BEPC",date:"2026-03-06",phone:"+237698244788"},
-{name:"Alice Dupont",age:28,city:"Yaoundé",district:"Bastos",position:"Développeur",degree:"Licence",date:"2026-03-05",phone:"(+237670035609"},
-{name:"Silac Azock",age:27,city:"Douala",district:"Nyalla Entree Ecole",position:"Un peu de tout",degree:"Licence",date:"2026-03-08",phone:"+237658415604"},
-{name:"Yaya Celestin",age:23,city:"Yaoundé",district:"Mbankolo",position:"Un peu de tout",degree:"CEP",date:"2026-03-08",phone:"+237652703436"},
-{name:"Jean Martin",age:32,city:"Douala",district:"Bonapriso",position:"Nounou",degree:"Baccalauréat",date:"2026-03-01",phone:"+237699112233"},
-{name:"ndeme carelle", age:20, city:"yaounde", district:"Bonas", position:"etudiante", degree:"Baccalauréat", date:"2026-03-09", phone:"+237672259151"},
-{name:"ndifor Clinton", age:27, city:"yaounde ", district:"ngousso", position:"cuisinier", degree:"Baccalauréat", date:"2026-03-14", phone:"+237650260023"},
-{name:"maah nguene", age:25, city:"yaounde", district:"carroussel", position:"secrétaire , restauratrice", degree:"Baccalauréat", date:"2026-03-09", phone:"+237694950832"},
-{name:"Yoko nginim", age:29, city:"Yde & dla", district:"iftic sup  & yassa", position:"technicien supérieur en maintenance industrielle", degree:"DUT en maintenance industrielle", date:"2026-03-14", phone:"+2376 55 43 67 11"},
-{name:" nzega ndjenou",age:41,city:"Douala",district:"beedi",position:"électricien",degree:"pf3",date:"2026-03-14",phone:"+237673077547"},
-];
+function showPremium(){
 
-function showPremium() {
-  const list = document.getElementById("offersList");
-  list.innerHTML = `
-    <p>Liste des chercheurs d'emploi disponibles. Contactez le profil qui vous intéresse :</p>
-    <div class="scrollable-table">
-      <table id="premiumTable">
-        <tr>
-          <th>Nom</th>
-          <th>Age</th>
-          <th>Ville</th>
-          <th>Quartier</th>
-          <th>Poste</th>
-          <th>Diplôme</th>
-          <th>Date</th>
-          <th>Téléphone</th>
-          <th>Contacter</th>
-        </tr>
-      </table>
-    </div>
-  `;
-  const table = document.getElementById("premiumTable");
-  premiumUsers.forEach(u => {
-    const row = table.insertRow();
-    row.innerHTML = `
-      <td>${u.name}</td>
-      <td>${u.age}</td>
-      <td>${u.city}</td>
-      <td>${u.district}</td>
-      <td>${u.position}</td>
-      <td>${u.degree}</td>
-      <td>${u.date}</td>
-      <td>${u.phone}</td>
-      <td>
-<button onclick="contactPremium('${u.phone}')">WhatsApp</button>
-</td>  `;
-  });
+const list=document.getElementById("offersList");
+
+list.innerHTML="";
+
+Object.keys(premiumUsers).forEach(city=>{
+
+const cityDiv=document.createElement("div");
+
+cityDiv.className="premium-city";
+
+cityDiv.innerHTML=`<h2>${city}</h2>`;
+
+const scroll=document.createElement("div");
+
+scroll.className="premium-scroll";
+
+premiumUsers[city].forEach(user=>{
+
+const card=document.createElement("div");
+
+card.className="premium-card";
+
+card.innerHTML=`
+
+<h4>${user.name}</h4>
+<p>Age: ${user.age}</p>
+<p>${user.district}</p>
+<p>${user.position}</p>
+
+<button onclick="contactPremium('${user.phone}')">
+WhatsApp
+</button>
+
+`;
+
+scroll.appendChild(card);
+
+});
+
+cityDiv.appendChild(scroll);
+
+list.appendChild(cityDiv);
+
+});
+
 }
 
-function searchOffers() {
-  const term = document.getElementById("searchOffer").value.toLowerCase();
-  const list = document.getElementById("offersList");
-  list.innerHTML = "";
-
-  // rechercher dans les OFFRES
-  Object.keys(offers).forEach(cat=>{
-    offers[cat].forEach(offer=>{
-      const text = (offer.title + offer.desc + offer.location + offer.whatsapp).toLowerCase();
-
-      if(text.includes(term)){
-        const div=document.createElement("div");
-        div.className="offer-card";
-        div.innerHTML=`
-          <h3>${offer.title}</h3>
-          <p>${offer.desc}</p>
-          <p><b>Localisation:</b> ${offer.location}</p>
-          <p><b>Téléphone:</b> ${offer.whatsapp}</p>
-          <div class="offer-actions">
-            <button class="primary" onclick="openForm(${offer.id})">Postuler</button>
-            <button class="success" onclick="copyLink(${offer.id})">Lien</button>
-            <button class="success" onclick="openWhatsApp('${offer.whatsapp}','${offer.title}',${offer.id})">WhatsApp</button>
-          </div>
-        `;
-        list.appendChild(div);
-      }
-    });
-  });
-
-  // rechercher dans les profils premium
-  premiumUsers.forEach(user=>{
-    const text = (user.name + user.city + user.position + user.phone).toLowerCase();
-
-    if(text.includes(term)){
-      const div=document.createElement("div");
-      div.className="offer-card";
-      div.innerHTML=`
-        <h3>${user.name}</h3>
-        <p><b>Age:</b> ${user.age}</p>
-        <p><b>Ville:</b> ${user.city}</p>
-        <p><b>Quartier:</b> ${user.district}</p>
-        <p><b>Poste:</b> ${user.position}</p>
-        <p><b>Téléphone:</b> ${user.phone}</p>
-        <button onclick="contactPremium('${user.phone}')">WhatsApp</button>
-      `;
-      list.appendChild(div);
-    }
-  });
-}
-
-// contact premium
 function contactPremium(phone){
-  window.open(`https://wa.me/${phone}`);
+
+window.open("https://wa.me/"+phone);
+
 }
 
-// INVITATION
-const inviteBtn = document.getElementById("inviteFriendsBtn");
-const inviteBox = document.getElementById("inviteBox");
-const inviteLink = document.getElementById("inviteLink");
+function searchOffers(){
 
-inviteLink.value = "https://workshopkmer.vercel.app/?ref=invite";
+const term=document.getElementById("searchOffer").value.toLowerCase();
 
-inviteBtn.onclick = () =>{
-  inviteBox.style.display =
-  inviteBox.style.display === "none" ? "block" : "none";
-};
+const list=document.getElementById("offersList");
 
-function copyInviteLink(){
-  navigator.clipboard.writeText(inviteLink.value);
-  alert("Lien copié !");
+list.innerHTML="";
+
+Object.values(offers).forEach(arr=>{
+
+arr.forEach(o=>{
+
+const text=(o.title+o.desc+o.location).toLowerCase();
+
+if(text.includes(term)){
+
+const div=document.createElement("div");
+
+div.className="offer-card";
+
+div.innerHTML="<h3>"+o.title+"</h3><p>"+o.desc+"</p>";
+
+list.appendChild(div);
+
 }
 
-function shareInviteWhatsApp(){
-  const text = encodeURIComponent("Rejoins Workshopkmer pour trouver un travail : " + inviteLink.value);
-  window.open("https://wa.me/?text="+text);
+});
+
+});
+
 }
 
 </script>
