@@ -90,7 +90,7 @@ padding:10px 0;
 }
 
 .premium-card{
-min-width:180px;
+min-width:200px;
 background:#1e293b;
 padding:10px;
 border-radius:10px;
@@ -136,6 +136,16 @@ WORKSHOPKMER
 
 <button class="success" onclick="showPremium()">Premium</button>
 
+<button class="primary"
+onclick="window.open('https://forms.gle/SgeUAdndex6Ch9Fh8')">
+Publier une offre
+</button>
+
+<button class="success"
+onclick="window.open('https://forms.gle/qNs3xAPf2UUU7NhC9')">
+Créer Profil Premium
+</button>
+
 <button class="success" onclick="openWhatsAppChannel()">WhatsApp</button>
 
 </header>
@@ -170,34 +180,10 @@ function openWhatsAppChannel(){
 window.open("https://whatsapp.com/channel/0029Vb8CxB25Ui2VYo0Ylt2w");
 }
 
-function applyOffer(title,phone){
-const text=encodeURIComponent("Bonjour je souhaite postuler pour "+title);
-window.open("https://wa.me/"+phone+"?text="+text);
-}
-
-function contactOffer(phone,title,id){
-
-const link="https://workshopkmer.vercel.app/#job"+id;
-
-const text=encodeURIComponent(
-"Bonjour concernant l'offre "+title+"\n"+link
-);
-
-window.open("https://wa.me/"+phone+"?text="+text);
-
-}
-
-function copyLink(id){
-
-const url="https://workshopkmer.vercel.app/#job"+id;
-
-navigator.clipboard.writeText(url);
-
-alert("Lien copié");
-
-}
+/* catégories */
 
 const categories=[
+
 "nounou menagere lessiveuse",
 "developpeur",
 "chauffeur",
@@ -212,247 +198,26 @@ const categories=[
 "marketing",
 "manutentionnaire et manoeuvre",
 "hotelerie"
+
 ];
-
-const offers={
-
-"nounou menagere lessiveuse":[
-
-{id:1,title:"Nounou expérimentée",desc:"Garde d'enfants à domicile",location:"Yaoundé",whatsapp:"237670035609"},
-{id:2,title:"Nounou residente",desc:"Recherche nounou douce et patiente pour 2 enfants salaire 40000",location:"Yaoundé Damas",whatsapp:"237672009971"},
-{id:3,title:"Baby sitter",desc:"Garde d'enfant les week-ends",location:"Yaoundé Mendong",whatsapp:"237655000000"},
-{id:4,title:"Recherche ménagère nounou résidente",desc:"Douce et sérieuse",location:"Yaoundé",whatsapp:"237673002813"},
-{id:5,title:"Recrutement de lessiveuses",desc:"Disponible immédiatement",location:"Yaoundé Douala Limbe",whatsapp:"237656550128"}
-
-],
-
-"securite":[
-
-{id:6,title:"Recherche 2 vigiles",desc:"Pour un immeuble jour et nuit",location:"Douala Akwa",whatsapp:"237694523427"},
-{id:7,title:"Recrutement des vigiles",desc:"Best Security Services SARL",location:"Yaoundé Douala",whatsapp:"237657952847"}
-
-],
-
-"teleconseiller":[
-
-{id:8,title:"Téléconseiller",desc:"Savoir bien s'exprimer en français",location:"Yaoundé Jouvence",whatsapp:"237690740718"}
-
-],
-
-"annonce commercial tout a vendre":[
-
-{id:9,title:"Fond de commerce à vendre",desc:"Sans marchandises 700k avec marchandises 1.200.000 loyer 50k",location:"Yaoundé Montée Zoé",whatsapp:"237670035609"},
-{id:10,title:"Fond de commerce à vendre",desc:"Avec ou sans emplacement",location:"Yaoundé Obobogo",whatsapp:"237670035609"}
-
-],
-
-"chauffeur":[
-
-{id:11,title:"Chauffeur Yango",desc:"Avec véhicule personnel",location:"Yaoundé",whatsapp:"237651978113"}
-
-],
-
-"technicien":[
-
-{id:12,title:"Recherche 2 maçons avec manoeuvre",desc:"Parpaing compte 70f",location:"Yaoundé Lendi",whatsapp:"237653997463"},
-{id:13,title:"Recrutement mécaniciens camion toliers",desc:"Travaux forage",location:"Douala",whatsapp:"237689625382"},
-{id:14,title:"Recherche 3 maçons avec manoeuvre",desc:"2 mois travail salaire 8000/jour",location:"Bafang",whatsapp:"237656486042"}
-
-],
-
-"developpeur":[
-
-{id:15,title:"Développeur Web",desc:"HTML CSS JavaScript React",location:"Yaoundé",whatsapp:"237670035609"}
-
-],
-
-"formation":[
-
-{id:16,title:"Formation dépannage cuisinière",desc:"Uniquement pour garçons libres",location:"Yaoundé Elig-Edzoa",whatsapp:"237656237988"},
-{id:17,title:"Formation recyclage grue",desc:"Formation 500000 au port autonome",location:"Douala",whatsapp:"237691564967"}
-
-],
-
-"hotelerie":[
-
-{id:18,title:"Recherche serveuses réceptionnistes cuisinières",desc:"Disponible immédiatement",location:"Yaoundé Olembe",whatsapp:"237699920394"},
-{id:19,title:"Serveuse de bar",desc:"Disponible immédiatement",location:"Yaoundé Mvogada",whatsapp:"237698288174"},
-{id:20,title:"Serveuse restaurant bistrot",desc:"Disponible immédiatement",location:"Yaoundé Damas",whatsapp:"237675139927"}
-
-],
-
-"manutentionnaire et manoeuvre":[
-
-{id:21,title:"Recherche 2 étiqueteurs",desc:"Produits cosmétiques",location:"Yaoundé",whatsapp:"237691674694"},
-{id:22,title:"Recherche manutentionnaires",desc:"Société de recyclage",location:"Yaoundé Barrière",whatsapp:"237695548297"},
-{id:23,title:"Recherche laveurs",desc:"Nouvelle laverie",location:"Yaoundé Biyemassi",whatsapp:"237655544556"}
-
-],
-
-"medecine auxiliaire de vie infirmiere":[
-
-{id:24,title:"Auxiliaire de vie",desc:"S'occuper d'un papa de +70 ans salaire 70000",location:"Yaoundé Anguissa",whatsapp:"237656109081"}
-
-],
-
-"commerciaux":[
-
-{id:25,title:"Vente de parfum ambulant",desc:"Personnes dynamiques",location:"Yaoundé",whatsapp:"237695353382"},
-{id:26,title:"Gérant boutique téléphone",desc:"Savoir souder circuit charge salaire 70000",location:"Yaoundé",whatsapp:"237692215670"},
-{id:27,title:"Chargé clientèle",desc:"Poste à Mokolo",location:"Yaoundé",whatsapp:"237698912831"},
-{id:28,title:"3 vendeuses parfumerie",desc:"Poste à Mokolo",location:"Yaoundé",whatsapp:"237640449791"}
-
-]
-
-};
-
-const premiumUsers={
-
-"Yaoundé":[
-
-{name:"Diane Miriam",age:25,district:"Ekounou",position:"Lessiveuse",degree:"BEPC",date:"2026-03-06",phone:"237656388065"},
-{name:"Haoua Daly Josepha",age:25,district:"Nkoabang",position:"Menagere",degree:"BEPC",date:"2026-03-06",phone:"237698244788"},
-{name:"Alice Dupont",age:28,district:"Bastos",position:"Développeur",degree:"Licence",date:"2026-03-05",phone:"237670035609"},
-{name:"Yaya Celestin",age:23,district:"Mbankolo",position:"Un peu de tout",degree:"CEP",date:"2026-03-08",phone:"237652703436"},
-{name:"Ndeme Carelle",age:20,district:"Bonas",position:"Etudiante",degree:"Baccalauréat",date:"2026-03-09",phone:"237672259151"},
-{name:"Ndifor Clinton",age:27,district:"Ngousso",position:"Cuisinier",degree:"Baccalauréat",date:"2026-03-14",phone:"237650260023"},
-{name:"Maah Nguene",age:25,district:"Carroussel",position:"Secrétaire restauratrice",degree:"Baccalauréat",date:"2026-03-09",phone:"237694950832"}
-
-],
-
-"Douala":[
-
-{name:"Jean Martin",age:32,district:"Bonapriso",position:"Nounou",degree:"Baccalauréat",date:"2026-03-01",phone:"237699112233"},
-{name:"Silac Azock",age:27,district:"Nyalla Entrée Ecole",position:"Un peu de tout",degree:"Licence",date:"2026-03-08",phone:"237658415604"},
-{name:"Nzega Ndjenou",age:41,district:"Beedi",position:"Électricien",degree:"PF3",date:"2026-03-14",phone:"237673077547"}
-
-]
-
-};
 
 const catDiv=document.getElementById("categories");
 
 categories.forEach(cat=>{
+
 const btn=document.createElement("button");
+
 btn.className="category-btn";
+
 btn.innerText=cat;
-btn.onclick=()=>showOffers(cat);
+
 catDiv.appendChild(btn);
-});
-
-function showOffers(cat){
-
-const list=document.getElementById("offersList");
-list.innerHTML="";
-
-if(!offers[cat]) return;
-
-offers[cat].forEach(offer=>{
-
-const div=document.createElement("div");
-
-div.className="offer-card";
-div.id="job"+offer.id;
-
-div.innerHTML=`
-
-<h3>${offer.title}</h3>
-<p>${offer.desc}</p>
-<p>${offer.location}</p>
-
-<div class="offer-actions">
-
-<button class="primary" onclick="applyOffer('${offer.title}','${offer.whatsapp}')">
-Postuler
-</button>
-
-<button class="success" onclick="copyLink(${offer.id})">
-Lien
-</button>
-
-<button class="success" onclick="contactOffer('${offer.whatsapp}','${offer.title}',${offer.id})">
-WhatsApp
-</button>
-
-</div>
-
-`;
-
-list.appendChild(div);
 
 });
-
-}
-
-function showPremium(){
-
-const list=document.getElementById("offersList");
-list.innerHTML="";
-
-Object.keys(premiumUsers).forEach(city=>{
-
-const cityDiv=document.createElement("div");
-cityDiv.className="premium-city";
-cityDiv.innerHTML=`<h2>${city}</h2>`;
-
-const scroll=document.createElement("div");
-scroll.className="premium-scroll";
-
-premiumUsers[city].forEach(user=>{
-
-const card=document.createElement("div");
-card.className="premium-card";
-
-card.innerHTML=`
-
-<h4>${user.name}</h4>
-<p>Age: ${user.age}</p>
-<p>${user.district}</p>
-<p>${user.position}</p>
-
-<button onclick="window.open('https://wa.me/${user.phone}')">
-WhatsApp
-</button>
-
-`;
-
-scroll.appendChild(card);
-
-});
-
-cityDiv.appendChild(scroll);
-list.appendChild(cityDiv);
-
-});
-
-}
 
 function searchOffers(){
 
 const term=document.getElementById("searchOffer").value.toLowerCase();
-const list=document.getElementById("offersList");
-list.innerHTML="";
-
-Object.values(offers).forEach(arr=>{
-
-arr.forEach(o=>{
-
-const text=(o.title+o.desc+o.location).toLowerCase();
-
-if(text.includes(term)){
-
-const div=document.createElement("div");
-div.className="offer-card";
-
-div.innerHTML="<h3>"+o.title+"</h3><p>"+o.desc+"</p><p>"+o.location+"</p>";
-
-list.appendChild(div);
-
-}
-
-});
-
-});
 
 }
 
