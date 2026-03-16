@@ -341,6 +341,7 @@ onkeyup="rechercher()">
 
 </footer>
 
+
 <!-- POPUP OFFRE -->
 
 <div id="popupOffre" class="popup">
@@ -348,10 +349,11 @@ onkeyup="rechercher()">
 
 <span class="close" onclick="fermerPopup('popupOffre')">×</span>
 
-<iframe src="https://docs.google.com/forms/d/e/1FAIpQLSeOffre/viewform?embedded=true"></iframe>
+<iframe src="https://docs.google.com/forms/d/e/1FAIpQLSfNr8QMkc50VaNmoQUOmfomlyt2hZq26klD5Vp98ZMYYZCkEA/viewform?embedded=true"></iframe>
 
 </div>
 </div>
+
 
 <!-- POPUP PREMIUM -->
 
@@ -360,165 +362,13 @@ onkeyup="rechercher()">
 
 <span class="close" onclick="fermerPopup('popupPremium')">×</span>
 
-<iframe src="https://docs.google.com/forms/d/e/1FAIpQLSePremium/viewform?embedded=true"></iframe>
+<iframe src="https://docs.google.com/forms/d/e/1FAIpQLSegi7tExGEbUwL3dEsUnI9lT73bO4Z8jpSK2Tfca0Nj0Kbb2Q/viewform?embedded=true"></iframe>
 
 </div>
 </div>
+
 
 <script>
-
-let offresData=[]
-let premiumData=[]
-
-fetch("https://sheetdb.io/api/v1/xfp4ufhy8zirg")
-.then(res=>res.json())
-.then(data=>{
-offresData=data
-afficherOffres(data)
-genererCategories()
-})
-
-function afficherOffres(data){
-
-let container=document.getElementById("offres")
-
-container.innerHTML=""
-
-data.forEach((o)=>{
-
-container.innerHTML+=`
-
-<div class="offre">
-
-<h4>${o["nom entreprise ou employeur "]}</h4>
-
-<p>${o["type d'employer recherché "]}</p>
-
-<p>${o["ville quartier où localisation "]}</p>
-
-<p>${o["description "]}</p>
-
-<button onclick="contactOffre('${o["contact WhatsApp "]}')">
-
-<i class="fab fa-whatsapp"></i> Contacter
-
-</button>
-
-</div>
-
-`
-
-})
-
-}
-
-function contactOffre(numero){
-
-let message="Bonjour, je vous contacte pour votre annonce sur Business TV Jobs : https://business-tv.vercel.app/"
-
-window.open("https://wa.me/237"+numero+"?text="+encodeURIComponent(message))
-
-}
-
-function genererCategories(){
-
-let cats=new Set()
-
-offresData.forEach(o=>{
-cats.add(o["catégories "])
-})
-
-let container=document.getElementById("categories")
-container.innerHTML=""
-
-cats.forEach(c=>{
-container.innerHTML+=`<button onclick="filtrer('${c}')">${c}</button>`
-})
-
-}
-
-function filtrer(cat){
-
-let offres=offresData.filter(o=>
-o["catégories "].toLowerCase().includes(cat.toLowerCase())
-)
-
-afficherOffres(offres)
-
-}
-
-function rechercher(){
-
-let mot=document.getElementById("search").value.toLowerCase()
-
-let offres=offresData.filter(o=>
-JSON.stringify(o).toLowerCase().includes(mot)
-)
-
-afficherOffres(offres)
-
-}
-
-/* PREMIUM */
-
-fetch("https://sheetdb.io/api/v1/14gkkcq7cvn8v")
-.then(res=>res.json())
-.then(data=>{
-premiumData=data
-afficherPremium(data)
-})
-
-function afficherPremium(data){
-
-let container=document.getElementById("premium")
-container.innerHTML=""
-
-data.forEach(p=>{
-
-let statut=(p["statut"]||"attente").toLowerCase()
-if(statut=="refuse"){return}
-
-let badgeClass="attente"
-let badgeText="⏳"
-
-if(statut=="verifie"){badgeClass="verifie";badgeText="✔"}
-if(statut=="premium"){badgeClass="premium";badgeText="⭐"}
-
-container.innerHTML+=`
-
-<div class="profil">
-
-<span class="badge ${badgeClass}">${badgeText}</span>
-
-<img src="https://raw.githubusercontent.com/Lfg237/m-dias/main/Polish_20260304_122805013.png">
-
-<h4>${p["nom et prénom :"]}</h4>
-
-<p>${p["âge :"]||""}</p>
-
-<p>${p["ville et quartier :"]}</p>
-
-<button onclick="contactProfil('${p["WhatsApp :"]||"670035609"}')">
-
-<i class="fab fa-whatsapp"></i> Contacter
-
-</button>
-
-</div>
-
-`
-
-})
-
-}
-
-function contactProfil(numero){
-
-let message="Bonjour, je viens de voir votre profil sur Business TV Jobs : https://business-tv.vercel.app/"
-
-window.open("https://wa.me/237"+numero+"?text="+encodeURIComponent(message))
-
-}
 
 function voirPremium(){
 document.getElementById("premium").scrollIntoView({behavior:"smooth"})
