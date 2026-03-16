@@ -1,225 +1,210 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html>
 <head>
-
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>WORKSHOPKMER</title>
-
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<title>Offres d'emploi Cameroun</title>
 
 <style>
 
 body{
-margin:0;
 font-family:Arial;
-background:#0f172a;
-color:white;
+background:#f2f2f2;
+margin:0;
 }
 
 header{
-background:#111827;
+background:#0a66c2;
+color:white;
 padding:15px;
-display:flex;
-gap:10px;
-align-items:center;
-justify-content:center;
-flex-wrap:wrap;
-font-weight:bold;
+text-align:center;
+}
+
+.section{
+padding:15px;
+}
+
+.offre{
+background:white;
+padding:10px;
+margin-bottom:10px;
+border-radius:8px;
 }
 
 button{
 padding:8px 12px;
-border:none;
-border-radius:8px;
-cursor:pointer;
-font-weight:bold;
-}
-
-.primary{background:#2563eb;color:white;}
-.success{background:#16a34a;color:white;}
-
-.container{
-max-width:900px;
-margin:auto;
-padding:20px;
-}
-
-.category-btn{
-background:#334155;
-color:white;
 margin:5px;
-}
-
-.offer-card{
-background:#1e293b;
-padding:15px;
-border-radius:10px;
-margin:10px 0;
-}
-
-.offer-actions{
-margin-top:10px;
-display:flex;
-gap:10px;
-flex-wrap:wrap;
-}
-
-input{
-width:100%;
-padding:10px;
-border-radius:8px;
 border:none;
-background:#334155;
+background:#0a66c2;
 color:white;
-margin:10px 0;
+border-radius:5px;
 }
 
-/* PREMIUM */
-
-.premium-city{
-margin-bottom:30px;
+.ville{
+margin-top:20px;
 }
 
-.premium-scroll{
+.scroll{
 display:flex;
 overflow-x:auto;
 gap:10px;
-padding:10px 0;
 }
 
-.premium-card{
-min-width:200px;
-background:#1e293b;
+.profil{
+min-width:160px;
+background:white;
 padding:10px;
-border-radius:10px;
-flex-shrink:0;
-}
-
-/* BANDE ANNONCE */
-
-#tickerContainer{
-position:fixed;
-bottom:0;
-left:0;
-width:100%;
-background:#2563eb;
-height:40px;
-display:flex;
-align-items:center;
-overflow:hidden;
-}
-
-#tickerText{
-white-space:nowrap;
-padding-left:100%;
-animation:tickerMove 20s linear infinite;
-}
-
-@keyframes tickerMove{
-0%{transform:translateX(0)}
-100%{transform:translateX(-100%)}
+border-radius:8px;
 }
 
 </style>
-
 </head>
 
 <body>
 
 <header>
-
-WORKSHOPKMER
-
-<button class="primary" onclick="goHome()">Accueil</button>
-
-<button class="success" onclick="showPremium()">Premium</button>
-
-<button class="primary"
-onclick="window.open('https://forms.gle/SgeUAdndex6Ch9Fh8')">
-Publier une offre
-</button>
-
-<button class="success"
-onclick="window.open('https://forms.gle/qNs3xAPf2UUU7NhC9')">
-Créer Profil Premium
-</button>
-
-<button class="success" onclick="openWhatsAppChannel()">WhatsApp</button>
-
+<h2>Offres d'emploi Cameroun</h2>
 </header>
 
-<div class="container">
+<div class="section">
 
-<h2>Catégories</h2>
+<h3>Catégories</h3>
 
-<div id="categories"></div>
-
-<input id="searchOffer" placeholder="Rechercher..." onkeyup="searchOffers()">
-
-<h2>Offres</h2>
-
-<div id="offersList"></div>
+<button onclick="filtrer('Vente')">Vente</button>
+<button onclick="filtrer('Informatique')">Informatique</button>
+<button onclick="filtrer('Marketing')">Marketing</button>
+<button onclick="filtrer('Tous')">Tous</button>
 
 </div>
 
-<div id="tickerContainer">
-<div id="tickerText">
-🔥 Nouvelles offres chaque jour 🔥 Contact recruteurs direct WhatsApp 🔥 Admin 670035609 🔥 WORKSHOPKMER la bible du travailleur
+<div class="section">
+
+<h3>Offres d'emploi</h3>
+
+<div id="offres"></div>
+
 </div>
+
+<div class="section">
+
+<h3>Profils Premium</h3>
+
+<div id="premium"></div>
+
 </div>
 
 <script>
 
-function goHome(){
-window.location.href="https://business-tv.vercel.app/";
-}
+let toutesOffres=[];
 
-function openWhatsAppChannel(){
-window.open("https://whatsapp.com/channel/0029Vb8CxB25Ui2VYo0Ylt2w");
-}
+fetch("https://opensheet.elk.sh/1klJHm6_gXU7EHqKBAe9cFL3i0LMu-u8S1ehz2bCD0AA/Form Responses 1")
+.then(res=>res.json())
+.then(data=>{
+toutesOffres=data;
+afficherOffres(data);
+});
 
-/* catégories */
+function afficherOffres(data){
 
-const categories=[
+let container=document.getElementById("offres");
 
-"nounou menagere lessiveuse",
-"developpeur",
-"chauffeur",
-"medecine auxiliaire de vie infirmiere",
-"commerciaux",
-"formation",
-"prothesiste ongulaire beaute coiffure",
-"technicien",
-"teleconseiller",
-"securite",
-"annonce commercial tout a vendre",
-"marketing",
-"manutentionnaire et manoeuvre",
-"hotelerie"
+container.innerHTML="";
 
-];
+data.forEach(o=>{
 
-const catDiv=document.getElementById("categories");
+container.innerHTML+=`
+<div class="offre">
 
-categories.forEach(cat=>{
+<h4>${o.Titre}</h4>
 
-const btn=document.createElement("button");
+<p>${o.Ville}</p>
 
-btn.className="category-btn";
+<p>${o.Categorie}</p>
 
-btn.innerText=cat;
+<p>${o.Description}</p>
 
-catDiv.appendChild(btn);
+<a href="https://wa.me/${o.WhatsApp}">
+<button>Contacter</button>
+</a>
+
+</div>
+`;
 
 });
 
-function searchOffers(){
+}
 
-const term=document.getElementById("searchOffer").value.toLowerCase();
+function filtrer(cat){
+
+if(cat==="Tous"){
+afficherOffres(toutesOffres);
+return;
+}
+
+let result=toutesOffres.filter(o=>o.Categorie===cat);
+
+afficherOffres(result);
 
 }
+
+fetch("https://opensheet.elk.sh/1J3oLyFZNPU-DJRSrhNjsxbEZX0ZGY_aebuuqIDW9sVU/Form Responses 1")
+.then(res=>res.json())
+.then(data=>{
+
+let villes={};
+
+data.forEach(p=>{
+
+if(!villes[p.Ville]){
+villes[p.Ville]=[];
+}
+
+villes[p.Ville].push(p);
+
+});
+
+let container=document.getElementById("premium");
+
+for(let ville in villes){
+
+container.innerHTML+=`
+
+<div class="ville">
+
+<h4>${ville}</h4>
+
+<div class="scroll" id="ville-${ville}"></div>
+
+</div>
+
+`;
+
+let zone=document.getElementById("ville-"+ville);
+
+villes[ville].forEach(p=>{
+
+zone.innerHTML+=`
+
+<div class="profil">
+
+<h5>${p.Nom}</h5>
+
+<p>${p.Age} ans</p>
+
+<p>${p.Quartier}</p>
+
+<a href="https://wa.me/${p.WhatsApp}">
+<button>WhatsApp</button>
+</a>
+
+</div>
+
+`;
+
+});
+
+}
+
+});
 
 </script>
 
