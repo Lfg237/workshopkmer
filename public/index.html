@@ -90,7 +90,7 @@ padding:10px 0;
 }
 
 .premium-card{
-min-width:200px;
+min-width:180px;
 background:#1e293b;
 padding:10px;
 border-radius:10px;
@@ -170,8 +170,34 @@ function openWhatsAppChannel(){
 window.open("https://whatsapp.com/channel/0029Vb8CxB25Ui2VYo0Ylt2w");
 }
 
-const categories=[
+function applyOffer(title,phone){
+const text=encodeURIComponent("Bonjour je souhaite postuler pour "+title);
+window.open("https://wa.me/"+phone+"?text="+text);
+}
 
+function contactOffer(phone,title,id){
+
+const link="https://workshopkmer.vercel.app/#job"+id;
+
+const text=encodeURIComponent(
+"Bonjour concernant l'offre "+title+"\n"+link
+);
+
+window.open("https://wa.me/"+phone+"?text="+text);
+
+}
+
+function copyLink(id){
+
+const url="https://workshopkmer.vercel.app/#job"+id;
+
+navigator.clipboard.writeText(url);
+
+alert("Lien copié");
+
+}
+
+const categories=[
 "nounou menagere lessiveuse",
 "developpeur",
 "chauffeur",
@@ -186,7 +212,6 @@ const categories=[
 "marketing",
 "manutentionnaire et manoeuvre",
 "hotelerie"
-
 ];
 
 const offers={
@@ -284,6 +309,7 @@ const offers={
 const premiumUsers={
 
 "Yaoundé":[
+
 {name:"Diane Miriam",age:25,district:"Ekounou",position:"Lessiveuse",degree:"BEPC",date:"2026-03-06",phone:"237656388065"},
 {name:"Haoua Daly Josepha",age:25,district:"Nkoabang",position:"Menagere",degree:"BEPC",date:"2026-03-06",phone:"237698244788"},
 {name:"Alice Dupont",age:28,district:"Bastos",position:"Développeur",degree:"Licence",date:"2026-03-05",phone:"237670035609"},
@@ -291,12 +317,15 @@ const premiumUsers={
 {name:"Ndeme Carelle",age:20,district:"Bonas",position:"Etudiante",degree:"Baccalauréat",date:"2026-03-09",phone:"237672259151"},
 {name:"Ndifor Clinton",age:27,district:"Ngousso",position:"Cuisinier",degree:"Baccalauréat",date:"2026-03-14",phone:"237650260023"},
 {name:"Maah Nguene",age:25,district:"Carroussel",position:"Secrétaire restauratrice",degree:"Baccalauréat",date:"2026-03-09",phone:"237694950832"}
+
 ],
 
 "Douala":[
+
 {name:"Jean Martin",age:32,district:"Bonapriso",position:"Nounou",degree:"Baccalauréat",date:"2026-03-01",phone:"237699112233"},
 {name:"Silac Azock",age:27,district:"Nyalla Entrée Ecole",position:"Un peu de tout",degree:"Licence",date:"2026-03-08",phone:"237658415604"},
 {name:"Nzega Ndjenou",age:41,district:"Beedi",position:"Électricien",degree:"PF3",date:"2026-03-14",phone:"237673077547"}
+
 ]
 
 };
@@ -304,23 +333,16 @@ const premiumUsers={
 const catDiv=document.getElementById("categories");
 
 categories.forEach(cat=>{
-
 const btn=document.createElement("button");
-
 btn.className="category-btn";
-
 btn.innerText=cat;
-
 btn.onclick=()=>showOffers(cat);
-
 catDiv.appendChild(btn);
-
 });
 
 function showOffers(cat){
 
 const list=document.getElementById("offersList");
-
 list.innerHTML="";
 
 if(!offers[cat]) return;
@@ -330,6 +352,7 @@ offers[cat].forEach(offer=>{
 const div=document.createElement("div");
 
 div.className="offer-card";
+div.id="job"+offer.id;
 
 div.innerHTML=`
 
@@ -347,7 +370,7 @@ Postuler
 Lien
 </button>
 
-<button class="success" onclick="contactOffer('${offer.whatsapp}','${offer.title}')">
+<button class="success" onclick="contactOffer('${offer.whatsapp}','${offer.title}',${offer.id})">
 WhatsApp
 </button>
 
@@ -361,49 +384,23 @@ list.appendChild(div);
 
 }
 
-function applyOffer(title,phone){
-
-const text=encodeURIComponent("Bonjour je souhaite postuler pour "+title);
-
-window.open("https://wa.me/"+phone+"?text="+text);
-
-}
-
-
-function contactOffer(phone,title,element){
-
-const link = window.location.origin + window.location.pathname + "#" + element.id;
-
-const text = encodeURIComponent(
-"Bonjour, je suis intéressé par l'offre : " + title + "\n" + link
-);
-
-window.open("https://wa.me/"+phone+"?text="+text,"_blank");
-
-}
-
 function showPremium(){
 
 const list=document.getElementById("offersList");
-
 list.innerHTML="";
 
 Object.keys(premiumUsers).forEach(city=>{
 
 const cityDiv=document.createElement("div");
-
 cityDiv.className="premium-city";
-
 cityDiv.innerHTML=`<h2>${city}</h2>`;
 
 const scroll=document.createElement("div");
-
 scroll.className="premium-scroll";
 
 premiumUsers[city].forEach(user=>{
 
 const card=document.createElement("div");
-
 card.className="premium-card";
 
 card.innerHTML=`
@@ -413,7 +410,7 @@ card.innerHTML=`
 <p>${user.district}</p>
 <p>${user.position}</p>
 
-<button onclick="contactPremium('${user.phone}')">
+<button onclick="window.open('https://wa.me/${user.phone}')">
 WhatsApp
 </button>
 
@@ -424,25 +421,16 @@ scroll.appendChild(card);
 });
 
 cityDiv.appendChild(scroll);
-
 list.appendChild(cityDiv);
 
 });
 
 }
 
-function contactPremium(phone){
-
-window.open("https://wa.me/"+phone);
-
-}
-
 function searchOffers(){
 
 const term=document.getElementById("searchOffer").value.toLowerCase();
-
 const list=document.getElementById("offersList");
-
 list.innerHTML="";
 
 Object.values(offers).forEach(arr=>{
@@ -454,10 +442,9 @@ const text=(o.title+o.desc+o.location).toLowerCase();
 if(text.includes(term)){
 
 const div=document.createElement("div");
-
 div.className="offer-card";
 
-div.innerHTML="<h3>"+o.title+"</h3><p>"+o.desc+"</p>";
+div.innerHTML="<h3>"+o.title+"</h3><p>"+o.desc+"</p><p>"+o.location+"</p>";
 
 list.appendChild(div);
 
