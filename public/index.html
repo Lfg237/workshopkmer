@@ -4,7 +4,7 @@
 <head>
 
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 
 <title>Business TV Jobs</title>
 
@@ -27,24 +27,63 @@ color:white;
 
 /* HEADER */
 
-header{
+.header{
 display:flex;
 justify-content:space-between;
 align-items:center;
-padding:15px;
-background:#00000066;
+padding:12px 15px;
+background:rgba(0,0,0,0.6);
+flex-wrap:wrap;
 }
 
-.logo{
+.header-left{
 display:flex;
 align-items:center;
 gap:10px;
 }
 
-.logo img{
-width:45px;
-height:45px;
+.logo{
+width:40px;
+height:40px;
 border-radius:50%;
+}
+
+.site-title{
+font-size:18px;
+font-weight:bold;
+}
+
+.header-center{
+display:flex;
+gap:15px;
+font-size:22px;
+}
+
+.header-center a{
+color:white;
+}
+
+.header-right{
+display:flex;
+gap:10px;
+}
+
+.btn-offre{
+background:#ff9800;
+border:none;
+padding:8px 14px;
+border-radius:20px;
+color:white;
+cursor:pointer;
+}
+
+.btn-premium{
+background:#e91e63;
+border:none;
+padding:8px 14px;
+border-radius:20px;
+color:white;
+cursor:pointer;
 }
 
 /* SEARCH */
@@ -58,20 +97,47 @@ width:100%;
 padding:12px;
 border-radius:10px;
 border:none;
-font-size:16px;
 }
 
-/* CATEGORIES AUTO */
+/* PREMIUM BUTTONS */
+
+.premium-actions{
+display:flex;
+gap:10px;
+justify-content:center;
+padding:10px;
+flex-wrap:wrap;
+}
+
+.btn-voir-premium{
+background:#ff9800;
+border:none;
+padding:10px 15px;
+border-radius:10px;
+color:white;
+cursor:pointer;
+}
+
+.btn-creer-premium{
+background:#e91e63;
+border:none;
+padding:10px 15px;
+border-radius:10px;
+color:white;
+cursor:pointer;
+}
+
+/* CATEGORIES */
 
 .categories{
 display:flex;
-gap:10px;
 overflow-x:auto;
+gap:10px;
 padding:10px;
 }
 
 .categories button{
-background:#ff9800;
+background:#2196f3;
 border:none;
 color:white;
 padding:8px 12px;
@@ -91,11 +157,6 @@ color:black;
 padding:12px;
 border-radius:10px;
 margin-bottom:10px;
-box-shadow:0 4px 10px rgba(0,0,0,0.2);
-}
-
-.offre h4{
-color:#0a66c2;
 }
 
 .offre button{
@@ -105,7 +166,6 @@ padding:8px;
 border-radius:6px;
 color:white;
 cursor:pointer;
-margin-top:5px;
 }
 
 /* PREMIUM */
@@ -114,6 +174,7 @@ margin-top:5px;
 display:flex;
 gap:10px;
 overflow-x:auto;
+padding:10px;
 }
 
 .profil{
@@ -129,7 +190,6 @@ text-align:center;
 width:70px;
 height:70px;
 border-radius:50%;
-object-fit:cover;
 margin-bottom:5px;
 }
 
@@ -148,73 +208,28 @@ padding:20px;
 background:#00000066;
 margin-top:20px;
 }
-.header-links{
-display:flex;
-gap:15px;
-font-size:22px;
-}
 
-.header-links a{
-color:white;
-transition:0.3s;
-}
-
-.header-links a:hover{
-color:#25d366;
-transform:scale(1.2);
-}
-.menu{
-display:flex;
-align-items:center;
-gap:10px;
-}
-
-.menu a{
-text-decoration:none;
-}
-
-.menu i{
-font-size:20px;
-color:white;
-}
-
-.btn-offre{
-background:#ff9800;
-border:none;
-padding:8px 12px;
-border-radius:6px;
-color:white;
-cursor:pointer;
-}
-
-.btn-premium{
-background:#e91e63;
-border:none;
-padding:8px 12px;
-border-radius:6px;
-color:white;
-cursor:pointer;
-}
 </style>
 
 </head>
 
 <body>
 
-<header>
+<header class="header">
 
-<div class="logo">
+<div class="header-left">
 
-<img src="https://raw.githubusercontent.com/Lfg237/m-dias/main/Polish_20260304_122805013.png">
+<img class="logo"
+src="https://raw.githubusercontent.com/Lfg237/m-dias/main/Polish_20260304_122805013.png">
 
-<h2>whorkshopkmer la bible du travailleur </h2>
+<span class="site-title">Business TV Jobs</span>
 
 </div>
 
-<div class="menu">
+<div class="header-center">
 
 <a href="https://business-tv.vercel.app/" target="_blank">
-<i class="fa-solid fa-house"></i>
+<i class="fa-solid fa-globe"></i>
 </a>
 
 <a href="https://www.facebook.com/profile.php?id=61587742360056" target="_blank">
@@ -225,16 +240,16 @@ cursor:pointer;
 <i class="fa-brands fa-whatsapp"></i>
 </a>
 
+</div>
+
+<div class="header-right">
+
 <a href="https://forms.gle/SgeUAdndex6Ch9Fh8" target="_blank">
-<button class="btn-offre">
-➕ Publier une offre
-</button>
+<button class="btn-offre">➕ Publier</button>
 </a>
 
 <a href="https://forms.gle/qNs3xAPf2UUU7NhC9" target="_blank">
-<button class="btn-premium">
-⭐ Profil Premium
-</button>
+<button class="btn-premium">⭐ Premium</button>
 </a>
 
 </div>
@@ -249,11 +264,25 @@ onkeyup="rechercher()">
 
 </div>
 
+<div class="premium-actions">
+
+<button onclick="voirPremium()" class="btn-voir-premium">
+⭐ Voir les profils Premium
+</button>
+
+<a href="https://forms.gle/qNs3xAPf2UUU7NhC9" target="_blank">
+<button class="btn-creer-premium">
+👤 Créer profil Premium
+</button>
+</a>
+
+</div>
+
 <div class="categories" id="categories"></div>
 
 <div class="section">
 
-<h3><i class="fa-solid fa-briefcase"></i> Offres d'emploi</h3>
+<h3>💼 Offres d'emploi</h3>
 
 <div id="offres"></div>
 
@@ -261,7 +290,7 @@ onkeyup="rechercher()">
 
 <div class="section">
 
-<h3><i class="fa-solid fa-star"></i> Profils Premium</h3>
+<h3>⭐ Profils Premium</h3>
 
 <div id="premium"></div>
 
@@ -269,36 +298,28 @@ onkeyup="rechercher()">
 
 <footer>
 
-© workshopkmer 2026 Cameroun
+© Business TV Cameroun
 
 </footer>
 
 <script>
 
-let offresData=[];
-let premiumData=[];
-
-/* CHARGER OFFRES */
+let offresData=[]
+let premiumData=[]
 
 fetch("https://sheetdb.io/api/v1/xfp4ufhy8zirg")
 .then(res=>res.json())
 .then(data=>{
-
-offresData=data;
-
-afficherOffres(data);
-
-genererCategories();
-
-});
-
-/* AFFICHER OFFRES */
+offresData=data
+afficherOffres(data)
+genererCategories()
+})
 
 function afficherOffres(data){
 
-let container=document.getElementById("offres");
+let container=document.getElementById("offres")
 
-container.innerHTML="";
+container.innerHTML=""
 
 data.forEach((o,i)=>{
 
@@ -308,15 +329,13 @@ container.innerHTML+=`
 
 <h4>${o["nom entreprise ou employeur "]}</h4>
 
-<p><b>Catégorie :</b> ${o["catégories "]}</p>
+<p>${o["type d'employer recherché "]}</p>
 
-<p><b>Poste :</b> ${o["type d'employer recherché "]}</p>
-
-<p><b>Lieu :</b> ${o["ville quartier où localisation "]}</p>
+<p>${o["ville quartier où localisation "]}</p>
 
 <p>${o["description "]}</p>
 
-<button onclick="contactOffre('${o["contact WhatsApp "]}' , '${o["type d'employer recherché "]}' , ${i})">
+<button onclick="contactOffre('${o["contact WhatsApp "]}')">
 
 <i class="fab fa-whatsapp"></i> Contacter
 
@@ -324,41 +343,33 @@ container.innerHTML+=`
 
 </div>
 
-`;
+`
 
-});
+})
 
 }
-
-/* GENERER CATEGORIES AUTO */
 
 function genererCategories(){
 
-let cats=new Set();
+let cats=new Set()
 
 offresData.forEach(o=>{
 
-cats.add(o["catégories "]);
+cats.add(o["catégories "])
 
-});
+})
 
-let container=document.getElementById("categories");
-
-container.innerHTML="";
+let container=document.getElementById("categories")
 
 cats.forEach(c=>{
 
-container.innerHTML+=`
+container.innerHTML+=
 
-<button onclick="filtrer('${c}')">${c}</button>
+`<button onclick="filtrer('${c}')">${c}</button>`
 
-`;
-
-});
+})
 
 }
-
-/* FILTRER */
 
 function filtrer(cat){
 
@@ -366,71 +377,44 @@ let offres=offresData.filter(o=>
 
 o["catégories "].toLowerCase().includes(cat.toLowerCase())
 
-);
+)
 
-afficherOffres(offres);
+afficherOffres(offres)
 
 }
 
-/* RECHERCHE */
-
 function rechercher(){
 
-let mot=document.getElementById("search").value.toLowerCase();
+let mot=document.getElementById("search").value.toLowerCase()
 
 let offres=offresData.filter(o=>
 
 JSON.stringify(o).toLowerCase().includes(mot)
 
-);
+)
 
-let premium=premiumData.filter(p=>
-
-JSON.stringify(p).toLowerCase().includes(mot)
-
-);
-
-afficherOffres(offres);
-
-afficherPremium(premium);
+afficherOffres(offres)
 
 }
 
-/* WHATSAPP OFFRE */
+function contactOffre(numero){
 
-function contactOffre(numero,poste,id){
-
-let message=encodeURIComponent(
-
-"Bonjour je vous contacte pour l'offre "+poste+
-
-" vue sur Business TV Jobs https://business-tv.vercel.app/#offre"+id
-
-);
-
-window.open("https://wa.me/237"+numero+"?text="+message);
+window.open("https://wa.me/237"+numero)
 
 }
-
-/* PREMIUM */
 
 fetch("https://sheetdb.io/api/v1/14gkkcq7cvn8v")
-
 .then(res=>res.json())
-
 .then(data=>{
-
-premiumData=data;
-
-afficherPremium(data);
-
-});
+premiumData=data
+afficherPremium(data)
+})
 
 function afficherPremium(data){
 
-let container=document.getElementById("premium");
+let container=document.getElementById("premium")
 
-container.innerHTML="";
+container.innerHTML=""
 
 data.forEach(p=>{
 
@@ -444,7 +428,7 @@ container.innerHTML+=`
 
 <p>${p["ville et quartier :"]}</p>
 
-<button onclick="contactProfil('${p["nom et prénom :"]}')">
+<button onclick="contactProfil()">
 
 <i class="fab fa-whatsapp"></i> Contacter
 
@@ -452,25 +436,22 @@ container.innerHTML+=`
 
 </div>
 
-`;
+`
 
-});
+})
 
 }
 
-/* WHATSAPP PROFIL */
+function contactProfil(){
 
-function contactProfil(nom){
+window.open("https://wa.me/237670035609")
 
-let message=encodeURIComponent(
+}
 
-"Bonjour "+nom+
+function voirPremium(){
 
-", j'ai vu votre profil sur Business TV Jobs https://business-tv.vercel.app"
-
-);
-
-window.open("https://wa.me/237670035609?text="+message);
+document.getElementById("premium")
+.scrollIntoView({behavior:"smooth"})
 
 }
 
