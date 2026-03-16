@@ -369,21 +369,16 @@ window.open("https://wa.me/"+phone+"?text="+text);
 
 }
 
-function contactOffer(phone,title){
 
-const text=encodeURIComponent("Bonjour concernant l'offre "+title);
+function contactOffer(phone,title,element){
 
-window.open("https://wa.me/"+phone+"?text="+text);
+const link = window.location.origin + window.location.pathname + "#" + element.id;
 
-}
+const text = encodeURIComponent(
+"Bonjour, je suis intéressé par l'offre : " + title + "\n" + link
+);
 
-function copyLink(id){
-
-const url=location.href+"#job"+id;
-
-navigator.clipboard.writeText(url);
-
-alert("Lien copié");
+window.open("https://wa.me/"+phone+"?text="+text,"_blank");
 
 }
 
