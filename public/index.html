@@ -486,10 +486,10 @@ let statut=(p["statut"]||"attente").toLowerCase()
 if(statut=="refuse"){return}
 
 let badgeClass="attente"
-let badgeText="⏳"
+let badgeText="⏳ En attente"
 
-if(statut=="verifie"){badgeClass="verifie";badgeText="✔"}
-if(statut=="premium"){badgeClass="premium";badgeText="⭐"}
+if(statut=="verifie"){badgeClass="verifie";badgeText="✔ Vérifié"}
+if(statut=="premium"){badgeClass="premium";badgeText="⭐ Premium"}
 
 container.innerHTML+=`
 
@@ -499,11 +499,17 @@ container.innerHTML+=`
 
 <img src="https://raw.githubusercontent.com/Lfg237/m-dias/main/Polish_20260304_122805013.png">
 
-<h4>${p["nom et prénom :"]}</h4>
+<h4>${p["nom et prénom :"]||""}</h4>
 
-<p>${p["âge :"]||""}</p>
+<p><b>Âge :</b> ${p["âge :"]||""}</p>
 
-<p>${p["ville et quartier :"]}</p>
+<p><b>Profession :</b> ${p["profession :"]||""}</p>
+
+<p><b>Ville :</b> ${p["ville et quartier :"]||""}</p>
+
+<p><b>Expérience :</b> ${p["expérience :"]||""}</p>
+
+<p style="font-size:12px">${p["description :"]||""}</p>
 
 <button onclick="contactProfil('${p["WhatsApp :"]||""}')">
 
