@@ -65,6 +65,7 @@ color:white;
 .header-right{
 display:flex;
 gap:10px;
+flex-wrap:wrap;
 }
 
 .btn-offre{
@@ -170,22 +171,18 @@ cursor:pointer;
 
 /* PROFILS */
 
-#premium{
-display:block;
-}
-
 .ville-scroll{
 display:flex;
-flex-direction:row;
-gap:12px;
+flex-wrap:nowrap;
 overflow-x:auto;
 overflow-y:hidden;
+gap:12px;
 padding:10px;
-scroll-behavior:smooth;
 }
 
 .profil{
 flex:0 0 180px;
+min-width:180px;
 background:white;
 color:black;
 padding:10px;
@@ -208,6 +205,7 @@ padding:6px;
 border-radius:6px;
 color:white;
 cursor:pointer;
+margin-top:4px;
 }
 
 /* BADGES */
@@ -226,7 +224,7 @@ color:white;
 .verifie{background:#2ecc71;}
 .premium{background:#9b59b6;}
 
-/* WhatsApp flottant */
+/* WhatsApp */
 
 .whatsapp-float{
 position:fixed;
@@ -237,10 +235,9 @@ color:white;
 font-size:28px;
 padding:15px;
 border-radius:50%;
-z-index:999;
 }
 
-/* BANDE ANNONCE */
+/* Ticker */
 
 .ticker{
 position:fixed;
@@ -260,28 +257,15 @@ font-size:14px;
 <header class="header">
 
 <div class="header-left">
-
 <img class="logo"
 src="https://raw.githubusercontent.com/Lfg237/m-dias/main/Polish_20260304_122805013.png">
-
 <span class="site-title">workshopkmer</span>
-
 </div>
 
 <div class="header-center">
-
-<a href="https://business-tv.vercel.app/" target="_blank">
-<i class="fa-solid fa-globe"></i>
-</a>
-
-<a href="https://www.facebook.com/profile.php?id=61587742360056" target="_blank">
-<i class="fa-brands fa-facebook"></i>
-</a>
-
-<a href="https://whatsapp.com/channel/0029Vb8CxB25Ui2VYo0Ylt2w" target="_blank">
-<i class="fa-brands fa-whatsapp"></i>
-</a>
-
+<a href="https://business-tv.vercel.app/" target="_blank"><i class="fa-solid fa-globe"></i></a>
+<a href="https://www.facebook.com/profile.php?id=61587742360056" target="_blank"><i class="fa-brands fa-facebook"></i></a>
+<a href="https://whatsapp.com/channel/0029Vb8CxB25Ui2VYo0Ylt2w" target="_blank"><i class="fa-brands fa-whatsapp"></i></a>
 </div>
 
 <div class="header-right">
@@ -289,7 +273,11 @@ src="https://raw.githubusercontent.com/Lfg237/m-dias/main/Polish_20260304_122805
 <button class="btn-offre" onclick="ouvrirFormOffre()">➕ Publier</button>
 
 <button onclick="voirPremium()" class="btn-premium">
-⭐ liste des chercheurs d'emploi
+⭐ chercheurs d'emploi
+</button>
+
+<button onclick="demanderAdmin()" style="background:black;color:white;border:none;padding:8px 12px;border-radius:10px;">
+🔐 Admin
 </button>
 
 </div>
@@ -297,19 +285,11 @@ src="https://raw.githubusercontent.com/Lfg237/m-dias/main/Polish_20260304_122805
 </header>
 
 <div class="search">
-
-<input type="text" id="search"
-placeholder="Rechercher ville, quartier, profession..."
-onkeyup="rechercher()">
-
+<input type="text" id="search" placeholder="Rechercher..." onkeyup="rechercher()">
 </div>
 
 <div class="actions">
-
-<button class="btn-creer-premium" onclick="ouvrirFormPremium()">
-👤 Créer profil Premium
-</button>
-
+<button class="btn-creer-premium" onclick="ouvrirFormPremium()">👤 Créer profil Premium</button>
 </div>
 
 <div class="categories" id="categories"></div>
@@ -325,219 +305,150 @@ onkeyup="rechercher()">
 </div>
 
 <a class="whatsapp-float"
-href="https://wa.me/237670035609?text=Bonjour%20workshopkmer"
+href="https://wa.me/237670035609"
 target="_blank">
 <i class="fab fa-whatsapp"></i>
 </a>
 
 <div class="ticker">
-<marquee>
-📢 Publiez vos offres d'emploi gratuitement sur workshopkmer • 
-⭐ Créez votre profil premium pour plus de visibilité • 
-📲 Rejoignez notre chaîne WhatsApp pour recevoir les dernières offres
-</marquee>
+<marquee>📢 Publiez vos offres • ⭐ Devenez premium • 📲 Rejoignez WhatsApp</marquee>
 </div>
 
 <script>
 
-let offresData=[]
-let premiumData=[]
+/* ADMIN */
+let isAdmin=false
 
+function demanderAdmin(){
+let code=prompt("Code admin :")
+if(code=="2332"){
+isAdmin=true
+alert("Admin activé")
+location.reload()
+}
+}
+
+/* OFFRES */
 fetch("https://sheetdb.io/api/v1/xfp4ufhy8zirg")
-.then(res=>res.json())
-.then(data=>{
-offresData=data
-afficherOffres(data)
-genererCategories()
-})
+.then(r=>r.json())
+.then(data=>afficherOffres(data))
 
 function afficherOffres(data){
-
-let container=document.getElementById("offres")
-container.innerHTML=""
-
-let categories={}
-
+let c=document.getElementById("offres")
+c.innerHTML=""
+let cats={}
 data.forEach(o=>{
-
-let cat=o["catégories "] || "Autres"
-
-if(!categories[cat]){
-categories[cat]=[]
-}
-
-categories[cat].push(o)
-
+let cat=o["catégories "]||"Autres"
+if(!cats[cat]) cats[cat]=[]
+cats[cat].push(o)
 })
 
-for(let cat in categories){
-
-container.innerHTML+=`
-<h3 style="margin-top:15px">${cat}</h3>
-<div class="categorie-scroll" id="cat-${cat.replace(/\s/g,'')}"></div>
-`
-
-let catContainer=document.getElementById("cat-"+cat.replace(/\s/g,''))
-
-categories[cat].forEach(o=>{
-
-catContainer.innerHTML+=`
-
+for(let cat in cats){
+c.innerHTML+=`<h3>${cat}</h3><div class="categorie-scroll" id="${cat}"></div>`
+let zone=document.getElementById(cat)
+cats[cat].forEach(o=>{
+zone.innerHTML+=`
 <div class="offre">
-
 <h4><b>${o["nom entreprise ou employeur "]}</b></h4>
-
 <p><b>${o["type d'employer recherché "]}</b></p>
-
 <p>${o["ville quartier où localisation "]}</p>
-
-<p>${o["description "]}</p>
-
-<button onclick="contactOffre('${o["contact WhatsApp "]}')">
-<i class="fab fa-whatsapp"></i> Contacter
-</button>
-
-</div>
-
-`
-
+<button onclick="contactOffre('${o["contact WhatsApp "]}')">WhatsApp</button>
+</div>`
 })
-
+}
 }
 
-}
-
-function contactOffre(numero){
-
-let message="Bonjour, je vous contacte pour votre annonce : https://workshopkmer.vercel.app/#job1"
-
-window.open("https://wa.me/237"+numero+"?text="+encodeURIComponent(message))
-
+function contactOffre(n){
+window.open("https://wa.me/237"+n)
 }
 
 /* PROFILS */
 
 fetch("https://sheetdb.io/api/v1/14gkkcq7cvn8v")
-.then(res=>res.json())
-.then(data=>{
-premiumData=data
-afficherPremium(data)
-})
+.then(r=>r.json())
+.then(data=>afficherPremium(data))
 
 function afficherPremium(data){
 
-let container=document.getElementById("premium")
-container.innerHTML=""
-
+let c=document.getElementById("premium")
+c.innerHTML=""
 let villes={}
 
 data.forEach(p=>{
+let loc=p["ville et quartier :"]||"Autres"
+let parts=loc.split("-")
+let v=parts[0].trim()
+let q=parts[1]?parts[1].trim():"Centre"
 
-let statut=(p["statut"]||"attente").toLowerCase()
-if(statut=="refuse"){return}
-
-let localisation=p["ville et quartier :"] || "Autres"
-
-let parts=localisation.split("-")
-
-let ville=parts[0] ? parts[0].trim() : "Autres"
-let quartier=parts[1] ? parts[1].trim() : "Centre"
-
-if(!villes[ville]){villes[ville]={}}
-if(!villes[ville][quartier]){villes[ville][quartier]=[]}
-
-villes[ville][quartier].push(p)
-
+if(!villes[v]) villes[v]={}
+if(!villes[v][q]) villes[v][q]=[]
+villes[v][q].push(p)
 })
 
-for(let ville in villes){
+for(let v in villes){
+c.innerHTML+=`<h2>${v}</h2>`
 
-container.innerHTML+=`<h2 style="margin-top:20px">${ville}</h2>`
+for(let q in villes[v]){
 
-for(let quartier in villes[ville]){
+let id=(v+q).replace(/\s/g,'')
 
-let id=(ville+quartier).replace(/\s/g,'')
-
-container.innerHTML+=`
-<h4 style="margin-top:10px">📍 ${quartier}</h4>
-<div class="ville-scroll" id="zone-${id}"></div>
+c.innerHTML+=`
+<h4>📍 ${q}</h4>
+<div class="ville-scroll" id="${id}"></div>
 `
 
-let zone=document.getElementById("zone-"+id)
+let zone=document.getElementById(id)
 
-villes[ville][quartier].forEach(p=>{
+villes[v][q].forEach(p=>{
 
-let statut=(p["statut"]||"attente").toLowerCase()
-
-let badgeClass="attente"
-let badgeText="⏳"
-
-if(statut=="verifie"){
-badgeClass="verifie"
-badgeText="✔"
-}
-
-if(statut=="premium"){
-badgeClass="premium"
-badgeText="⭐"
-}
+let idU=p["id_unique"]||""
 
 let infos=""
-
-/* afficher toutes les informations du profil */
-
-for(let key in p){
-
-if(
-key.toLowerCase().includes("statut")||
-key.toLowerCase().includes("whatsapp")||
-key.toLowerCase().includes("nom")
-){
-continue
+for(let k in p){
+if(k.includes("nom")||k.includes("WhatsApp")||k.includes("statut")||k.includes("id_unique")) continue
+infos+=`<p>${p[k]}</p>`
 }
 
-infos+=`<p><b>${key}</b> ${p[key]}</p>`
+let adminBtns=""
+if(isAdmin){
+adminBtns=`
+<button onclick="supprimer('${idU}')" style="background:red;">❌</button>
+<button onclick="modifier('${idU}')" style="background:orange;">✏️</button>`
 }
 
 zone.innerHTML+=`
-
 <div class="profil">
-
-<span class="badge ${badgeClass}">${badgeText}</span>
-
-<img src="https://raw.githubusercontent.com/Lfg237/m-dias/main/Polish_20260304_122805013.png">
-
-<h4><b>${p["nom et prénom :"] || ""}</b></h4>
-
+<h4>${p["nom et prénom :"]}</h4>
 ${infos}
-
-<button onclick="contactProfil('${p["WhatsApp :"]||""}')">
-<i class="fab fa-whatsapp"></i> Contacter
-</button>
-
-</div>
-
-`
-
-
+<button onclick="contactProfil('${p["WhatsApp :"]}')">WhatsApp</button>
+${adminBtns}
+</div>`
 })
 
 }
-
+}
 }
 
+function contactProfil(n){
+window.open("https://wa.me/237"+n)
 }
 
-function contactProfil(numero){
+/* ADMIN ACTIONS */
 
-let message="Bonjour, je viens de voir votre profil : https://workshopkmer.vercel.app/#job1"
-
-window.open("https://wa.me/237"+numero+"?text="+encodeURIComponent(message))
-
+function supprimer(id){
+if(confirm("Supprimer ?")){
+fetch("https://sheetdb.io/api/v1/14gkkcq7cvn8v/id_unique/"+id,{method:"DELETE"})
+.then(()=>location.reload())
+}
 }
 
-function voirPremium(){
-document.getElementById("premium").scrollIntoView({behavior:"smooth"})
+function modifier(id){
+let nom=prompt("Nom")
+fetch("https://sheetdb.io/api/v1/14gkkcq7cvn8v/id_unique/"+id,{
+method:"PATCH",
+headers:{"Content-Type":"application/json"},
+body:JSON.stringify({data:{"nom et prénom :":nom}})
+}).then(()=>location.reload())
 }
 
 </script>
