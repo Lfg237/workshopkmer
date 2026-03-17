@@ -11,6 +11,7 @@
 href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
 <style>
+
 *{margin:0;padding:0;box-sizing:border-box;font-family:'Segoe UI',sans-serif;}
 body{background:#f4f6fb;color:#333;}
 
@@ -75,6 +76,33 @@ position:fixed;bottom:80px;right:20px;
 background:#25d366;color:white;font-size:24px;
 padding:15px;border-radius:50%;
 }
+.ticker{
+position:fixed;
+bottom:0;
+width:100%;
+background:#000;
+color:#fff;
+overflow:hidden;
+height:40px;
+display:flex;
+align-items:center;
+z-index:999;
+}
+
+.ticker-track{
+display:flex;
+gap:50px;
+animation:scroll 20s linear infinite;
+}
+
+.ticker-track span{
+white-space:nowrap;
+}
+
+@keyframes scroll{
+0%{transform:translateX(0);}
+100%{transform:translateX(-50%);}
+}
 </style>
 </head>
 
@@ -123,29 +151,53 @@ padding:15px;border-radius:50%;
 </a>
 
 <script>
-
+console.log("SCRIPT OK")
 let offresData=[]
 let profilsData=[]
 
 function chargerDonnees(){
 
+// OFFRES CACHE
+let cacheOffres = localStorage.getItem("offres")
+
+if(cacheOffres){
+offresData = JSON.parse(cacheOffres)
+afficherOffres(offresData)
+}else{
 fetch("https://sheetdb.io/api/v1/xfp4ufhy8zirg")
 .then(r=>r.json())
 .then(data=>{
 offresData=data
+localStorage.setItem("offres", JSON.stringify(data))
 afficherOffres(data)
 })
+}
 
+// PROFILS CACHE
+let cacheProfils = localStorage.getItem("profils")
+
+if(cacheProfils){
+profilsData = JSON.parse(cacheProfils)
+afficherProfils(profilsData)
+}else{
 fetch("https://sheetdb.io/api/v1/14gkkcq7cvn8v")
 .then(r=>r.json())
 .then(data=>{
 profilsData=data
+localStorage.setItem("profils", JSON.stringify(data))
 afficherProfils(data)
 })
+}
 
 }
 
 chargerDonnees()
+console.log("Chargement données...")
+setInterval(()=>{
+localStorage.removeItem("offres")
+localStorage.removeItem("profils")
+chargerDonnees()
+}, 600000)
 
 function clean(n){
 let num=(n||"").toString().replace(/\D/g,'')
@@ -259,7 +311,7 @@ return
 }
 
 let filtres=offresData.filter(o=>{
-let txt=(o["recruteurs "]+" "+o["type d'employer recherché "]+" "+o["ville quartier où localisation "]+" "+o["description "]).toLowerCase()
+let txt=(o["recruteurs "]+" "+o["type d'employer recherché "]+" "+o["ville quartier où localisation "]+" "+o["description "]+" "+o["catégories "]).toLowerCase()
 return txt.includes(val)
 })
 
@@ -275,9 +327,14 @@ alert("Numéro invalide")
 return
 }
 
-let message="Bonjour 👋\nJe viens de workshopkmer.\n\n📌 "+info+"\n\n🔗 https://workshopkmer.vercel.app/#job1"
+let message = "Bonjour 👋\n"
++ "Je viens de workshopkmer.\n\n"
++ "📌 Offre / Profil : " + (info || "") + "\n\n"
++ "🔗 Voir ici : https://workshopkmer.vercel.app\n\n"
++ "Je suis intéressé."
 
 window.open("https://wa.me/"+n+"?text="+encodeURIComponent(message))
+
 
 }
 
@@ -298,6 +355,12 @@ window.open("https://forms.gle/qNs3xAPf2UUU7NhC9")
 }
 
 </script>
-
+<!-- BANDE ANNONCE -->
+<div class="ticker">
+  <div class="ticker-track">
+    <span>📢 Publiez vos offres gratuitement • ⭐ Créez votre profil premium • 📲 Contact direct WhatsApp</span>
+    <span>🚀 Workshopkmer - Trouvez un emploi rapidement • 🔗 https://workshopkmer.vercel.app</span>
+  </div>
+</div>
 </body>
 </html>
