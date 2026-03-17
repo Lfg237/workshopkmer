@@ -326,7 +326,15 @@ return
 }
 
 let filtres=offresData.filter(o=>{
-let txt=(o["recruteurs "]+" "+o["type d'employer recherché "]+" "+o["ville quartier où localisation "]+" "+o["description "]+" "+o["catégories "]).toLowerCase()
+let txt = (
+(o["recruteurs "] || o["recruteurs"] || "") + " " +
+(o["poste"] || o["type d'employer recherché "] || "") + " " +
+(o["ville"] || "") + " " +
+(o["quartier"] || "") + " " +
+(o["ville quartier où localisation "] || "") + " " +
+(o["description "] || o["description"] || "") + " " +
+(o["catégories "] || o["catégories"] || "")
+).toLowerCase()
 return txt.includes(val)
 })
 
