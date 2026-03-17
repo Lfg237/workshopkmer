@@ -11,7 +11,6 @@
 href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
 <style>
-
 *{margin:0;padding:0;box-sizing:border-box;font-family:'Segoe UI',sans-serif;}
 body{background:#f4f6fb;color:#333;}
 
@@ -76,33 +75,8 @@ position:fixed;bottom:80px;right:20px;
 background:#25d366;color:white;font-size:24px;
 padding:15px;border-radius:50%;
 }
-.ticker{
-position:fixed;
-bottom:0;
-width:100%;
-background:#000;
-color:#fff;
-overflow:hidden;
-height:40px;
-display:flex;
-align-items:center;
-z-index:999;
-}
 
-.ticker-track{
-display:flex;
-gap:50px;
-animation:scroll 20s linear infinite;
-}
-
-.ticker-track span{
-white-space:nowrap;
-}
-
-@keyframes scroll{
-0%{transform:translateX(0);}
-100%{transform:translateX(-50%);}
-}
+h3{margin:10px 0;color:#2563eb;}
 </style>
 </head>
 
@@ -125,7 +99,7 @@ white-space:nowrap;
 <div class="header-right">
 <button class="btn-offre" onclick="ouvrirFormOffre()">➕ Publier</button>
 <button class="btn-create" onclick="ouvrirFormPremium()">👤 inscription</button>
-<button class="btn-premium" onclick="voirPremium()">⭐ profils des chercheurs demploi</button>
+<button class="btn-premium" onclick="voirPremium()">⭐ profils</button>
 </div>
 
 </header>
@@ -137,12 +111,12 @@ white-space:nowrap;
 <div class="categories" id="categories"></div>
 
 <div class="section">
-<h3>💼 Offres d'emploi</h3>
+<h3>💼 Offres</h3>
 <div id="offres"></div>
 </div>
 
 <div class="section">
-<h3>⭐ Profils des chercheurs d'emploi</h3>
+<h3>⭐ Profils</h3>
 <div id="premium"></div>
 </div>
 
@@ -151,85 +125,50 @@ white-space:nowrap;
 </a>
 
 <script>
-console.log("SCRIPT OK")
-let offresData=[]
-let profilsData=[]
 
-function chargerDonnees(){
+// ================= DATA =================
 
-// OFFRES CACHE
-let cacheOffres = localStorage.getItem("offres")
-
-if(cacheOffres){
-offresData = JSON.parse(cacheOffres)
-afficherOffres(offresData)
-}else{
-fetch("https://sheetdb.io/api/v1/xfp4ufhy8zirg")
-.then(r=>r.json())
-.then(data=>{
-offresData=data
-localStorage.setItem("offres", JSON.stringify(data))
-afficherOffres(data)
-})
+let offresData = [
+{
+recruteur:"Entreprise ABC",
+poste:"Développeur Web",
+ville:"Yaoundé",
+quartier:"Bastos",
+description:"Recherche développeur web",
+whatsapp:"670000000",
+categorie:"Informatique"
 }
+]
 
-// PROFILS CACHE
-let cacheProfils = localStorage.getItem("profils")
-
-if(cacheProfils){
-profilsData = JSON.parse(cacheProfils)
-afficherProfils(profilsData)
-}else{
-fetch("https://sheetdb.io/api/v1/14gkkcq7cvn8v")
-.then(r=>r.json())
-.then(data=>{
-profilsData=data
-localStorage.setItem("profils", JSON.stringify(data))
-afficherProfils(data)
-})
+let profilsData = [
+{
+nom:"nzega ndjenou",
+ville:"douala",
+quartier:"beedi",
+competence:"electricien",
+whatsapp:"237673077547",
+statut:"premium"
+},
+{
+nom:"Maah nguene",
+ville:"Yaoundé",
+quartier:"karosselle",
+competence:"secretaire restauratrice",
+whatsapp:"237694950832",
+statut:"premium"
+},
+{
+nom:"ndifor clinton",
+ville:"Yaoundé",
+quartier:"ngousso",
+competence:"Cuisinier",
+whatsapp:"237650260023",
+statut:"premium"
 }
+]
 
-}
+// ================= UTILS =================
 
-function chargerDonnees(){
-
-console.log("Chargement données...")
-
-// ===== OFFRES =====
-let cacheOffres = localStorage.getItem("offres")
-
-if(cacheOffres){
-offresData = JSON.parse(cacheOffres)
-afficherOffres(offresData)
-}else{
-fetch("https://sheetdb.io/api/v1/xfp4ufhy8zirg")
-.then(r=>r.json())
-.then(data=>{
-offresData = data
-localStorage.setItem("offres", JSON.stringify(data))
-afficherOffres(data)
-})
-.catch(e=>console.log("Erreur offres", e))
-}
-
-// ===== PROFILS =====
-let cacheProfils = localStorage.getItem("profils")
-
-if(cacheProfils){
-profilsData = JSON.parse(cacheProfils)
-afficherProfils(profilsData)
-}else{
-fetch("https://sheetdb.io/api/v1/14gkkcq7cvn8v")
-.then(r=>r.json())
-.then(data=>{
-profilsData = data
-localStorage.setItem("profils", JSON.stringify(data))
-afficherProfils(data)
-})
-.catch(e=>console.log("Erreur profils", e))
-}
-
-}
 function clean(n){
 let num=(n||"").toString().replace(/\D/g,'')
 if(num.startsWith("237")) return num
@@ -237,8 +176,22 @@ if(num.length===9) return "237"+num
 return ""
 }
 
-/* OFFRES */
-function afficherOffres(data){
+// ================= WHATSAPP =================
+
+function wa(n, info){
+if(!n){alert("Numéro invalide");return}
+
+let message="Bonjour 👋\n"
++"Je viens de workshopkmer.\n\n"
++"📌 "+info+"\n\n"
++"🔗 https://workshopkmer.vercel.app/#job1\n\n"
+
+window.open("https://wa.me/"+n+"?text="+encodeURIComponent(message))
+}
+
+// ================= OFFRES =================
+
+function afficherOffres(){
 
 let offresDiv=document.getElementById("offres")
 let catDiv=document.getElementById("categories")
@@ -248,8 +201,8 @@ catDiv.innerHTML=""
 
 let cats={}
 
-data.forEach(o=>{
-let cat=o["catégories "]||"Autres"
+offresData.forEach(o=>{
+let cat=o.categorie||"Autres"
 if(!cats[cat]) cats[cat]=[]
 cats[cat].push(o)
 })
@@ -267,40 +220,16 @@ let zone=document.getElementById("zone-"+cat)
 
 cats[cat].forEach(o=>{
 
-let num = clean(o["contact WhatsApp "] || o["contact WhatsApp"])
-
-// 🔥 champs adaptatifs
-let poste = o["poste"] || o["type d'employer recherché "] || ""
-let recruteur = o["recruteurs "] || o["recruteurs"] || ""
-
-let ville = o["ville"] || ""
-let quartier = o["quartier"] || ""
-let ancienLieu = o["ville quartier où localisation "] || o["ville quartier où localisation"] || ""
-
-let lieu = (ville || quartier)
-? ville + (quartier ? " - " + quartier : "")
-: ancienLieu
-
-let desc = o["description "] || o["description"] || ""
-let lien = o["lien du site "] || o["lien du site"] || ""
+let num=clean(o.whatsapp)
+let lieu=o.ville+(o.quartier?" - "+o.quartier:"")
 
 zone.innerHTML+=`
 <div class="offre">
-
-<h4>${recruteur || "Entreprise inconnue"}</h4>
-
-<p><b>Poste :</b> ${poste}</p>
-
+<h4>${o.recruteur}</h4>
+<p><b>Poste :</b> ${o.poste}</p>
 <p><b>Lieu :</b> ${lieu}</p>
-
-<p>${desc}</p>
-
-${lien ? `<a href="${lien}" target="_blank">🌐 Voir le site</a>` : ""}
-
-<button onclick="wa('${num}','${poste.replace(/'/g," ")}')">
-📲 WhatsApp
-</button>
-
+<p>${o.description}</p>
+<button onclick="wa('${num}','${o.poste}')">📲 WhatsApp</button>
 </div>`
 })
 
@@ -308,37 +237,66 @@ ${lien ? `<a href="${lien}" target="_blank">🌐 Voir le site</a>` : ""}
 
 }
 
-/* PROFILS */
-function afficherProfils(data){
+// ================= PROFILS =================
 
-let c=document.getElementById("premium")
-c.innerHTML=""
+function afficherProfils(){
 
-data.forEach(p=>{
+let container=document.getElementById("premium")
+container.innerHTML=""
 
-let num=clean(p["WhatsApp :"])
-let statut=(p["statut"]||"attente").toLowerCase()
+let metiers={}
 
-let infos=""
+// 🔥 regrouper par métier
+profilsData.forEach(p=>{
+let m = p.competence || p["métier"] || "Autres"
+if(!metiers[m]) metiers[m]=[]
+metiers[m].push(p)
+})
 
-for(let k in p){
-if(k.includes("nom")||k.includes("WhatsApp")||k.includes("statut")) continue
-if(p[k]) infos+=`<p><b>${k} :</b> ${p[k]}</p>`
-}
+// 🔥 affichage
+for(let m in metiers){
 
-c.innerHTML+=`
+container.innerHTML+=`
+<h3>${m}</h3>
+<div class="categorie-scroll" id="zone-${m}"></div>
+`
+
+let zone=document.getElementById("zone-"+m)
+
+metiers[m].forEach(p=>{
+
+let num = clean(p.whatsapp || p["WhatsApp"] || "")
+let nom = p.nom || p["nom et prénom"] || ""
+
+let age = p.age || ""
+let experience = p.experience || p["expérience"] || ""
+let description = p.description || ""
+
+let ville = p.ville || ""
+let quartier = p.quartier || ""
+let lieu = ville + (quartier ? " - " + quartier : "")
+
+let statut = (p.statut || "attente").toLowerCase()
+
+zone.innerHTML+=`
 <div class="profil">
 
 <span class="badge ${statut}">${statut}</span>
 
-<h4>${p["nom et prénom :"]||""}</h4>
+<h4>${nom}</h4>
 
-<p><b>Localisation :</b> ${p["ville et quartier :"]||""}</p>
+<p><b>📍 Localisation :</b> ${lieu}</p>
 
-${infos}
+${age ? `<p><b>🎂 Âge :</b> ${age}</p>` : ""}
 
-<button onclick="wa('${num}','${(p["nom et prénom :"]||"").replace(/'/g," ")}')">
-📲 Contacter
+${experience ? `<p><b>💼 Expérience :</b> ${experience}</p>` : ""}
+
+${description ? `<p><b>📝 Description :</b> ${description}</p>` : ""}
+
+<p><b>🛠 Métier :</b> ${m}</p>
+
+<button onclick="wa('${num}','${nom.replace(/'/g," ")}')">
+📲 Contacter sur WhatsApp
 </button>
 
 </div>`
@@ -346,51 +304,30 @@ ${infos}
 
 }
 
-/* RECHERCHE */
+}
+
+// ================= SEARCH =================
+
 function rechercher(){
 
 let val=document.getElementById("search").value.toLowerCase()
 
 if(!val){
-afficherOffres(offresData)
+afficherOffres()
 return
 }
 
 let filtres=offresData.filter(o=>{
-let txt = (
-(o["recruteurs "] || o["recruteurs"] || "") + " " +
-(o["poste"] || o["type d'employer recherché "] || "") + " " +
-(o["ville"] || "") + " " +
-(o["quartier"] || "") + " " +
-(o["ville quartier où localisation "] || "") + " " +
-(o["description "] || o["description"] || "") + " " +
-(o["catégories "] || o["catégories"] || "")
-).toLowerCase()
+let txt=(o.recruteur+" "+o.poste+" "+o.ville+" "+o.quartier+" "+o.description).toLowerCase()
 return txt.includes(val)
 })
 
-afficherOffres(filtres)
+offresData=filtres
+afficherOffres()
 
 }
 
-/* WHATSAPP */
-function wa(n, info){
-
-if(!n){
-alert("Numéro invalide")
-return
-}
-
-let message = "Bonjour 👋\n"
-+ "Je viens de workshopkmer.\n\n"
-+ "📌 Offre / Profil : " + (info || "") + "\n\n"
-+ "🔗 Voir ici : https://workshopkmer.vercel.app\n\n"
-+ "Je suis intéressé."
-
-window.open("https://wa.me/"+n+"?text="+encodeURIComponent(message))
-
-
-}
+// ================= NAV =================
 
 function scrollCat(cat){
 document.getElementById(cat).scrollIntoView({behavior:"smooth"})
@@ -407,23 +344,13 @@ window.open("https://forms.gle/SgeUAdndex6Ch9Fh8")
 function ouvrirFormPremium(){
 window.open("https://forms.gle/qNs3xAPf2UUU7NhC9")
 }
-chargerDonnees()
 
-// rafraîchit toutes les 10 min
-setInterval(()=>{
-localStorage.removeItem("offres")
-localStorage.removeItem("profils")
-chargerDonnees()
-}, 600000)
+// ================= INIT =================
+
+afficherOffres()
+afficherProfils()
 
 </script>
-<!-- BANDE ANNONCE -->
-<div class="ticker">
-  <div class="ticker-track">
-    <span>📢 Publiez vos offres gratuitement • ⭐ Créez votre profil 
- • 📲 recherche des partenaires Contact admin a What's 670035609</span>
-    <span>🚀 Workshopkmer - Trouvez un emploi rapidement • 🔗 https://workshopkmer.vercel.app</span>
-  </div>
-</div>
+
 </body>
 </html>
