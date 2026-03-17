@@ -191,14 +191,45 @@ afficherProfils(data)
 
 }
 
-chargerDonnees()
-console.log("Chargement données...")
-setInterval(()=>{
-localStorage.removeItem("offres")
-localStorage.removeItem("profils")
-chargerDonnees()
-}, 600000)
+function chargerDonnees(){
 
+console.log("Chargement données...")
+
+// ===== OFFRES =====
+let cacheOffres = localStorage.getItem("offres")
+
+if(cacheOffres){
+offresData = JSON.parse(cacheOffres)
+afficherOffres(offresData)
+}else{
+fetch("https://sheetdb.io/api/v1/xfp4ufhy8zirg")
+.then(r=>r.json())
+.then(data=>{
+offresData = data
+localStorage.setItem("offres", JSON.stringify(data))
+afficherOffres(data)
+})
+.catch(e=>console.log("Erreur offres", e))
+}
+
+// ===== PROFILS =====
+let cacheProfils = localStorage.getItem("profils")
+
+if(cacheProfils){
+profilsData = JSON.parse(cacheProfils)
+afficherProfils(profilsData)
+}else{
+fetch("https://sheetdb.io/api/v1/14gkkcq7cvn8v")
+.then(r=>r.json())
+.then(data=>{
+profilsData = data
+localStorage.setItem("profils", JSON.stringify(data))
+afficherProfils(data)
+})
+.catch(e=>console.log("Erreur profils", e))
+}
+
+}
 function clean(n){
 let num=(n||"").toString().replace(/\D/g,'')
 if(num.startsWith("237")) return num
@@ -376,6 +407,14 @@ window.open("https://forms.gle/SgeUAdndex6Ch9Fh8")
 function ouvrirFormPremium(){
 window.open("https://forms.gle/qNs3xAPf2UUU7NhC9")
 }
+chargerDonnees()
+
+// rafraîchit toutes les 10 min
+setInterval(()=>{
+localStorage.removeItem("offres")
+localStorage.removeItem("profils")
+chargerDonnees()
+}, 600000)
 
 </script>
 <!-- BANDE ANNONCE -->
