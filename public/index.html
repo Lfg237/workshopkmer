@@ -9,12 +9,7 @@
 
 <link rel="stylesheet"
 href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-.ville-scroll{
-display:flex;
-gap:10px;
-overflow-x:auto;
-padding:10px;
-}
+
 <style>
 
 *{
@@ -144,12 +139,24 @@ cursor:pointer;
 padding:15px;
 }
 
+.categorie-scroll{
+display:flex;
+gap:10px;
+overflow-x:auto;
+padding:10px;
+}
+
 .offre{
+flex:0 0 230px;
 background:white;
 color:black;
 padding:12px;
 border-radius:10px;
-margin-bottom:10px;
+}
+
+.offre h4{
+font-weight:bold;
+font-size:16px;
 }
 
 .offre button{
@@ -161,17 +168,24 @@ color:white;
 cursor:pointer;
 }
 
-/* PREMIUM */
+/* PROFILS */
 
 #premium{
+display:block;
+}
+
+.ville-scroll{
 display:flex;
-gap:10px;
+flex-direction:row;
+gap:12px;
 overflow-x:auto;
+overflow-y:hidden;
 padding:10px;
+scroll-behavior:smooth;
 }
 
 .profil{
-min-width:200px;
+flex:0 0 180px;
 background:white;
 color:black;
 padding:10px;
@@ -211,45 +225,6 @@ color:white;
 .attente{background:#f1c40f;color:black;}
 .verifie{background:#2ecc71;}
 .premium{background:#9b59b6;}
-
-/* POPUP */
-
-.popup{
-display:none;
-position:fixed;
-top:0;
-left:0;
-width:100%;
-height:100%;
-background:rgba(0,0,0,0.7);
-justify-content:center;
-align-items:center;
-z-index:999;
-}
-
-.popup-content{
-background:white;
-width:90%;
-height:90%;
-border-radius:10px;
-overflow:hidden;
-position:relative;
-}
-
-.popup iframe{
-width:100%;
-height:100%;
-border:none;
-}
-
-.close{
-position:absolute;
-top:10px;
-right:15px;
-font-size:30px;
-cursor:pointer;
-color:black;
-}
 
 /* WhatsApp flottant */
 
@@ -314,7 +289,7 @@ src="https://raw.githubusercontent.com/Lfg237/m-dias/main/Polish_20260304_122805
 <button class="btn-offre" onclick="ouvrirFormOffre()">➕ Publier</button>
 
 <button onclick="voirPremium()" class="btn-premium">
-⭐ liste des chercheurs d'emploi 
+⭐ liste des chercheurs d'emploi
 </button>
 
 </div>
@@ -340,63 +315,27 @@ onkeyup="rechercher()">
 <div class="categories" id="categories"></div>
 
 <div class="section">
-
 <h3>💼 Offres d'emploi</h3>
-
 <div id="offres"></div>
-
 </div>
 
 <div class="section">
-
 <h3>⭐ Profils Premium</h3>
-
 <div id="premium"></div>
-
 </div>
 
-<!-- WhatsApp flottant -->
-
 <a class="whatsapp-float"
-href="https://wa.me/237670035609?text=Bonjour%20Business%20TV%20Jobs"
+href="https://wa.me/237670035609?text=Bonjour%20workshopkmer"
 target="_blank">
 <i class="fab fa-whatsapp"></i>
 </a>
 
-<!-- Bande annonce -->
-
 <div class="ticker">
-
 <marquee>
-
-📢 Publiez vos offres d'emploi gratuitement sur workshopkmer• 
-⭐ Créez votre profil premium pour  plus de visibilite et etre contacté par les employeurs • 
-📲 Rejoignez notre chaîne WhatsApp pour recevoir les dernieres nouvelles , workshopkmer la bible du travailleur
-
+📢 Publiez vos offres d'emploi gratuitement sur workshopkmer • 
+⭐ Créez votre profil premium pour plus de visibilité • 
+📲 Rejoignez notre chaîne WhatsApp pour recevoir les dernières offres
 </marquee>
-
-</div>
-
-<!-- POPUP OFFRE -->
-
-<div id="popupOffre" class="popup">
-<div class="popup-content">
-<span class="close" onclick="fermerPopup('popupOffre')">×</span>
-
-<iframe src="https://docs.google.com/forms/d/e/1FAIpQLSfNr8QMkc50VaNmoQUOmfomlyt2hZq26klD5Vp98ZMYYZCkEA/viewform?embedded=true"></iframe>
-
-</div>
-</div>
-
-<!-- POPUP PREMIUM -->
-
-<div id="popupPremium" class="popup">
-<div class="popup-content">
-<span class="close" onclick="fermerPopup('popupPremium')">×</span>
-
-<iframe src="https://docs.google.com/forms/d/e/1FAIpQLSegi7tExGEbUwL3dEsUnI9lT73bO4Z8jpSK2Tfca0Nj0Kbb2Q/viewform?embedded=true"></iframe>
-
-</div>
 </div>
 
 <script>
@@ -417,15 +356,38 @@ function afficherOffres(data){
 let container=document.getElementById("offres")
 container.innerHTML=""
 
-data.forEach((o)=>{
+let categories={}
+
+data.forEach(o=>{
+
+let cat=o["catégories "] || "Autres"
+
+if(!categories[cat]){
+categories[cat]=[]
+}
+
+categories[cat].push(o)
+
+})
+
+for(let cat in categories){
 
 container.innerHTML+=`
+<h3 style="margin-top:15px">${cat}</h3>
+<div class="categorie-scroll" id="cat-${cat.replace(/\s/g,'')}"></div>
+`
+
+let catContainer=document.getElementById("cat-"+cat.replace(/\s/g,''))
+
+categories[cat].forEach(o=>{
+
+catContainer.innerHTML+=`
 
 <div class="offre">
 
-<h4>${o["nom entreprise ou employeur "]}</h4>
+<h4><b>${o["nom entreprise ou employeur "]}</b></h4>
 
-<p>${o["type d'employer recherché "]}</p>
+<p><b>${o["type d'employer recherché "]}</b></p>
 
 <p>${o["ville quartier où localisation "]}</p>
 
@@ -443,55 +405,17 @@ container.innerHTML+=`
 
 }
 
+}
 
 function contactOffre(numero){
 
-let message="Bonjour, je vous contacte pour votre annonce sur Business TV Jobs : https://workshopkmer.vercel.app/#job1"
+let message="Bonjour, je vous contacte pour votre annonce : https://workshopkmer.vercel.app/#job1"
 
 window.open("https://wa.me/237"+numero+"?text="+encodeURIComponent(message))
 
 }
 
-function genererCategories(){
-
-let cats=new Set()
-
-offresData.forEach(o=>{
-cats.add(o["catégories "])
-})
-
-let container=document.getElementById("categories")
-container.innerHTML=""
-
-cats.forEach(c=>{
-container.innerHTML+=`<button onclick="filtrer('${c}')">${c}</button>`
-})
-
-}
-
-function filtrer(cat){
-
-let offres=offresData.filter(o=>
-o["catégories "].toLowerCase().includes(cat.toLowerCase())
-)
-
-afficherOffres(offres)
-
-}
-
-function rechercher(){
-
-let mot=document.getElementById("search").value.toLowerCase()
-
-let offres=offresData.filter(o=>
-JSON.stringify(o).toLowerCase().includes(mot)
-)
-
-afficherOffres(offres)
-
-}
-
-/* PREMIUM */
+/* PROFILS */
 
 fetch("https://sheetdb.io/api/v1/14gkkcq7cvn8v")
 .then(res=>res.json())
@@ -507,45 +431,60 @@ container.innerHTML=""
 
 let villes={}
 
-/* regrouper par ville */
-
 data.forEach(p=>{
 
 let statut=(p["statut"]||"attente").toLowerCase()
 if(statut=="refuse"){return}
 
-let ville=p["ville et quartier :"] || "Autres"
+let localisation=p["ville et quartier :"] || "Autres"
 
-if(!villes[ville]){
-villes[ville]=[]
-}
+let parts=localisation.split("-")
 
-villes[ville].push(p)
+let ville=parts[0] ? parts[0].trim() : "Autres"
+let quartier=parts[1] ? parts[1].trim() : "Centre"
+
+if(!villes[ville]){villes[ville]={}}
+if(!villes[ville][quartier]){villes[ville][quartier]=[]}
+
+villes[ville][quartier].push(p)
 
 })
 
-/* afficher par ville */
-
 for(let ville in villes){
 
+container.innerHTML+=`<h2 style="margin-top:20px">${ville}</h2>`
+
+for(let quartier in villes[ville]){
+
+let id=(ville+quartier).replace(/\s/g,'')
+
 container.innerHTML+=`
-<h3 style="margin-top:15px">${ville}</h3>
-<div class="ville-scroll" id="ville-${ville}"></div>
+<h4 style="margin-top:10px">📍 ${quartier}</h4>
+<div class="ville-scroll" id="zone-${id}"></div>
 `
 
-let villeContainer=document.getElementById("ville-"+ville)
+let zone=document.getElementById("zone-"+id)
 
-villes[ville].forEach(p=>{
+villes[ville][quartier].forEach(p=>{
 
 let statut=(p["statut"]||"attente").toLowerCase()
 
 let badgeClass="attente"
 let badgeText="⏳"
 
-if(statut=="verifie"){badgeClass="verifie";badgeText="✔"}
-if(statut=="premium"){badgeClass="premium";badgeText="⭐"}
+if(statut=="verifie"){
+badgeClass="verifie"
+badgeText="✔"
+}
+
+if(statut=="premium"){
+badgeClass="premium"
+badgeText="⭐"
+}
 
 let infos=""
+
+/* afficher toutes les informations du profil */
 
 for(let key in p){
 
@@ -553,12 +492,14 @@ if(
 key.toLowerCase().includes("statut")||
 key.toLowerCase().includes("whatsapp")||
 key.toLowerCase().includes("nom")
-){continue}
+){
+continue
+}
 
 infos+=`<p><b>${key}</b> ${p[key]}</p>`
 }
 
-villeContainer.innerHTML+=`
+zone.innerHTML+=`
 
 <div class="profil">
 
@@ -566,19 +507,18 @@ villeContainer.innerHTML+=`
 
 <img src="https://raw.githubusercontent.com/Lfg237/m-dias/main/Polish_20260304_122805013.png">
 
-<h4>${p["nom et prénom :"] || ""}</h4>
+<h4><b>${p["nom et prénom :"] || ""}</b></h4>
 
 ${infos}
 
 <button onclick="contactProfil('${p["WhatsApp :"]||""}')">
-
 <i class="fab fa-whatsapp"></i> Contacter
-
 </button>
 
 </div>
 
 `
+
 
 })
 
@@ -586,25 +526,14 @@ ${infos}
 
 }
 
+}
+
 function contactProfil(numero){
 
-let message="Bonjour, je viens de voir votre profil sur Business TV Jobs : https://workshopkmer.vercel.app/#job1"
+let message="Bonjour, je viens de voir votre profil : https://workshopkmer.vercel.app/#job1"
 
 window.open("https://wa.me/237"+numero+"?text="+encodeURIComponent(message))
 
-}
-
-
-function ouvrirFormOffre(){
-document.getElementById("popupOffre").style.display="flex"
-}
-
-function ouvrirFormPremium(){
-document.getElementById("popupPremium").style.display="flex"
-}
-
-function fermerPopup(id){
-document.getElementById(id).style.display="none"
 }
 
 function voirPremium(){
