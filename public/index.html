@@ -380,6 +380,7 @@ ${o["recruteurs "]||""}
 ${o["type d'employer recherché "]||""}
 ${o["ville quartier où localisation "]||""}
 ${o["description "]||""}
+${o["catégories "]||""}
 `.toLowerCase()
 
 return texte.includes(val)
@@ -389,8 +390,6 @@ return texte.includes(val)
 afficherOffres(filtres)
 
 }
-return texte.includes(val) || 
-(o["catégories "]||"").toLowerCase().includes(val)
 
 function wa(n){
 if(!n) return alert("Numéro invalide")
