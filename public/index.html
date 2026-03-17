@@ -230,8 +230,8 @@ white-space:nowrap;
 <!-- TICKER -->
 <div class="ticker">
 <div class="ticker-track">
-<span>📢 Publiez vos offres • ⭐ Devenez premium • 📲 Rejoignez WhatsApp</span>
-<span>📢 Publiez vos offres • ⭐ Devenez premium • 📲 Rejoignez WhatsApp</span>
+<span>📢 partagez vos offres d'emploi• ⭐ inscrivez vous comme chercheurs d'emploi gratuitement 📲 Rejoignez WhatsApp</span>
+<span>📢 ⭐  recherche des partenaires plus d'informations 670035609⭐ Workshopkmer la bible du travailleur</span>
 </div>
 </div>
 
@@ -366,15 +366,31 @@ ${infos}
 
 }
 
-/* SEARCH */
-function rechercher(){
-let val=document.querySelector("input").value.toLowerCase()
 
-let filtres=offresData.filter(o=>
-(o["recruteurs "]||"").toLowerCase().includes(val)
-)
+function rechercher(){
+
+let val = document.getElementById("search").value.toLowerCase().trim()
+
+if(!val){
+afficherOffres(offresData)
+return
+}
+
+let filtres = offresData.filter(o =>{
+
+let texte = `
+${o["recruteurs "]||""}
+${o["type d'employer recherché "]||""}
+${o["ville quartier où localisation "]||""}
+${o["description "]||""}
+`.toLowerCase()
+
+return texte.includes(val)
+
+})
 
 afficherOffres(filtres)
+
 }
 
 function wa(n){
