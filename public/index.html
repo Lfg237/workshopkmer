@@ -206,10 +206,7 @@ white-space:nowrap;
 </div>
 
 </header>
-
-<div class="search">
-<input type="text" placeholder="Rechercher..." onkeyup="rechercher()">
-</div>
+<input type="text" id="search" placeholder="Rechercher..." onkeyup="rechercher()">
 
 <div class="categories" id="categories"></div>
 
@@ -392,6 +389,8 @@ return texte.includes(val)
 afficherOffres(filtres)
 
 }
+return texte.includes(val) || 
+(o["catégories "]||"").toLowerCase().includes(val)
 
 function wa(n){
 if(!n) return alert("Numéro invalide")
