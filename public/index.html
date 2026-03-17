@@ -41,6 +41,23 @@ cursor:pointer;
 .btn-create{background:#6366f1;color:white;}
 .btn-premium{background:#ec4899;color:white;}
 
+.header-center{
+display:flex;
+gap:15px;
+align-items:center;
+}
+
+.header-center a{
+color:white;
+font-size:20px;
+transition:0.3s;
+}
+
+.header-center a:hover{
+color:#38bdf8;
+transform:scale(1.2);
+}
+
 /* SEARCH */
 .search{padding:15px;}
 .search input{
@@ -85,19 +102,10 @@ padding:15px;
 border-radius:12px;
 box-shadow:0 4px 12px rgba(0,0,0,0.08);
 }
-
-.offre h4{margin-bottom:5px;}
-.offre p{font-size:14px;margin:3px 0;}
-
-.offre button{
-margin-top:10px;
-background:#25d366;
-border:none;
-padding:8px;
-border-radius:8px;
-color:white;
-cursor:pointer;
-width:100%;
+.offre button,
+.profil button{
+font-weight:bold;
+font-size:14px;
 }
 
 /* PROFILS */
@@ -116,19 +124,6 @@ box-shadow:0 4px 12px rgba(0,0,0,0.08);
 position:relative;
 }
 
-.profil h4{margin-bottom:5px;}
-.profil p{font-size:13px;margin:2px 0;}
-
-.profil button{
-margin-top:8px;
-background:#25d366;
-border:none;
-padding:6px;
-border-radius:8px;
-color:white;
-cursor:pointer;
-width:100%;
-}
 
 /* BADGE */
 .badge{
@@ -145,7 +140,7 @@ font-size:11px;
 .verifie{background:#22c55e;}
 .premium{background:#8b5cf6;}
 
-/* FLOAT WA */
+/* WA FLOAT */
 .whatsapp-float{
 position:fixed;
 bottom:80px;
@@ -156,69 +151,35 @@ font-size:24px;
 padding:15px;
 border-radius:50%;
 }
-.header-center{
-display:flex;
-gap:15px;
-align-items:center;
-}
 
-.header-center a{
-color:white;
-font-size:20px;
-transition:0.3s;
-}
-
-.header-center a:hover{
-color:#38bdf8;
-transform:scale(1.2);
-}
-.header-center{
-display:flex;
-gap:15px;
-align-items:center;
-}
-
-.header-center a{
-color:white;
-font-size:20px;
-transition:0.3s;
-}
-
-.header-center a:hover{
-color:#38bdf8;
-transform:scale(1.2);
-}
-
+/* TICKER FIXED */
 .ticker{
 position:fixed;
 bottom:0;
-left:0;
 width:100%;
-height:45px;
 background:#000;
 color:#fff;
 overflow:hidden;
-z-index:9999;
+height:40px;
 display:flex;
 align-items:center;
 }
 
-.ticker-content{
-display:inline-block;
-white-space:nowrap;
-padding-left:100%;
-animation:defilement 25s linear infinite;
-font-size:14px;
+.ticker-track{
+display:flex;
+gap:50px;
+animation:scroll 20s linear infinite;
 }
 
-@keyframes defilement{
-0%{
-transform:translateX(0);
+.ticker-track span{
+white-space:nowrap;
 }
-100%{
-transform:translateX(-100%);
+
+@keyframes scroll{
+0%{transform:translateX(0);}
+100%{transform:translateX(-50%);}
 }
-}
+
 </style>
 </head>
 
@@ -231,38 +192,23 @@ transform:translateX(-100%);
 <span>workshopkmer</span>
 </div>
 
-<!-- 🔥 LIENS AJOUTÉS ICI -->
 <div class="header-center">
-
-<a href="https://business-tv.vercel.app/" target="_blank" title="Business TV">
-<i class="fa-solid fa-tv"></i>
-</a>
-
-<a href="https://lesfacilitateurs.vercel.app" target="_blank" title="Les Facilitateurs">
-<i class="fa-solid fa-globe"></i>
-</a>
-
-<a href="https://www.facebook.com/profile.php?id=61587742360056" target="_blank" title="Facebook">
-<i class="fa-brands fa-facebook"></i>
-</a>
-
-<a href="https://whatsapp.com/channel/0029Vb8CxB25Ui2VYo0Ylt2w" target="_blank" title="WhatsApp">
-<i class="fa-brands fa-whatsapp"></i>
-</a>
-
+<a href="https://business-tv.vercel.app/" target="_blank"><i class="fa-solid fa-tv"></i></a>
+<a href="https://lesfacilitateurs.vercel.app" target="_blank"><i class="fa-solid fa-globe"></i></a>
+<a href="https://www.facebook.com/profile.php?id=61587742360056" target="_blank"><i class="fa-brands fa-facebook"></i></a>
+<a href="https://whatsapp.com/channel/0029Vb8CxB25Ui2VYo0Ylt2w" target="_blank"><i class="fa-brands fa-whatsapp"></i></a>
 </div>
 
 <div class="header-right">
 <button class="btn-offre" onclick="ouvrirFormOffre()">➕ Publier</button>
 <button class="btn-create" onclick="ouvrirFormPremium()">👤 inscription</button>
-<button class="btn-premium" onclick="voirPremium()">⭐ liste des chercheurs d'emploi</button>
+<button class="btn-premium" onclick="voirPremium()">⭐ profils</button>
 </div>
 
 </header>
-</div>
 
 <div class="search">
-<input type="text" placeholder="Rechercher...">
+<input type="text" placeholder="Rechercher..." onkeyup="rechercher()">
 </div>
 
 <div class="categories" id="categories"></div>
@@ -273,38 +219,61 @@ transform:translateX(-100%);
 </div>
 
 <div class="section">
-<h3>⭐ Profils des chercheurs d'emploi</h3>
+<h3>⭐ Profils</h3>
 <div id="premium"></div>
 </div>
 
-<a class="whatsapp-float"
-href="https://wa.me/237670035609"
-target="_blank">
+<a class="whatsapp-float" href="https://wa.me/237670035609" target="_blank">
 <i class="fab fa-whatsapp"></i>
 </a>
 
+<!-- TICKER -->
+<div class="ticker">
+<div class="ticker-track">
+<span>📢 Publiez vos offres • ⭐ Devenez premium • 📲 Rejoignez WhatsApp</span>
+<span>📢 Publiez vos offres • ⭐ Devenez premium • 📲 Rejoignez WhatsApp</span>
+</div>
+</div>
+
 <script>
 
-/* FORM */
-function ouvrirFormOffre(){
-window.open("https://forms.gle/SgeUAdndex6Ch9Fh8")
-}
-function ouvrirFormPremium(){
-window.open("https://forms.gle/qNs3xAPf2UUU7NhC9")
+/* CACHE */
+let offresData=[]
+let profilsData=[]
+
+function chargerDonnees(){
+
+fetch("https://sheetdb.io/api/v1/xfp4ufhy8zirg")
+.then(r=>r.json())
+.then(data=>{
+offresData=data
+afficherOffres(data)
+})
+
+fetch("https://sheetdb.io/api/v1/14gkkcq7cvn8v")
+.then(r=>r.json())
+.then(data=>{
+profilsData=data
+afficherProfils(data)
+})
+
 }
 
-/* CLEAN NUM */
+chargerDonnees()
+
 function clean(n){
 return (n||"").toString().replace(/\D/g,'').replace(/^237/,'')
 }
 
 /* OFFRES */
-fetch("https://sheetdb.io/api/v1/xfp4ufhy8zirg")
-.then(r=>r.json())
-.then(data=>{
+function afficherOffres(data){
 
 let offresDiv=document.getElementById("offres")
 let catDiv=document.getElementById("categories")
+
+offresDiv.innerHTML=""
+catDiv.innerHTML=""
+
 let cats={}
 
 data.forEach(o=>{
@@ -329,22 +298,31 @@ let num=clean(o["contact WhatsApp "])
 
 zone.innerHTML+=`
 <div class="offre">
-<h4>${o["recruteurs "]||""}</h4>
+
+<h4>${o["recruteurs "]||"Entreprise inconnue"}</h4>
+
 <p><b>Poste :</b> ${o["type d'employer recherché "]||""}</p>
+
 <p><b>Lieu :</b> ${o["ville quartier où localisation "]||""}</p>
-<p>${o["description "]||""}</p>
-<button onclick="wa('${num}')">Contacter</button>
+
+<p><b>Description :</b> ${o["description "]||"Non précisé"}</p>
+
+${o["lien du site "] 
+? `<a href="${o["lien du site "]}" target="_blank">🌐 Voir le site</a>` 
+: ""}
+
+<button onclick="wa('${num}')">📲 Contacter sur WhatsApp</button>
+
 </div>`
 })
 
 }
 
-})
+}
 
 /* PROFILS */
-fetch("https://sheetdb.io/api/v1/14gkkcq7cvn8v")
-.then(r=>r.json())
-.then(data=>{
+
+function afficherProfils(data){
 
 let c=document.getElementById("premium")
 c.innerHTML=""
@@ -355,22 +333,49 @@ let num=clean(p["WhatsApp :"])
 let statut=(p["statut"]||"attente").toLowerCase()
 
 let infos=""
+
 for(let k in p){
-if(k.includes("nom")||k.includes("WhatsApp")||k.includes("statut")) continue
-infos+=`<p><b>${k}:</b> ${p[k]}</p>`
+
+if(
+k.includes("nom")||
+k.includes("WhatsApp")||
+k.includes("statut")
+) continue
+
+if(p[k]){
+infos+=`<p><b>${k} :</b> ${p[k]}</p>`
+}
+
 }
 
 c.innerHTML+=`
 <div class="profil">
+
 <span class="badge ${statut}">${statut}</span>
-<h4>${p["nom et prénom :"]||""}</h4>
+
+<h4>${p["nom et prénom :"]||"Profil"}</h4>
+
 <p><b>Localisation :</b> ${p["ville et quartier :"]||""}</p>
+
 ${infos}
-<button onclick="wa('${num}')">Contacter</button>
+
+<button onclick="wa('${num}')">📲 WhatsApp</button>
+
 </div>`
 })
 
-})
+}
+
+/* SEARCH */
+function rechercher(){
+let val=document.querySelector("input").value.toLowerCase()
+
+let filtres=offresData.filter(o=>
+(o["recruteurs "]||"").toLowerCase().includes(val)
+)
+
+afficherOffres(filtres)
+}
 
 function wa(n){
 if(!n) return alert("Numéro invalide")
@@ -385,15 +390,15 @@ function voirPremium(){
 document.getElementById("premium").scrollIntoView({behavior:"smooth"})
 }
 
+/* FORM */
+function ouvrirFormOffre(){
+window.open("https://forms.gle/SgeUAdndex6Ch9Fh8")
+}
+function ouvrirFormPremium(){
+window.open("https://forms.gle/qNs3xAPf2UUU7NhC9")
+}
+
 </script>
-<div class="ticker">
-  <div class="ticker-content">
-    📢 Publiez vos offres gratuitement sur workshopkmer • 
-    ⭐ Créez votre profil premium • 
-    📲 Rejoignez notre chaîne WhatsApp • 
-    🚀 Trouvez un emploi rapidement au Cameroun
-  </div>
-</div>
 
 </body>
 </html>
