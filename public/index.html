@@ -47,13 +47,29 @@ padding:8px 12px;border-radius:20px;cursor:pointer;
 
 .section{padding:15px;}
 
-.categorie-scroll{display:flex;gap:15px;overflow-x:auto;}
+.categorie-scroll{
+display:flex;
+gap:15px;
+overflow-x:auto;
+scroll-behavior:smooth;
+padding-bottom:10px;
+}
 
+.categorie-scroll::-webkit-scrollbar{
+height:6px;
+}
+
+.categorie-scroll::-webkit-scrollbar-thumb{
+background:#ccc;
+border-radius:10px;
+}
 .offre,.profil{
 background:white;padding:15px;border-radius:12px;
 box-shadow:0 4px 12px rgba(0,0,0,0.08);
 }
-
+.offre, .profil{
+flex: 0 0 auto;
+}
 .offre{min-width:260px;}
 .profil{min-width:220px;position:relative;}
 
@@ -83,6 +99,22 @@ h3{margin:10px 0;color:#2563eb;}
 <body>
 
 <header class="header">
+	<div class="section">
+
+<h3>Créer un profil</h3>
+
+<input id="nom" placeholder="Nom"><br><br>
+<input id="age" placeholder="Age"><br><br>
+<input id="metier" placeholder="Métier"><br><br>
+<input id="ville" placeholder="Ville"><br><br>
+<input id="quartier" placeholder="Quartier"><br><br>
+<input id="experience" placeholder="Expérience"><br><br>
+<input id="desc" placeholder="Description"><br><br>
+<input id="tel" placeholder="Numéro WhatsApp"><br><br>
+
+<button onclick="envoyerProfil()">📲 Envoyer sur WhatsApp</button>
+
+</div>
 
 <div class="header-left">
 <img class="logo" src="https://raw.githubusercontent.com/Lfg237/m-dias/main/Polish_20260304_122805013.png">
@@ -97,10 +129,8 @@ h3{margin:10px 0;color:#2563eb;}
 </div>
 
 <div class="header-right">
-<button class="btn-offre" onclick="ouvrirFormOffre()">➕ Publier</button>
-<button class="btn-create" onclick="ouvrirFormPremium()">👤 inscription</button>
-<button class="btn-premium" onclick="voirPremium()">⭐ profils</button>
-</div>
+<button class="btn-offre" onclick="publierWhatsApp('offre')">➕ Publier</button>
+<button class="btn-create" onclick="publierWhatsApp('profil')">👤 inscription</button>
 
 </header>
 
@@ -123,9 +153,55 @@ h3{margin:10px 0;color:#2563eb;}
 <a class="whatsapp-float" href="https://wa.me/237670035609" target="_blank">
 <i class="fab fa-whatsapp"></i>
 </a>
+<div class="section">
+
+<h3>Publier une offre</h3>
+
+<input id="recruteur" placeholder="Entreprise"><br><br>
+<input id="poste" placeholder="Poste"><br><br>
+<input id="villeO" placeholder="Ville"><br><br>
+<input id="quartierO" placeholder="Quartier"><br><br>
+<input id="descO" placeholder="Description"><br><br>
+<input id="telO" placeholder="WhatsApp"><br><br>
+
+<button onclick="envoyerOffre()">📲 Envoyer sur WhatsApp</button>
+
+</div>
 
 <script>
+	function envoyerProfil(){
 
+let nom=document.getElementById("nom").value
+let age=document.getElementById("age").value
+let metier=document.getElementById("metier").value
+let ville=document.getElementById("ville").value
+let quartier=document.getElementById("quartier").value
+let experience=document.getElementById("experience").value
+let desc=document.getElementById("desc").value
+let tel=document.getElementById("tel").value
+
+let message="Bonjour 👋\n\n"
++"📌 NOUVEAU PROFIL\n\n"
++"👤 Nom : "+nom+"\n"
++"🎂 Age : "+age+"\n"
++"🛠 Métier : "+metier+"\n"
++"📍 Ville : "+ville+"\n"
++"🏘 Quartier : "+quartier+"\n"
++"💼 Expérience : "+experience+"\n"
++"📝 Description : "+desc+"\n"
++"📞 WhatsApp : "+tel+"\n\n"
++"🔗 https://workshopkmer.vercel.app/#job1"
+
+window.open("https://wa.me/237670035609?text="+encodeURIComponent(message))
+}
+function publierWhatsApp(type){
+
+let message="Bonjour 👋\n"
++"Je veux publier un "+type+" sur workshopkmer.\n\n"
++"🔗 https://workshopkmer.vercel.app/#job1\n\n"
+
+window.open("https://wa.me/237670035609?text="+encodeURIComponent(message))
+}
 // ================= DATA =================
 
 let offresData = [
@@ -137,6 +213,26 @@ quartier:"Bastos",
 description:"Recherche développeur web",
 whatsapp:"670000000",
 categorie:"Informatique"
+},
+
+{
+recruteur:"Test",
+poste:"Test",
+ville:"Yaoundé",
+quartier:"Centre",
+description:"Test",
+whatsapp:"670000000",
+categorie:"Test"
+},
+
+{
+recruteur:"Test",
+poste:"Test",
+ville:"Yaoundé",
+quartier:"Centre",
+description:"Test",
+whatsapp:"670000000",
+categorie:"Test"
 }
 ]
 
@@ -255,15 +351,19 @@ cats[cat].forEach(o=>{
 
 let num=clean(o.whatsapp)
 let lieu=o.ville+(o.quartier?" - "+o.quartier:"")
-
 zone.innerHTML+=`
 <div class="offre">
 <h4>${o.recruteur}</h4>
 <p><b>Poste :</b> ${o.poste}</p>
 <p><b>Lieu :</b> ${lieu}</p>
 <p>${o.description}</p>
+
 <button onclick="wa('${num}','${o.poste}')">📲 WhatsApp</button>
+
+
 </div>`
+
+
 })
 
 }
@@ -332,6 +432,7 @@ ${description ? `<p><b>📝 Description :</b> ${description}</p>` : ""}
 📲 Contacter sur WhatsApp
 </button>
 
+
 </div>`
 })
 
@@ -382,6 +483,27 @@ window.open("https://forms.gle/qNs3xAPf2UUU7NhC9")
 
 afficherOffres()
 afficherProfils()
+function envoyerOffre(){
+
+let recruteur=document.getElementById("recruteur").value
+let poste=document.getElementById("poste").value
+let ville=document.getElementById("villeO").value
+let quartier=document.getElementById("quartierO").value
+let desc=document.getElementById("descO").value
+let tel=document.getElementById("telO").value
+
+let message="Bonjour 👋\n\n"
++"📌 NOUVELLE OFFRE\n\n"
++"🏢 Recruteur : "+recruteur+"\n"
++"💼 Poste : "+poste+"\n"
++"📍 Ville : "+ville+"\n"
++"🏘 Quartier : "+quartier+"\n"
++"📝 Description : "+desc+"\n"
++"📞 Contact : "+tel+"\n\n"
++"🔗 https://workshopkmer.vercel.app/#job1"
+
+window.open("https://wa.me/237670035609?text="+encodeURIComponent(message))
+}
 
 </script>
 
