@@ -260,7 +260,22 @@ afficherProfils(data)
 chargerDonnees()
 
 function clean(n){
-return (n||"").toString().replace(/\D/g,'').replace(/^237/,'')
+
+let num = (n||"").toString().replace(/\D/g,'')
+
+// si numéro commence par 237
+if(num.startsWith("237")){
+return num
+}
+
+// sinon on ajoute 237
+if(num.length === 9){
+return "237"+num
+}
+
+// sinon invalide
+return ""
+
 }
 
 /* OFFRES */
@@ -356,9 +371,9 @@ c.innerHTML+=`
 <p><b>Localisation :</b> ${p["ville et quartier :"]||""}</p>
 
 ${infos}
-
-<button onclick="wa('${num}')">📲 WhatsApp</button>
-
+<button onclick="wa('${num}', '${o["type d'employer recherché "]}')">
+📲 WhatsApp
+</button>
 </div>`
 })
 
@@ -392,9 +407,22 @@ afficherOffres(filtres)
 
 }
 
-function wa(n){
-if(!n) return alert("Numéro invalide")
-window.open("https://wa.me/237"+n)
+function wa(n, info=""){
+
+if(!n){
+alert("Numéro invalide")
+return
+}
+
+let message = `Bonjour, je viens de workshopkmer.
+Je suis intéressé par : ${info}
+
+Voir l'annonce : https://workshopkmer.vercel.app/#job1`
+
+let url = "https://wa.me/"+n+"?text="+encodeURIComponent(message)
+
+window.open(url)
+
 }
 
 function scrollCat(cat){
