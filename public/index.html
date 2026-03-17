@@ -324,7 +324,9 @@ ${o["lien du site "]
 ? `<a href="${o["lien du site "]}" target="_blank">🌐 Voir le site</a>` 
 : ""}
 
-<button onclick="wa('${num}', \`${o["type d'employer recherché "]||""}\`)">
+<button onclick="wa('${num}', encodeURIComponent('${o["type d'employer recherché "]||""}'))">
+📲 WhatsApp
+</button>
 </div>`
 })
 
@@ -413,14 +415,23 @@ alert("Numéro invalide")
 return
 }
 
-let message = `Bonjour, je viens de workshopkmer.
-Je suis intéressé par : ${info}
+// si déjà encodé
+let decoded = decodeURIComponent(info)
 
-Voir l'annonce : https://workshopkmer.vercel.app/#job1`
+let message = `Bonjour 👋
+Je viens de workshopkmer.
+
+📌 Offre : ${decoded}
+
+🔗 https://workshopkmer.vercel.app/#job1
+
+Je suis intéressé.`
 
 let url = "https://wa.me/"+n+"?text="+encodeURIComponent(message)
 
 window.open(url)
+
+}
 
 }
 
