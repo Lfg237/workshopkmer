@@ -236,22 +236,37 @@ let zone=document.getElementById("zone-"+cat)
 
 cats[cat].forEach(o=>{
 
-let num=clean(o["contact WhatsApp "])
+let num = clean(o["contact WhatsApp "] || o["contact WhatsApp"])
+
+// 🔥 champs adaptatifs
+let poste = o["poste"] || o["type d'employer recherché "] || ""
+let recruteur = o["recruteurs "] || o["recruteurs"] || ""
+
+let ville = o["ville"] || ""
+let quartier = o["quartier"] || ""
+let ancienLieu = o["ville quartier où localisation "] || o["ville quartier où localisation"] || ""
+
+let lieu = (ville || quartier)
+? ville + (quartier ? " - " + quartier : "")
+: ancienLieu
+
+let desc = o["description "] || o["description"] || ""
+let lien = o["lien du site "] || o["lien du site"] || ""
 
 zone.innerHTML+=`
 <div class="offre">
 
-<h4>${o["recruteurs "]||"Entreprise inconnue"}</h4>
+<h4>${recruteur || "Entreprise inconnue"}</h4>
 
-<p><b>Poste :</b> ${o["type d'employer recherché "]||""}</p>
+<p><b>Poste :</b> ${poste}</p>
 
-<p><b>Lieu :</b> ${o["ville quartier où localisation "]||""}</p>
+<p><b>Lieu :</b> ${lieu}</p>
 
-<p>${o["description "]||""}</p>
+<p>${desc}</p>
 
-${o["lien du site "] ? `<a href="${o["lien du site "]}" target="_blank">🌐 Voir le site</a>` : ""}
+${lien ? `<a href="${lien}" target="_blank">🌐 Voir le site</a>` : ""}
 
-<button onclick="wa('${num}','${(o["type d'employer recherché "]||"").replace(/'/g," ")}')">
+<button onclick="wa('${num}','${poste.replace(/'/g," ")}')">
 📲 WhatsApp
 </button>
 
