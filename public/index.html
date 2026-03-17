@@ -194,7 +194,7 @@ position:fixed;
 bottom:0;
 left:0;
 width:100%;
-height:40px;
+height:45px;
 background:#000;
 color:#fff;
 overflow:hidden;
@@ -203,20 +203,21 @@ display:flex;
 align-items:center;
 }
 
-.ticker-track{
+.ticker-content{
+display:inline-block;
 white-space:nowrap;
-display:inline-block;
-animation:scroll 20s linear infinite;
-}
-
-.ticker-track span{
 padding-left:100%;
-display:inline-block;
+animation:defilement 25s linear infinite;
+font-size:14px;
 }
 
-@keyframes scroll{
-0%{transform:translateX(0);}
-100%{transform:translateX(-100%);}
+@keyframes defilement{
+0%{
+transform:translateX(0);
+}
+100%{
+transform:translateX(-100%);
+}
 }
 </style>
 </head>
@@ -385,15 +386,12 @@ document.getElementById("premium").scrollIntoView({behavior:"smooth"})
 }
 
 </script>
-
 <div class="ticker">
-  <div class="ticker-track">
-    <span>
-      📢 Publiez vos offres gratuitement sur workshopkmer • 
-      ⭐ Créez votre profil premium • 
-      📲 Rejoignez notre chaîne WhatsApp • 
-      🚀 Trouvez un emploi rapidement
-    </span>
+  <div class="ticker-content">
+    📢 Publiez vos offres gratuitement sur workshopkmer • 
+    ⭐ Créez votre profil premium • 
+    📲 Rejoignez notre chaîne WhatsApp • 
+    🚀 Trouvez un emploi rapidement au Cameroun
   </div>
 </div>
 
